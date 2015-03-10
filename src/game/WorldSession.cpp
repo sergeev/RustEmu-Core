@@ -202,6 +202,8 @@ bool WorldSession::Update(PacketFilter& updater)
 {
     ///- Retrieve packets from the receive queue and call the appropriate handlers
     /// not process packets if socket already closed
+    //! Delete packet after processing by default
+    bool deletePacket = true;
     WorldPacket* packet = NULL;
     while (m_Socket && !m_Socket->IsClosed() && _recvQueue.next(packet, updater))
     {
@@ -220,8 +222,18 @@ bool WorldSession::Update(PacketFilter& updater)
                     if (!_player)
                     {
                         // skip STATUS_LOGGEDIN opcode unexpected errors if player logout sometime ago - this can be network lag delayed packets
+                        //! If player didn't log out a while ago, it means packets are being sent while the server does not recognize
+                        //! the client to be in world yet. We will re-add the packets to the bottom of the queue and process them later.
                         if (!m_playerRecentlyLogout)
-                            LogUnexpectedOpcode(packet, "the player has not logged in yet");
+                        {
+                            //! Because checking a bool is faster than reallocating memory
+                            deletePacket = false;
+                            //! Re-enqueue
+                            QueuePacket(packet);
+                            //! Log
+                            DEBUG_LOG("Re-enqueueing packet with opcode %s (0x%.4X) with with status STATUS_LOGGEDIN. "
+                                "Player is currently not in world yet.", opHandle.name, packet->GetOpcode());
+                        }
                     }
                     else if (_player->IsInWorld())
                         ExecuteOpcode(opHandle, packet);
@@ -296,7 +308,8 @@ bool WorldSession::Update(PacketFilter& updater)
             }
         }
 
-        delete packet;
+        if (deletePacket)
+            delete packet;
     }
 
     ///- Cleanup socket pointer if need
