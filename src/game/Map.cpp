@@ -57,13 +57,17 @@ Map::~Map()
         i_data = NULL;
     }
 
+    //sMapMgr.GetMapUpdater().MapStatisticDataRemove(this);
+
     // unload instance specific navigation data
-    MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(GetTerrain()->GetMapId(), GetInstanceId());
+    MMAP::MMapFactory::createOrGetMMapManager()->unloadMapInstance(m_TerrainData->GetMapId(), GetInstanceId());
 
-    sTerrainMgr.UnloadTerrain(GetTerrain()->GetMapId());
+    //release reference count
+    if (m_TerrainData->Release())
+        sTerrainMgr.UnloadTerrain(m_TerrainData->GetMapId());
 
-    delete m_weatherSystem;
     m_weatherSystem = NULL;
+    delete m_weatherSystem;    
 
     DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "Map::~Map removing map %u instance %u complete", GetId(), GetInstanceId());
 }
@@ -75,8 +79,8 @@ void Map::LoadMapAndVMap(int gx,int gy)
 
     m_bLoadedGrids[gx][gy] = true;
 
-    if (!GetTerrain()->Load(gx, gy))
-        m_bLoadedGrids[gx][gy] = false;
+    if (m_TerrainData->Load(gx, gy))
+        m_bLoadedGrids[gx][gy] = true;
 }
 
 Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode)
@@ -102,6 +106,9 @@ Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode)
     //lets initialize visibility distance for map
     Map::InitVisibilityDistance();
 
+    //add reference for TerrainData object
+    m_TerrainData->AddRef();
+
     MapPersistentState* persistentState = sMapPersistentStateMgr.AddPersistentState(i_mapEntry, GetInstanceId(), GetDifficulty(), 0, IsDungeon());
     persistentState->SetUsedByMapState(this);
     SetBroken(false);
@@ -116,7 +123,6 @@ Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode)
 
     //if (GetInstanceId() && !sMapMgr.IsTransportMap(GetId()))
     //    sObjectMgr.LoadTransports(this);
-
     m_weatherSystem = new WeatherSystem(this);
 
     DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "Map::Map creating map %u instance %u complete", GetId(), GetInstanceId());
@@ -333,19 +339,19 @@ bool Map::EnsureGridLoaded(Cell const& cell)
     if (!IsGridObjectDataLoaded(cgrid))
     {
         NGridType* grid = const_cast<NGridType*>(cgrid);
-        {
-            //it's important to set it loaded before loading!
-            //otherwise there is a possibility of infinity chain (grid loading will be called many times for the same grid)
-            //possible scenario:
-            //active object A(loaded with loader.LoadN call and added to the  map)
-            //summons some active object B, while B added to map grid loading called again and so on..
-            SetGridObjectDataLoaded(true, *grid);
-            ObjectGridLoader loader(*grid, this, cell);
-            loader.LoadN();
 
-            // Add resurrectable corpses to world object list in grid
-            sObjectAccessor.AddCorpsesToGrid(GridPair(cell.GridX(),cell.GridY()),(*grid)(cell.CellX(), cell.CellY()), this);
-        }
+        //it's important to set it loaded before loading!
+        //otherwise there is a possibility of infinity chain (grid loading will be called many times for the same grid)
+        //possible scenario:
+        //active object A(loaded with loader.LoadN call and added to the  map)
+        //summons some active object B, while B added to map grid loading called again and so on..
+        SetGridObjectDataLoaded(true, *grid);
+        ObjectGridLoader loader(*grid, this, cell);
+        loader.LoadN();
+
+        // Add resurrectable corpses to world object list in grid
+        sObjectAccessor.AddCorpsesToGrid(GridPair(cell.GridX(),cell.GridY()),(*grid)(cell.CellX(), cell.CellY()), this);
+
         DynamicMapTreeBalance();
         return true;
     }
@@ -618,6 +624,8 @@ void Map::Update(const uint32 &t_diff)
         }
         delete loadingObject;
     }
+
+    UpdateEvents(t_diff);
 
     /// update worldsessions for existing players (stage 1)
     GuidQueue updateQueue = GetActiveObjects();
@@ -1069,7 +1077,7 @@ bool Map::UnloadGrid(NGridType& grid, bool pForce)
     if (m_bLoadedGrids[gx][gy])
     {
         m_bLoadedGrids[gx][gy] = false;
-        GetTerrain()->Unload(gx, gy);
+        m_TerrainData->Unload(gx, gy);
     }
 
     return true;
@@ -1972,7 +1980,6 @@ bool Map::ScriptsStart(ScriptMapMapName const& scripts, uint32 id, Object* sourc
     {
         ScriptAction sa(scripts.first, this, sourceGuid, targetGuid, ownerGuid, &iter->second);
         sScriptMgr.IncreaseScheduledScriptsCount();
-
         m_scriptSchedule.insert(ScriptScheduleMap::value_type(time_t(sWorld.GetGameTime() + iter->first), sa));
     }
 
@@ -2620,7 +2627,6 @@ bool Map::GetHitPosition(float srcX, float srcY, float srcZ, float& destX, float
         destZ = tempZ;
     }
     // at second all dynamic objects, if static check has an hit, then we can calculate only to this point and NOT to end, because we need closely hit point
-
     bool result1 = GetDynamicMapTree().getObjectHitPos(phasemask, srcX, srcY, srcZ, destX, destY, destZ, tempX, tempY, tempZ, modifyDist);
     if (result1)
     {
@@ -2634,11 +2640,10 @@ bool Map::GetHitPosition(float srcX, float srcY, float srcZ, float& destX, float
 
 float Map::GetHeight(uint32 phasemask, float x, float y, float z) const
 {
-    float staticHeight = GetTerrain()->GetHeightStatic(x, y, z);
+    float staticHeight = m_TerrainData->GetHeightStatic(x, y, z);
 
     // Get Dynamic Height around static Height (if valid)
     float dynSearchHeight = 2.0f + (z < staticHeight ? staticHeight : z);
-
     return std::max<float>(staticHeight, GetDynamicMapTree().getHeight(x, y, dynSearchHeight, dynSearchHeight - staticHeight, phasemask));
 }
 
@@ -2757,6 +2762,30 @@ template<class T> void Map::LoadObjectToGrid(uint32& guid, GridType& grid, Battl
         bg->OnObjectDBLoad(obj);
 
     obj->UpdateObjectVisibility();
+}
+
+WorldObjectEventProcessor* Map::GetEvents()
+{
+    return &m_Events;
+}
+
+void Map::KillAllEvents(bool force)
+{
+    GetEvents()->KillAllEvents(force);
+}
+
+void Map::AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime)
+{
+    if (set_addtime)
+        GetEvents()->AddEvent(Event, GetEvents()->CalculateTime(e_time), set_addtime);
+    else
+        GetEvents()->AddEvent(Event, e_time, set_addtime);
+}
+
+void Map::UpdateEvents(uint32 update_diff)
+{
+    GetEvents()->RenewEvents();
+    GetEvents()->Update(update_diff);
 }
 
 bool Map::IsVisibleGlobally(ObjectGuid const& guid)
@@ -2921,7 +2950,6 @@ bool Map::GetRandomPointUnderWater(uint32 phaseMask, float& x, float& y, float& 
     return false;
 }
 
-// This will generate a random point to all directions in air for the provided point in radius range.
 bool Map::GetRandomPointInTheAir(uint32 phaseMask, float& x, float& y, float& z, float radius)
 {
     const float angle = rand_norm_f() * (M_PI_F * 2.0f);
@@ -2931,17 +2959,21 @@ bool Map::GetRandomPointInTheAir(uint32 phaseMask, float& x, float& y, float& z,
     float i_y = y + range * sin(angle);
 
     // get real ground of new point
-    // the code consider cylinder instead of sphere for possible z
+    // the code considere cylindre instead of sphere for possible z
     float ground = GetHeight(phaseMask, i_x, i_y, z);
-    if (ground > INVALID_HEIGHT) // GetHeight can fail
+    if (ground > INVALID_HEIGHT)    // GetHeight can fail
     {
-        float min_z = z - 0.7f * radius; // 0.7 to have a bit a "flat" cylinder, TODO which value looks nicest
+        float min_z = z - radius;
         if (min_z < ground)
-            min_z = ground + 2.5f; // Get some space to prevent landing
-        float max_z = std::max(z + 0.7f * radius, min_z);
+            min_z = ground + 0.5f;
+        float z1 = fabs(min_z);
+        float z2 = fabs(z + radius);
+
+        uint32 usable_range = (z1 > z2) ? z1 - z2 : z2 - z1;    // rounded to unit32
+
         x = i_x;
         y = i_y;
-        z = min_z + rand_norm_f() * (max_z - min_z);
+        z = min_z + rand_norm_f() * float(usable_range);
         return true;
     }
     return false;

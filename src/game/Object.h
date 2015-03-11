@@ -655,7 +655,7 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         virtual void ResetMap() { m_currMap = NULL; }
 
         //obtain terrain data for map where this object belong...
-        TerrainInfo* GetTerrain() const;
+        TerrainInfo const* GetTerrain() const;
 
         void AddToClientUpdateList() override;
         void RemoveFromClientUpdateList() override;

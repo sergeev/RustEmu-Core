@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,11 +68,11 @@ static DumpTable dumpTables[] =
 };
 
 // Low level functions
-static bool findtoknth(std::string& str, int n, std::string::size_type& s, std::string::size_type& e)
+static bool findtoknth(std::string &str, int n, std::string::size_type &s, std::string::size_type &e)
 {
     int i; s = e = 0;
     std::string::size_type size = str.size();
-    for (i = 1; s < size && i < n; ++s) if (str[s] == ' ') ++i;
+    for(i = 1; s < size && i < n; s++) if(str[s] == ' ') ++i;
     if (i < n)
         return false;
 
@@ -81,94 +81,92 @@ static bool findtoknth(std::string& str, int n, std::string::size_type& s, std::
     return e != std::string::npos;
 }
 
-std::string gettoknth(std::string& str, int n)
+std::string gettoknth(std::string &str, int n)
 {
     std::string::size_type s = 0, e = 0;
     if (!findtoknth(str, n, s, e))
         return "";
 
-    return str.substr(s, e - s);
+    return str.substr(s, e-s);
 }
 
-bool findnth(std::string& str, int n, std::string::size_type& s, std::string::size_type& e)
+bool findnth(std::string &str, int n, std::string::size_type &s, std::string::size_type &e)
 {
-    s = str.find("VALUES ('") + 9;
+    s = str.find("VALUES ('")+9;
     if (s == std::string::npos)
         return false;
 
     do
     {
-        e = str.find("'", s);
+        e = str.find("'",s);
         if (e == std::string::npos)
             return false;
-    }
-    while (str[e - 1] == '\\');
+    } while(str[e-1] == '\\');
 
-    for (int i = 1; i < n; ++i)
+    for(int i = 1; i < n; ++i)
     {
         do
         {
-            s = e + 4;
-            e = str.find("'", s);
+            s = e+4;
+            e = str.find("'",s);
             if (e == std::string::npos)
                 return false;
-        }
-        while (str[e - 1] == '\\');
+        } while (str[e-1] == '\\');
     }
     return true;
 }
 
-std::string gettablename(std::string& str)
+std::string gettablename(std::string &str)
 {
     std::string::size_type s = 13;
     std::string::size_type e = str.find(_TABLE_SIM_, s);
     if (e == std::string::npos)
         return "";
 
-    return str.substr(s, e - s);
+    return str.substr(s, e-s);
 }
 
-bool changenth(std::string& str, int n, const char* with, bool insert = false, bool nonzero = false)
+bool changenth(std::string &str, int n, const char *with, bool insert = false, bool nonzero = false)
 {
     std::string::size_type s, e;
-    if (!findnth(str, n, s, e))
+    if (!findnth(str,n,s,e))
         return false;
 
-    if (nonzero && str.substr(s, e - s) == "0")
+    if (nonzero && str.substr(s,e-s) == "0")
         return true;                                        // not an error
     if (!insert)
-        str.replace(s, e - s, with);
+        str.replace(s,e-s, with);
     else
         str.insert(s, with);
 
     return true;
 }
 
-std::string getnth(std::string& str, int n)
+std::string getnth(std::string &str, int n)
 {
     std::string::size_type s, e;
-    if (!findnth(str, n, s, e))
+    if (!findnth(str,n,s,e))
         return "";
 
-    return str.substr(s, e - s);
+    return str.substr(s, e-s);
 }
 
-bool changetoknth(std::string& str, int n, const char* with, bool insert = false, bool nonzero = false)
+bool changetoknth(std::string &str, int n, const char *with, bool insert = false, bool nonzero = false)
 {
     std::string::size_type s = 0, e = 0;
     if (!findtoknth(str, n, s, e))
         return false;
-    if (nonzero && str.substr(s, e - s) == "0")
+    if (nonzero && str.substr(s,e-s) == "0")
         return true;                                        // not an error
     if (!insert)
-        str.replace(s, e - s, with);
+        str.replace(s, e-s, with);
     else
         str.insert(s, with);
 
     return true;
 }
 
-uint32 registerNewGuid(uint32 oldGuid, std::map<uint32, uint32>& guidMap, uint32 hiGuid)
+uint32 registerNewGuid(uint32 oldGuid, std::map<uint32, uint32> &guidMap, uint32 hiGuid)
 {
     std::map<uint32, uint32>::const_iterator itr = guidMap.find(oldGuid);
     if (itr != guidMap.end())
@@ -179,7 +177,7 @@ uint32 registerNewGuid(uint32 oldGuid, std::map<uint32, uint32>& guidMap, uint32
     return newguid;
 }
 
-bool changeGuid(std::string& str, int n, std::map<uint32, uint32>& guidMap, uint32 hiGuid, bool nonzero = false)
+bool changeGuid(std::string &str, int n, std::map<uint32, uint32> &guidMap, uint32 hiGuid, bool nonzero = false)
 {
     char chritem[20];
     uint32 oldGuid = atoi(getnth(str, n).c_str());
@@ -192,7 +190,7 @@ bool changeGuid(std::string& str, int n, std::map<uint32, uint32>& guidMap, uint
     return changenth(str, n, chritem, false, nonzero);
 }
 
-bool changetokGuid(std::string& str, int n, std::map<uint32, uint32>& guidMap, uint32 hiGuid, bool nonzero = false)
+bool changetokGuid(std::string &str, int n, std::map<uint32, uint32> &guidMap, uint32 hiGuid, bool nonzero = false)
 {
     char chritem[20];
     uint32 oldGuid = atoi(gettoknth(str, n).c_str());
@@ -205,15 +203,15 @@ bool changetokGuid(std::string& str, int n, std::map<uint32, uint32>& guidMap, u
     return changetoknth(str, n, chritem, false, nonzero);
 }
 
-std::string CreateDumpString(char const* tableName, QueryResult* result)
+std::string CreateDumpString(char const* tableName, QueryResult *result)
 {
     if (!tableName || !result)
         return "";
 
     std::ostringstream ss;
-    ss << "INSERT INTO " << _TABLE_SIM_ << tableName << _TABLE_SIM_ << " VALUES (";
-    Field* fields = result->Fetch();
-    for (uint32 i = 0; i < result->GetFieldCount(); ++i)
+    ss << "INSERT INTO "<< _TABLE_SIM_ << tableName << _TABLE_SIM_ << " VALUES (";
+    Field *fields = result->Fetch();
+    for(uint32 i = 0; i < result->GetFieldCount(); ++i)
     {
         if (i != 0)
             ss << ", ";
@@ -243,7 +241,7 @@ std::string PlayerDumpWriter::GenerateWhereStr(char const* field, GUIDs const& g
 {
     std::ostringstream wherestr;
     wherestr << field << " IN ('";
-    for (; itr != guids.end(); ++itr)
+    for(; itr != guids.end(); ++itr)
     {
         wherestr << *itr;
 
@@ -261,7 +259,7 @@ std::string PlayerDumpWriter::GenerateWhereStr(char const* field, GUIDs const& g
     return wherestr.str();
 }
 
-void StoreGUID(QueryResult* result, uint32 field, std::set<uint32>& guids)
+void StoreGUID(QueryResult *result,uint32 field,std::set<uint32>& guids)
 {
     Field* fields = result->Fetch();
     uint32 guid = fields[field].GetUInt32();
@@ -269,7 +267,7 @@ void StoreGUID(QueryResult* result, uint32 field, std::set<uint32>& guids)
         guids.insert(guid);
 }
 
-void StoreGUID(QueryResult* result, uint32 data, uint32 field, std::set<uint32>& guids)
+void StoreGUID(QueryResult *result,uint32 data,uint32 field, std::set<uint32>& guids)
 {
     Field* fields = result->Fetch();
     std::string dataStr = fields[data].GetCppString();
@@ -279,12 +277,12 @@ void StoreGUID(QueryResult* result, uint32 data, uint32 field, std::set<uint32>&
 }
 
 // Writing - High-level functions
-void PlayerDumpWriter::DumpTableContent(std::string& dump, uint32 guid, char const* tableFrom, char const* tableTo, DumpTableType type)
+void PlayerDumpWriter::DumpTableContent(std::string& dump, uint32 guid, char const*tableFrom, char const*tableTo, DumpTableType type)
 {
     GUIDs const* guids = NULL;
     char const* fieldname = NULL;
 
-    switch (type)
+    switch ( type )
     {
         case DTT_ITEM:      fieldname = "guid";      guids = &items; break;
         case DTT_ITEM_GIFT: fieldname = "item_guid"; guids = &items; break;
@@ -311,27 +309,27 @@ void PlayerDumpWriter::DumpTableContent(std::string& dump, uint32 guid, char con
         std::string wherestr;
 
         if (guids)                                          // set case, get next guids string
-            wherestr = GenerateWhereStr(fieldname, *guids, guids_itr);
+            wherestr = GenerateWhereStr(fieldname,*guids,guids_itr);
         else                                                // not set case, get single guid string
-            wherestr = GenerateWhereStr(fieldname, guid);
+            wherestr = GenerateWhereStr(fieldname,guid);
 
-        QueryResult* result = CharacterDatabase.PQuery("SELECT * FROM %s WHERE %s", tableFrom, wherestr.c_str());
+        QueryResult *result = CharacterDatabase.PQuery("SELECT * FROM %s WHERE %s", tableFrom, wherestr.c_str());
         if (!result)
             return;
 
         do
         {
             // collect guids
-            switch (type)
+            switch ( type )
             {
                 case DTT_INVENTORY:
-                    StoreGUID(result, 3, items); break;     // item guid collection (character_inventory.item)
+                    StoreGUID(result,3,items); break;       // item guid collection (character_inventory.item)
                 case DTT_PET:
-                    StoreGUID(result, 0, pets);  break;     // pet petnumber collection (character_pet.id)
+                    StoreGUID(result,0,pets);  break;       // pet petnumber collection (character_pet.id)
                 case DTT_MAIL:
-                    StoreGUID(result, 0, mails);            // mail id collection (mail.id)
+                    StoreGUID(result,0,mails); break;       // mail id collection (mail.id)
                 case DTT_MAIL_ITEM:
-                    StoreGUID(result, 1, items); break;     // item guid collection (mail_items.item_guid)
+                    StoreGUID(result,1,items); break;       // item guid collection (mail_items.item_guid)
                 default:                       break;
             }
 
@@ -342,7 +340,7 @@ void PlayerDumpWriter::DumpTableContent(std::string& dump, uint32 guid, char con
 
         delete result;
     }
-    while (guids && guids_itr != guids->end());             // not set case iterate single time, set case iterate for all guids
+    while(guids && guids_itr != guids->end());              // not set case iterate single time, set case iterate for all guids
 }
 
 std::string PlayerDumpWriter::GetDump(uint32 guid)
@@ -358,9 +356,9 @@ std::string PlayerDumpWriter::GetDump(uint32 guid)
     {
         QueryFieldNames const& namesMap = result->GetFieldNames();
         std::string reqName;
-        for (QueryFieldNames::const_iterator itr = namesMap.begin(); itr != namesMap.end(); ++itr)
+        for(QueryFieldNames::const_iterator itr = namesMap.begin(); itr != namesMap.end(); ++itr)
         {
-            if (itr->substr(0, 9) == "required_")
+            if (itr->substr(0,9)=="required_")
             {
                 reqName = *itr;
                 break;
@@ -370,7 +368,7 @@ std::string PlayerDumpWriter::GetDump(uint32 guid)
         if (!reqName.empty())
         {
             // this will fail at wrong character DB version
-            dump += "UPDATE character_db_version SET " + reqName + " = 1 WHERE FALSE;\n\n";
+            dump += "UPDATE character_db_version SET "+reqName+" = 1 WHERE FALSE;\n\n";
         }
         else
             sLog.outError("Table 'character_db_version' not have revision guard field, revision guard query not added to pdump.");
@@ -380,7 +378,7 @@ std::string PlayerDumpWriter::GetDump(uint32 guid)
     else
         sLog.outError("Character DB not have 'character_db_version' table, revision guard query not added to pdump.");
 
-    for (DumpTable* itr = &dumpTables[0]; itr->isValid(); ++itr)
+    for(DumpTable* itr = &dumpTables[0]; itr->isValid(); ++itr)
         DumpTableContent(dump, guid, itr->name, itr->name, itr->type);
 
     // TODO: Add instance/group..
@@ -391,13 +389,13 @@ std::string PlayerDumpWriter::GetDump(uint32 guid)
 
 DumpReturn PlayerDumpWriter::WriteDump(const std::string& file, uint32 guid)
 {
-    FILE* fout = fopen(file.c_str(), "w");
+    FILE *fout = fopen(file.c_str(), "wb");
     if (!fout)
         return DUMP_FILE_OPEN_ERROR;
 
     std::string dump = GetDump(guid);
 
-    fprintf(fout, "%s\n", dump.c_str());
+    fprintf(fout,"%s\n",dump.c_str());
     fclose(fout);
     return DUMP_SUCCESS;
 }
@@ -414,11 +412,11 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
     if (charcount >= 10)
         return DUMP_TOO_MANY_CHARS;
 
-    FILE* fin = fopen(file.c_str(), "r");
+    FILE *fin = fopen(file.c_str(), "r");
     if (!fin)
         return DUMP_FILE_OPEN_ERROR;
 
-    QueryResult* result = NULL;
+    QueryResult * result = NULL;
     char newguid[20], chraccount[20], newpetid[20], currpetid[20], lastpetid[20];
 
     // make sure the same guid doesn't already exist and is safe to use
@@ -438,20 +436,20 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
 
     // normalize the name if specified and check if it exists
     if (!normalizePlayerName(name))
-        name.clear();
+        name = "";
 
-    if (ObjectMgr::CheckPlayerName(name, true) == CHAR_NAME_SUCCESS)
+    if (ObjectMgr::CheckPlayerName(name,true) == CHAR_NAME_SUCCESS)
     {
         CharacterDatabase.escape_string(name);              // for safe, we use name only for sql quearies anyway
         result = CharacterDatabase.PQuery("SELECT * FROM characters WHERE name = '%s'", name.c_str());
         if (result)
         {
-            name.clear();                                   // use the one from the dump
+            name = "";                                      // use the one from the dump
             delete result;
         }
     }
     else
-        name.clear();
+        name = "";
 
     // name encoded or empty
 
@@ -460,9 +458,9 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
     snprintf(newpetid, 20, "%u", sObjectMgr.GeneratePetNumber());
     snprintf(lastpetid, 20, "%s", "");
 
-    std::map<uint32, uint32> items;
-    std::map<uint32, uint32> mails;
-    std::map<uint32, uint32> eqsets;
+    std::map<uint32,uint32> items;
+    std::map<uint32,uint32> mails;
+    std::map<uint32,uint32> eqsets;
     char buf[32000] = "";
 
     typedef std::map<uint32, uint32> PetIds;                // old->new petid relation
@@ -470,11 +468,11 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
     PetIds petids;
 
     CharacterDatabase.BeginTransaction();
-    while (!feof(fin))
+    while(!feof(fin))
     {
         if (!fgets(buf, 32000, fin))
         {
-            if (feof(fin)) break;
+            if(feof(fin)) break;
             ROLLBACK(DUMP_FILE_BROKEN);
         }
 
@@ -482,15 +480,15 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
 
         // skip empty strings
         size_t nw_pos = line.find_first_not_of(" \t\n\r\7");
-        if (nw_pos == std::string::npos)
+        if (nw_pos==std::string::npos)
             continue;
 
         // skip NOTE
-        if (line.substr(nw_pos, 15) == "IMPORTANT NOTE:")
+        if (line.substr(nw_pos,15)=="IMPORTANT NOTE:")
             continue;
 
         // add required_ check
-        if (line.substr(nw_pos, 41) == "UPDATE character_db_version SET required_")
+        if (line.substr(nw_pos,41)=="UPDATE character_db_version SET required_")
         {
             if (!CharacterDatabase.Execute(line.c_str()))
                 ROLLBACK(DUMP_FILE_BROKEN);
@@ -506,9 +504,9 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
             ROLLBACK(DUMP_FILE_BROKEN);
         }
 
-        DumpTableType type = DTT_CHARACTER;                 // Fixed: Using uninitialized memory 'type'
+        DumpTableType type = DTT_CHARACTER;                 //Fixed: Using uninitialized memory 'type'
         DumpTable* dTable = &dumpTables[0];
-        for (; dTable->isValid(); ++dTable)
+        for(; dTable->isValid(); ++dTable)
         {
             if (tn == dTable->name)
             {
@@ -526,7 +524,7 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
         bool execute_ok = true;                             // false, if need skip soem query
 
         // change the data to server values
-        switch (type)
+        switch(type)
         {
             case DTT_CHAR_TABLE:
                 if (!changenth(line, 1, newguid))           // character_*.guid update
@@ -552,7 +550,7 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
                 if (!changenth(line, 2, chraccount))        // characters.account update
                     ROLLBACK(DUMP_FILE_BROKEN);
 
-                if (name.empty())
+                if (name == "")
                 {
                     // check if the original name already exists
                     name = getnth(line, 3);                 // characters.name
@@ -597,10 +595,10 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
                     ROLLBACK(DUMP_FILE_BROKEN);             // item_instance.guid update
                 if (!changenth(line, 2, newguid))           // item_instance.owner_guid update
                     ROLLBACK(DUMP_FILE_BROKEN);
-                std::string vals = getnth(line, 3);         // item_instance.data get
-                if (!changetokGuid(vals, OBJECT_FIELD_GUID + 1, items, sObjectMgr.m_ItemGuids.GetNextAfterMaxUsed()))
+                std::string vals = getnth(line,3);          // item_instance.data get
+                if (!changetokGuid(vals, OBJECT_FIELD_GUID+1, items, sObjectMgr.m_ItemGuids.GetNextAfterMaxUsed()))
                     ROLLBACK(DUMP_FILE_BROKEN);             // item_instance.data.OBJECT_FIELD_GUID update
-                if (!changetoknth(vals, ITEM_FIELD_OWNER + 1, newguid))
+                if (!changetoknth(vals, ITEM_FIELD_OWNER+1, newguid))
                     ROLLBACK(DUMP_FILE_BROKEN);             // item_instance.data.ITEM_FIELD_OWNER update
                 if (!changenth(line, 3, vals.c_str()))      // item_instance.data update
                     ROLLBACK(DUMP_FILE_BROKEN);
@@ -625,12 +623,12 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
             }
             case DTT_PET:
             {
-                // store a map of old pet id to new inserted pet id for use by type 5 tables
+                //store a map of old pet id to new inserted pet id for use by type 5 tables
                 snprintf(currpetid, 20, "%s", getnth(line, 1).c_str());
-                if (strlen(lastpetid) == 0)
+                if (strlen(lastpetid)==0)
                     snprintf(lastpetid, 20, "%s", currpetid);
 
-                if (strcmp(lastpetid, currpetid) != 0)
+                if (strcmp(lastpetid,currpetid)!=0)
                 {
                     snprintf(newpetid, 20, "%d", sObjectMgr.GeneratePetNumber());
                     snprintf(lastpetid, 20, "%s", currpetid);
@@ -709,13 +707,13 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
                     ROLLBACK(DUMP_FILE_BROKEN);
                 if (!changeGuid(line, 2, eqsets, sObjectMgr.m_EquipmentSetIds.GetNextAfterMaxUsed()))
                     ROLLBACK(DUMP_FILE_BROKEN);             // character_equipmentsets.setguid
-                for (int i = 0; i < 19; ++i)                // character_equipmentsets.item0..item18
-                    if (!changeGuid(line, 6 + i, items, sObjectMgr.m_ItemGuids.GetNextAfterMaxUsed()))
+                for(int i = 0; i < 19; ++i)                 // character_equipmentsets.item0..item18
+                    if(!changeGuid(line, 6+i, items, sObjectMgr.m_ItemGuids.GetNextAfterMaxUsed()))
                         ROLLBACK(DUMP_FILE_BROKEN);
                 break;
             }
             default:
-                sLog.outError("Unknown dump table type: %u", type);
+                sLog.outError("Unknown dump table type: %u",type);
                 break;
         }
 
@@ -725,13 +723,13 @@ DumpReturn PlayerDumpReader::LoadDump(const std::string& file, uint32 account, s
 
     CharacterDatabase.CommitTransaction();
 
-    // FIXME: current code with post-updating guids not safe for future per-map threads
+    //FIXME: current code with post-updating guids not safe for future per-map threads
     sObjectMgr.m_ItemGuids.Set(sObjectMgr.m_ItemGuids.GetNextAfterMaxUsed() + items.size());
     sObjectMgr.m_MailIds.Set(sObjectMgr.m_MailIds.GetNextAfterMaxUsed() +  mails.size());
     sObjectMgr.m_EquipmentSetIds.Set(sObjectMgr.m_EquipmentSetIds.GetNextAfterMaxUsed() + eqsets.size());
 
     if (incHighest)
-        sObjectMgr.m_CharGuids.Set(sObjectMgr.m_CharGuids.GetNextAfterMaxUsed() + 1);
+        sObjectMgr.m_CharGuids.Set(sObjectMgr.m_CharGuids.GetNextAfterMaxUsed()+1);
 
     fclose(fin);
 

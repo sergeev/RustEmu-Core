@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,14 +40,15 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 #include "Weather.h"
-#include "PointMovementGenerator.h"
 #include "PathFinder.h"
+#include "PointMovementGenerator.h"
 #include "TargetedMovementGenerator.h"
 #include "HomeMovementGenerator.h"
 #include "SystemConfig.h"
 #include "Config/Config.h"
 #include "Mail.h"
 #include "Util.h"
+#include "Transports.h"
 #include "ItemEnchantmentMgr.h"
 #include "BattleGround/BattleGroundMgr.h"
 #include "MapPersistentStateMgr.h"
@@ -271,10 +272,9 @@ bool ChatHandler::HandleReloadAllLootCommand(char* /*args*/)
     return true;
 }
 
-bool ChatHandler::HandleReloadAllNpcCommand(char* args)
+bool ChatHandler::HandleReloadAllNpcCommand(char* /*args*/)
 {
-    if (*args != 'a')                                       // will be reloaded from all_gossips
-        HandleReloadNpcGossipCommand((char*)"a");
+    HandleReloadNpcGossipCommand((char*)"a");
     HandleReloadNpcTrainerCommand((char*)"a");
     HandleReloadNpcVendorCommand((char*)"a");
     HandleReloadPointsOfInterestCommand((char*)"a");
@@ -338,8 +338,8 @@ bool ChatHandler::HandleReloadAllSpellCommand(char* /*args*/)
     HandleReloadSpellScriptTargetCommand((char*)"a");
     HandleReloadSpellTargetPositionCommand((char*)"a");
     HandleReloadSpellThreatsCommand((char*)"a");
-    HandleReloadSpellLinkedCommand((char*)"a");
     HandleReloadSpellPetAurasCommand((char*)"a");
+    HandleReloadSpellLinkedCommand((char*)"a");
     return true;
 }
 
@@ -672,6 +672,14 @@ bool ChatHandler::HandleReloadSpellClickSpellsCommand(char* /*args*/)
     return true;
 }
 
+bool ChatHandler::HandleReloadSpellDbcCommand(char* /*args*/)
+{
+    sLog.outString( "Re-Loading `spell_dbc` Table!" );
+    sSpellMgr.LoadSpellDbc();
+    SendGlobalSysMessage("DB table `spell_dbc` reloaded.");
+    return true;
+}
+
 bool ChatHandler::HandleReloadReservedNameCommand(char* /*args*/)
 {
     sLog.outString("Loading ReservedNames... (`reserved_name`)");
@@ -800,14 +808,6 @@ bool ChatHandler::HandleReloadSpellThreatsCommand(char* /*args*/)
     return true;
 }
 
-bool ChatHandler::HandleReloadSpellLinkedCommand(char* /*arg*/)
-{
-    sLog.outString("Re-Loading spell linked table...");    
-    sSpellMgr.LoadSpellLinked();    
-    SendGlobalSysMessage("DB table `spell_linked` reloaded.");    
-    return true;
-}
-
 bool ChatHandler::HandleReloadSpellPetAurasCommand(char* /*args*/)
 {
     sLog.outString("Re-Loading Spell pet auras...");
@@ -858,6 +858,7 @@ bool ChatHandler::HandleReloadBattleEventCommand(char* /*args*/)
 
 bool ChatHandler::HandleReloadEventAITextsCommand(char* /*args*/)
 {
+
     sLog.outString("Re-Loading Texts from `creature_ai_texts`...");
     sEventAIMgr.LoadCreatureEventAI_Texts(true);
     SendGlobalSysMessage("DB table `creature_ai_texts` reloaded.");
@@ -1131,6 +1132,17 @@ bool ChatHandler::HandleReloadMailLevelRewardCommand(char* /*args*/)
     return true;
 }
 
+bool ChatHandler::HandleReloadSpellLinkedCommand(char* /*arg*/)
+{
+    sLog.outString( "Re-Loading spell linked table...");
+
+    sSpellMgr.LoadSpellLinked();
+
+    SendGlobalSysMessage("DB table `spell_linked` reloaded.");
+
+    return true;
+}
+
 bool ChatHandler::HandleReloadCreaturesStatsCommand(char* /*args*/)
 {
     sLog.outString("Re-Loading stats data...");
@@ -1182,6 +1194,8 @@ bool ChatHandler::HandleAccountSetGmLevelCommand(char* args)
     if (!ExtractInt32(&args, gm))
         return false;
 
+    uint32 gmRealmID = sWorld.getConfig(CONFIG_UINT32_REALMID);
+
     if (gm < SEC_PLAYER || gm > SEC_ADMINISTRATOR)
     {
         SendSysMessage(LANG_BAD_VALUE);
@@ -1196,12 +1210,22 @@ bool ChatHandler::HandleAccountSetGmLevelCommand(char* args)
 
     /// account can't set security to same or grater level, need more power GM or console
     AccountTypes plSecurity = GetAccessLevel();
-    if (AccountTypes(gm) >= plSecurity)
+    if (AccountTypes(gm) >= plSecurity || (gmRealmID != sWorld.getConfig(CONFIG_UINT32_REALMID) && plSecurity < SEC_CONSOLE))
     {
         SendSysMessage(LANG_YOURS_SECURITY_IS_LOW);
         SetSentErrorMessage(true);
         return false;
     }
+
+    /*
+    // Check if provided realmID is not current realmID, or isn't -1
+    if (gmRealmID != realmID && gmRealmID != -1)
+    {
+        SendSysMessage(LANG_INVALID_REALMID);
+        SetSentErrorMessage(true);
+        return false;
+    }
+    */
 
     if (targetPlayer)
     {
@@ -1210,7 +1234,19 @@ bool ChatHandler::HandleAccountSetGmLevelCommand(char* args)
     }
 
     PSendSysMessage(LANG_YOU_CHANGE_SECURITY, targetAccountName.c_str(), gm);
-    LoginDatabase.PExecute("UPDATE account SET gmlevel = '%i' WHERE id = '%u'", gm, targetAccountId);
+
+    // If gmRealmID is -1, delete all values for the account id, else, insert values for the specific realmID
+    if (int32(gmRealmID) == -1)
+    {
+        LoginDatabase.PExecute("DELETE FROM account_access WHERE id = '%u'", targetAccountId);
+        LoginDatabase.PExecute("INSERT INTO account_access VALUES ('%u', '%d', -1)", targetAccountId, gm);
+    }
+    else
+    {
+        LoginDatabase.PExecute("DELETE FROM account_access WHERE id = '%u' AND RealmID = '%d'", targetAccountId, sWorld.getConfig(CONFIG_UINT32_REALMID));
+        LoginDatabase.PExecute("INSERT INTO account_access VALUES ('%u','%d','%d')", targetAccountId, gm, sWorld.getConfig(CONFIG_UINT32_REALMID));
+    }
+    //LoginDatabase.PExecute("UPDATE account SET gmlevel = '%i' WHERE id = '%u'", gm, targetAccountId);
 
     return true;
 }
@@ -1270,6 +1306,7 @@ bool ChatHandler::HandleAccountSetPasswordCommand(char* args)
     SetSentErrorMessage(true);
     return false;
 }
+
 
 void ChatHandler::ShowAchievementCriteriaListHelper(AchievementCriteriaEntry const* criEntry, AchievementEntry const* achEntry, LocaleConstant loc, Player* target /*= NULL*/)
 {
@@ -1352,7 +1389,7 @@ bool ChatHandler::HandleAchievementAddCommand(char* args)
         return false;
 
     AchievementEntry const* achEntry = sAchievementStore.LookupEntry(achId);
-    if (!achEntry || achEntry->flags & ACHIEVEMENT_FLAG_COUNTER)
+    if (!achEntry || (achEntry->flags & ACHIEVEMENT_FLAG_COUNTER))
     {
         PSendSysMessage(LANG_ACHIEVEMENT_NOT_EXIST, achId);
         SetSentErrorMessage(true);
@@ -2364,8 +2401,7 @@ bool ChatHandler::HandleLearnAllMyClassCommand(char* /*args*/)
 
 bool ChatHandler::HandleLearnAllMySpellsCommand(char* /*args*/)
 {
-    Player* player = m_session->GetPlayer();
-    ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(player->getClass());
+    ChrClassesEntry const* clsEntry = sChrClassesStore.LookupEntry(m_session->GetPlayer()->getClass());
     if (!clsEntry)
         return true;
     uint32 family = clsEntry->spellfamily;
@@ -2385,7 +2421,7 @@ bool ChatHandler::HandleLearnAllMySpellsCommand(char* /*args*/)
             continue;
 
         // skip wrong class/race skills
-        if (!player->IsSpellFitByClassAndRace(spellInfo->Id))
+        if (!m_session->GetPlayer()->IsSpellFitByClassAndRace(spellInfo->Id))
             continue;
 
         // skip other spell families
@@ -2398,10 +2434,10 @@ bool ChatHandler::HandleLearnAllMySpellsCommand(char* /*args*/)
             continue;
 
         // skip broken spells
-        if (!SpellMgr::IsSpellValid(spellInfo, player, false))
+        if (!SpellMgr::IsSpellValid(spellInfo, m_session->GetPlayer(), false))
             continue;
 
-        player->learnSpell(spellInfo->Id, false);
+        m_session->GetPlayer()->learnSpell(spellInfo->Id, false);
     }
 
     SendSysMessage(LANG_COMMAND_LEARN_CLASS_SPELLS);
@@ -2442,7 +2478,7 @@ bool ChatHandler::HandleLearnAllMyTalentsCommand(char* /*args*/)
             continue;
 
         SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
-        if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, player, false))
+        if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, m_session->GetPlayer(), false))
             continue;
 
         // learn highest rank of talent and learn all non-talent spell ranks (recursive by tree)
@@ -2520,7 +2556,7 @@ bool ChatHandler::HandleLearnAllMyPetTalentsCommand(char* /*args*/)
             continue;
 
         SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid);
-        if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, player, false))
+        if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, m_session->GetPlayer(), false))
             continue;
 
         // learn highest rank of talent and learn all non-talent spell ranks (recursive by tree)
@@ -2535,11 +2571,9 @@ bool ChatHandler::HandleLearnAllMyPetTalentsCommand(char* /*args*/)
 
 bool ChatHandler::HandleLearnAllLangCommand(char* /*args*/)
 {
-    Player* player = m_session->GetPlayer();
-
     // skipping UNIVERSAL language (0)
     for (int i = 1; i < LANGUAGES_COUNT; ++i)
-        player->learnSpell(lang_description[i].spell_id, false);
+        m_session->GetPlayer()->learnSpell(lang_description[i].spell_id, false);
 
     SendSysMessage(LANG_COMMAND_LEARN_ALL_LANG);
     return true;
@@ -2560,7 +2594,6 @@ bool ChatHandler::HandleLearnAllDefaultCommand(char* args)
 
 bool ChatHandler::HandleLearnCommand(char* args)
 {
-    Player* player = m_session->GetPlayer();
     Player* targetPlayer = getSelectedPlayer();
 
     if (!targetPlayer)
@@ -2580,7 +2613,7 @@ bool ChatHandler::HandleLearnCommand(char* args)
         return false;
 
     SpellEntry const* spellInfo = sSpellStore.LookupEntry(spell);
-    if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, player))
+    if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, m_session->GetPlayer()))
     {
         PSendSysMessage(LANG_COMMAND_SPELL_BROKEN, spell);
         SetSentErrorMessage(true);
@@ -2589,7 +2622,7 @@ bool ChatHandler::HandleLearnCommand(char* args)
 
     if (!allRanks && targetPlayer->HasSpell(spell))
     {
-        if (targetPlayer == player)
+        if (targetPlayer == m_session->GetPlayer())
             SendSysMessage(LANG_YOU_KNOWN_SPELL);
         else
             PSendSysMessage(LANG_TARGET_KNOWN_SPELL, GetNameLink(targetPlayer).c_str());
@@ -3123,6 +3156,7 @@ bool ChatHandler::HandleListCreatureCommand(char* args)
     return true;
 }
 
+
 void ChatHandler::ShowItemListHelper(uint32 itemId, int loc_idx, Player* target /*=NULL*/)
 {
     ItemPrototype const* itemProto = sItemStorage.LookupEntry<ItemPrototype >(itemId);
@@ -3431,6 +3465,7 @@ bool ChatHandler::HandleLookupSpellCommand(char* args)
         SendSysMessage(LANG_COMMAND_NOSPELLFOUND);
     return true;
 }
+
 
 void ChatHandler::ShowQuestListHelper(uint32 questId, int32 loc_idx, Player* target /*= NULL*/)
 {
@@ -3864,10 +3899,9 @@ bool ChatHandler::HandleGetDistanceCommand(char* args)
 
 bool ChatHandler::HandleDieCommand(char* /*args*/)
 {
-    Player* player = m_session->GetPlayer();
     Unit* target = getSelectedUnit();
 
-    if (!target || !player->GetSelectionGuid())
+    if (!target || !m_session->GetPlayer()->GetSelectionGuid())
     {
         SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
@@ -3882,7 +3916,7 @@ bool ChatHandler::HandleDieCommand(char* /*args*/)
 
     if (target->isAlive())
     {
-        player->DealDamage(target, target->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        m_session->GetPlayer()->DealDamage(target, target->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
     }
 
     return true;
@@ -3894,9 +3928,8 @@ bool ChatHandler::HandleDamageCommand(char* args)
         return false;
 
     Unit* target = getSelectedUnit();
-    Player* player = m_session->GetPlayer();
 
-    if (!target || !player->GetSelectionGuid())
+    if (!target || !m_session->GetPlayer()->GetSelectionGuid())
     {
         SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
@@ -3915,14 +3948,14 @@ bool ChatHandler::HandleDamageCommand(char* args)
 
     uint32 damage = damage_int;
 
-    // flat melee damage without resistance/etc reduction
+    // flat melee damage without resistence/etc reduction
     if (!*args)
     {
-        player->DealDamage(target, damage, NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-        if (target != player)
+        m_session->GetPlayer()->DealDamage(target, damage, NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+        if (target != m_session->GetPlayer())
         {
-            DamageInfo damageInfo = DamageInfo(player, target, uint32(0), damage);
-            damageInfo.HitInfo = HITINFO_AFFECTS_VICTIM;
+            DamageInfo damageInfo  = DamageInfo(m_session->GetPlayer(), target, uint32(0), damage);
+            damageInfo.HitInfo     = HITINFO_AFFECTS_VICTIM;
             damageInfo.TargetState = VICTIMSTATE_NORMAL;
             m_session->GetPlayer()->SendAttackStateUpdate(&damageInfo);
         }
@@ -3943,29 +3976,27 @@ bool ChatHandler::HandleDamageCommand(char* args)
 
     SpellSchoolMask schoolmask = SpellSchoolMask(1 << school);
 
-    if (schoolmask & SPELL_SCHOOL_MASK_NORMAL)
-        damage = player->CalcArmorReducedDamage(target, damage);
+    if ( schoolmask & SPELL_SCHOOL_MASK_NORMAL )
+        damage = m_session->GetPlayer()->CalcArmorReducedDamage(target, damage);
 
     // melee damage by specific school
     if (!*args)
     {
-        DamageInfo damageInfo = DamageInfo(player, target, spellid, damage);
-        damageInfo.absorb = 0;
-        damageInfo.resist = 0;
-        damageInfo.HitInfo = HITINFO_AFFECTS_VICTIM;
+        DamageInfo damageInfo  = DamageInfo(m_session->GetPlayer(), target, spellid, damage);
+        damageInfo.HitInfo     = HITINFO_AFFECTS_VICTIM;
         damageInfo.TargetState = VICTIMSTATE_NORMAL;
 
-        target->CalculateDamageAbsorbAndResist(player, &damageInfo, false);
-        
-        player->DealDamageMods(&damageInfo);
-        player->DealDamage(target, &damageInfo, false);
-        player->SendAttackStateUpdate(&damageInfo);
+        target->CalculateDamageAbsorbAndResist(m_session->GetPlayer(),&damageInfo, false);
+
+        m_session->GetPlayer()->DealDamageMods(&damageInfo);
+        m_session->GetPlayer()->DealDamage(target,&damageInfo,false);
+        m_session->GetPlayer()->SendAttackStateUpdate(&damageInfo);
         return true;
     }
 
     // non-melee damage
 
-    player->SpellNonMeleeDamageLog(target, spellid, damage);
+    m_session->GetPlayer()->SpellNonMeleeDamageLog(target, spellid, damage);
     return true;
 }
 
@@ -4000,7 +4031,7 @@ bool ChatHandler::HandleReviveCommand(char* args)
 
     if (target)
     {
-        target->ResurrectPlayer(0.5f);
+        target->ResurrectPlayer(100);
         target->SpawnCorpseBones();
     }
     else
@@ -4028,7 +4059,7 @@ bool ChatHandler::HandleAuraCommand(char* args)
         return false;
 
     if (!IsSpellAppliesAura(spellInfo) &&
-        !IsSpellHaveEffect(spellInfo, SPELL_EFFECT_PERSISTENT_AREA_AURA))
+            !IsSpellHaveEffect(spellInfo, SPELL_EFFECT_PERSISTENT_AREA_AURA))
     {
         PSendSysMessage(LANG_SPELL_NO_HAVE_AURAS, spellID);
         SetSentErrorMessage(true);
@@ -4042,9 +4073,9 @@ bool ChatHandler::HandleAuraCommand(char* args)
         uint8 eff = spellInfo->Effect[i];
         if (eff >= TOTAL_SPELL_EFFECTS)
             continue;
-        if (IsAreaAuraEffect(eff) ||
-            eff == SPELL_EFFECT_APPLY_AURA ||
-            eff == SPELL_EFFECT_PERSISTENT_AREA_AURA)
+        if (IsAreaAuraEffect(eff)           ||
+                eff == SPELL_EFFECT_APPLY_AURA  ||
+                eff == SPELL_EFFECT_PERSISTENT_AREA_AURA)
         {
             holder->CreateAura(spellInfo, SpellEffectIndex(i), NULL, holder, target, NULL, NULL);
         }
@@ -4270,8 +4301,8 @@ bool ChatHandler::HandleNpcInfoCommand(char* /*args*/)
 
     if (diff < MAX_DIFFICULTY)
         PSendSysMessage(LANG_NPCINFO_CHAR_DIFFICULTY, target->GetGuidStr().c_str(), faction, npcflags,
-        Entry, target->GetCreatureInfo()->Entry, diff,
-        displayid, nativeid);
+                        Entry, target->GetCreatureInfo()->Entry, diff,
+                        displayid, nativeid);
     else
         PSendSysMessage(LANG_NPCINFO_CHAR, target->GetGuidStr().c_str(), faction, npcflags, Entry, displayid, nativeid);
 
@@ -4282,12 +4313,13 @@ bool ChatHandler::HandleNpcInfoCommand(char* /*args*/)
     PSendSysMessage(LANG_NPCINFO_HEALTH, target->GetCreateHealth(), target->GetMaxHealth(), target->GetHealth());
     PSendSysMessage(LANG_NPCINFO_FLAGS, target->GetUInt32Value(UNIT_FIELD_FLAGS), target->GetUInt32Value(UNIT_DYNAMIC_FLAGS), target->getFaction());
     PSendSysMessage(LANG_COMMAND_RAWPAWNTIMES, defRespawnDelayStr.c_str(), curRespawnDelayStr.c_str());
-    PSendSysMessage(LANG_NPCINFO_LOOT, cInfo->LootId, cInfo->PickpocketLootId, cInfo->SkinningLootId);
+    PSendSysMessage(LANG_NPCINFO_LOOT,  cInfo->LootId, cInfo->PickpocketLootId, cInfo->SkinningLootId);
     PSendSysMessage(LANG_NPCINFO_DUNGEON_ID, target->GetInstanceId());
     PSendSysMessage(LANG_NPCINFO_POSITION, float(target->GetPositionX()), float(target->GetPositionY()), float(target->GetPositionZ()));
 
-    PSendSysMessage("Phasemask %u, " SIZEFMTD " SpellAuraHolders, " SIZEFMTD " unit states",
+    PSendSysMessage("Phasemask %u, has %u active events, " SIZEFMTD " SpellAuraHolders, " SIZEFMTD " unit states",
         phaseMask,
+        target->GetEvents()->size(),
         target->GetSpellAuraHolderMap().size(),
         target->GetUnitStateMgr().GetActions().size());
 
@@ -4498,6 +4530,9 @@ bool ChatHandler::HandleCharacterLevelCommand(char* args)
     if (newlevel > STRONG_MAX_LEVEL)                        // hardcoded maximum level
         newlevel = STRONG_MAX_LEVEL;
 
+    if (newlevel > int32(sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)))
+        newlevel = int32(sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL));
+
     HandleCharacterLevel(target, target_guid, oldlevel, newlevel);
 
     if (!m_session || m_session->GetPlayer() != target)     // including player==NULL
@@ -4542,6 +4577,9 @@ bool ChatHandler::HandleLevelUpCommand(char* args)
 
     if (newlevel > STRONG_MAX_LEVEL)                        // hardcoded maximum level
         newlevel = STRONG_MAX_LEVEL;
+
+    if (newlevel > int32(sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL)))
+        newlevel = int32(sWorld.getConfig(CONFIG_UINT32_MAX_PLAYER_LEVEL));
 
     HandleCharacterLevel(target, target_guid, oldlevel, newlevel);
 
@@ -4728,6 +4766,7 @@ bool ChatHandler::HandleAuctionItemCommand(char* args)
         MANGOS_ASSERT(newItem);
 
         auctionHouse->AddAuction(auctionHouseEntry, newItem, etime, price, buyout);
+
     }
     while (item_count);
 
@@ -4813,7 +4852,7 @@ bool ChatHandler::HandleTeleAddCommand(char* args)
     }
 
     GameTele tele;
-    tele.loc = player->GetPosition();
+    tele.loc  = player->GetPosition();
     tele.name = name;
 
     if (sObjectMgr.AddGameTele(tele))
@@ -5005,7 +5044,7 @@ static bool HandleResetStatsOrLevelHelper(Player* player)
         return false;
     }
 
-    uint8 powertype = cEntry->powerType;
+    Powers powertype = Powers(cEntry->powerType);
 
     // reset m_form if no aura
     if (!player->HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
@@ -5574,6 +5613,35 @@ bool ChatHandler::HandleBanHelper(BanMode mode, char* args)
                 PSendSysMessage(LANG_BAN_YOUBANNED, nameOrIP.c_str(), secsToTimeString(duration_secs, true).c_str(), reason);
             else
                 PSendSysMessage(LANG_BAN_YOUPERMBANNED, nameOrIP.c_str(), reason);
+            if (sWorld.getConfig(CONFIG_BOOL_GM_ANNOUNCE_BAN))
+            {
+                std::string GMnameLink;
+                if (m_session)
+                    GMnameLink = playerLink(m_session->GetPlayerName());
+                else
+                    GMnameLink = "";
+                switch(mode)
+                {
+                    case BAN_ACCOUNT:
+                        if (duration_secs > 0)
+                            PSendGlobalSysMessage(LANG_BAN_ACCOUNT_ANNOUNCE, GMnameLink.c_str(), nameOrIP.c_str(), secsToTimeString(duration_secs, true).c_str(), reason);
+                        else
+                            PSendGlobalSysMessage(LANG_PERMBAN_ACCOUNT_ANNOUNCE, GMnameLink.c_str(), nameOrIP.c_str(), reason);
+                        break;
+                    case BAN_CHARACTER:
+                        if (duration_secs > 0)
+                            PSendGlobalSysMessage(LANG_BAN_CHARACTER_ANNOUNCE, GMnameLink.c_str(), nameOrIP.c_str(), secsToTimeString(duration_secs, true).c_str(), reason);
+                        else
+                            PSendGlobalSysMessage(LANG_PERMBAN_CHARACTER_ANNOUNCE, GMnameLink.c_str(), nameOrIP.c_str(), reason);
+                       break;
+                    case BAN_IP:
+                        if (duration_secs > 0)
+                            PSendGlobalSysMessage(LANG_BAN_IP_ANNOUNCE, GMnameLink.c_str(), nameOrIP.c_str(), secsToTimeString(duration_secs, true).c_str(), reason);
+                        else
+                            PSendGlobalSysMessage(LANG_PERMBAN_IP_ANNOUNCE, GMnameLink.c_str(), nameOrIP.c_str(), reason);
+                        break;
+                }
+            }
             break;
         case BAN_SYNTAX_ERROR:
             return false;
@@ -5675,7 +5743,7 @@ bool ChatHandler::HandleBanInfoCharacterCommand(char* args)
     if (!ExtractPlayerTarget(&args, &target, &target_guid))
         return false;
 
-    uint32 accountid = target ? target->GetSession()->GetAccountId() : sObjectMgr.GetPlayerAccountIdByGUID(target_guid);
+    uint32 accountid = target ? target->GetSession()->GetAccountId() : sAccountMgr.GetPlayerAccountIdByGUID(target_guid);
 
     std::string accountname;
     if (!sAccountMgr.GetName(accountid, accountname))
@@ -6051,7 +6119,7 @@ bool ChatHandler::HandlePDumpLoadCommand(char* args)
 
             ObjectGuid guid = ObjectGuid(HIGHGUID_PLAYER, lowguid);
 
-            if (sObjectMgr.GetPlayerAccountIdByGUID(guid))
+            if (sAccountMgr.GetPlayerAccountIdByGUID(guid))
             {
                 PSendSysMessage(LANG_CHARACTER_GUID_IN_USE, lowguid);
                 SetSentErrorMessage(true);
@@ -6110,7 +6178,7 @@ bool ChatHandler::HandlePDumpWriteCommand(char* args)
             return false;
         }
 
-        guid = sObjectMgr.GetPlayerGuidByName(name);
+        guid = sAccountMgr.GetPlayerGuidByName(name);
         if (!guid)
         {
             PSendSysMessage(LANG_PLAYER_NOT_FOUND);
@@ -6123,7 +6191,7 @@ bool ChatHandler::HandlePDumpWriteCommand(char* args)
     else
         guid = ObjectGuid(HIGHGUID_PLAYER, lowguid);
 
-    if (!sObjectMgr.GetPlayerAccountIdByGUID(guid))
+    if (!sAccountMgr.GetPlayerAccountIdByGUID(guid))
     {
         PSendSysMessage(LANG_PLAYER_NOT_FOUND);
         SetSentErrorMessage(true);
@@ -6173,58 +6241,58 @@ bool ChatHandler::HandleMovegensCommand(char* /*args*/)
 
         PSendSysMessage(LANG_MOVEGENS_DEFAULT, i, action->Name());
 
-        switch (action->GetMovementGeneratorType())
+        switch(action->GetMovementGeneratorType())
         {
-        case IDLE_MOTION_TYPE:
-        case RANDOM_MOTION_TYPE:
-        case WAYPOINT_MOTION_TYPE:
-        case CONFUSED_MOTION_TYPE:
-        case FLIGHT_MOTION_TYPE:
-        case FLEEING_MOTION_TYPE:
-        case DISTRACT_MOTION_TYPE:
-        case EFFECT_MOTION_TYPE:
-            break;
+            case IDLE_MOTION_TYPE:
+            case RANDOM_MOTION_TYPE:
+            case WAYPOINT_MOTION_TYPE:
+            case CONFUSED_MOTION_TYPE:
+            case FLIGHT_MOTION_TYPE:
+            case FLEEING_MOTION_TYPE:
+            case DISTRACT_MOTION_TYPE:
+            case EFFECT_MOTION_TYPE:
+                break;
 
-        case CHASE_MOTION_TYPE:
-        {
-            Unit* target = NULL;
-            if (unit->GetTypeId() == TYPEID_PLAYER)
-                target = static_cast<ChaseMovementGenerator<Player> const*>(&*action)->GetTarget();
-            else
-                target = static_cast<ChaseMovementGenerator<Creature> const*>(&*action)->GetTarget();
-
-            PSendSysMessage(LANG_MOVEGENS_CHASE_TARGET, target ? target->GetObjectGuid().GetString().c_str() : "<NULL>");
-            break;
-        }
-        case FOLLOW_MOTION_TYPE:
-        {
-            Unit* target = NULL;
-            if (unit->GetTypeId() == TYPEID_PLAYER)
-                target = static_cast<FollowMovementGenerator<Player> const*>(&*action)->GetTarget();
-            else
-                target = static_cast<FollowMovementGenerator<Creature> const*>(&*action)->GetTarget();
-
-            PSendSysMessage(LANG_MOVEGENS_FOLLOW_TARGET, target ? target->GetObjectGuid().GetString().c_str() : "<NULL>");
-            break;
-        }
-        case HOME_MOTION_TYPE:
-            if (unit->GetTypeId() == TYPEID_UNIT)
+            case CHASE_MOTION_TYPE:
             {
-                ((Creature*)unit)->GetRespawnCoord(x, y, z);
-                PSendSysMessage(LANG_MOVEGENS_HOME_CREATURE, x, y, z);
+                Unit* target = NULL;
+                if (unit->GetTypeId() == TYPEID_PLAYER)
+                    target = static_cast<ChaseMovementGenerator<Player> const*>(&*action)->GetTarget();
+                else
+                    target = static_cast<ChaseMovementGenerator<Creature> const*>(&*action)->GetTarget();
+
+                PSendSysMessage(LANG_MOVEGENS_CHASE_TARGET,target ? target->GetObjectGuid().GetString().c_str() : "<NULL>");
+                break;
             }
-            else
-                SendSysMessage(LANG_MOVEGENS_HOME_PLAYER);
-            break;
-        case POINT_MOTION_TYPE:
-        {
-            static_cast<PointMovementGenerator<Creature> const*>(&*action)->GetDestination(x, y, z);
-            PSendSysMessage(LANG_MOVEGENS_POINT, x, y, z);
-            break;
-        }
-        default:
-            PSendSysMessage(LANG_MOVEGENS_UNKNOWN, action->Name());
-            break;
+            case FOLLOW_MOTION_TYPE:
+            {
+                Unit* target = NULL;
+                if (unit->GetTypeId() == TYPEID_PLAYER)
+                    target = static_cast<FollowMovementGenerator<Player> const*>(&*action)->GetTarget();
+                else
+                    target = static_cast<FollowMovementGenerator<Creature> const*>(&*action)->GetTarget();
+
+                PSendSysMessage(LANG_MOVEGENS_FOLLOW_TARGET,target ? target->GetObjectGuid().GetString().c_str() : "<NULL>");
+                break;
+            }
+            case HOME_MOTION_TYPE:
+                if (unit->GetTypeId() == TYPEID_UNIT)
+                {
+                    ((Creature*)unit)->GetRespawnCoord(x, y, z);
+                    PSendSysMessage(LANG_MOVEGENS_HOME_CREATURE, x, y, z);
+                }
+                else
+                    SendSysMessage(LANG_MOVEGENS_HOME_PLAYER);
+                break;
+            case POINT_MOTION_TYPE:
+            {
+                static_cast<PointMovementGenerator<Creature> const*>(&*action)->GetDestination(x,y,z);
+                PSendSysMessage(LANG_MOVEGENS_POINT, x, y, z);
+                break;
+            }
+            default:
+                PSendSysMessage(LANG_MOVEGENS_UNKNOWN,action->Name());
+                break;
         }
     }
     return true;
@@ -6624,7 +6692,9 @@ bool ChatHandler::HandleInstanceSaveDataCommand(char* /*args*/)
 bool ChatHandler::HandleGMListFullCommand(char* /*args*/)
 {
     ///- Get the accounts with GM Level >0
-    QueryResult* result = LoginDatabase.Query("SELECT username,gmlevel FROM account WHERE gmlevel > 0");
+    QueryResult* result = LoginDatabase.PQuery("SELECT ac.username, af.gmlevel FROM account AS ac LEFT JOIN "
+                                               "account_access AS af ON (ac.id = af.id) WHERE (af.gmlevel > 0 AND (af.RealmID = '%u' OR af.RealmID = -1))"
+                                               , sConfig.GetIntDefault("RealmID", 0));
     if (result)
     {
         SendSysMessage(LANG_GMLIST);
@@ -6636,7 +6706,7 @@ bool ChatHandler::HandleGMListFullCommand(char* /*args*/)
         do
         {
             Field* fields = result->Fetch();
-            PSendSysMessage("|%15s|%6s|", fields[0].GetString(), fields[1].GetString());
+            PSendSysMessage("|%15s|%6u|", fields[0].GetString(), fields[1].GetUInt8());
         }
         while (result->NextRow());
 
@@ -6705,6 +6775,7 @@ bool ChatHandler::ShowPlayerListHelper(QueryResult* result, uint32* limit, bool 
                 PSendSysMessage(LANG_CHARACTERS_LIST_LINE_CONSOLE, guid, name.c_str(), race_name, class_name, level);
             else
                 PSendSysMessage(LANG_CHARACTERS_LIST_LINE_CHAT, guid, name.c_str(), name.c_str(), race_name, class_name, level);
+
         }
         while (result->NextRow());
 
@@ -6716,6 +6787,7 @@ bool ChatHandler::ShowPlayerListHelper(QueryResult* result, uint32* limit, bool 
 
     return true;
 }
+
 
 /// Output list of character for account
 bool ChatHandler::HandleAccountCharactersCommand(char* args)
@@ -7026,14 +7098,12 @@ bool ChatHandler::HandleSendMessageCommand(char* args)
     if (!ExtractPlayerTarget(&args, &rPlayer))
         return false;
 
-    WorldSession* rPlayerSession = rPlayer->GetSession();
-
     ///- message
     if (!*args)
         return false;
 
     ///- Check that he is not logging out.
-    if (rPlayerSession->isLogingOut())
+    if (rPlayer->GetSession()->isLogingOut())
     {
         SendSysMessage(LANG_PLAYER_NOT_FOUND);
         SetSentErrorMessage(true);
@@ -7042,8 +7112,8 @@ bool ChatHandler::HandleSendMessageCommand(char* args)
 
     ///- Send the message
     // Use SendAreaTriggerMessage for fastest delivery.
-    rPlayerSession->SendAreaTriggerMessage("%s", args);
-    rPlayerSession->SendAreaTriggerMessage("|cffff0000[Message from administrator]:|r");
+    rPlayer->GetSession()->SendAreaTriggerMessage("%s", args);
+    rPlayer->GetSession()->SendAreaTriggerMessage("|cffff0000[Message from administrator]:|r");
 
     // Confirmation message
     std::string nameLink = GetNameLink(rPlayer);
@@ -7215,9 +7285,9 @@ bool ChatHandler::HandleMmapTestHeight(char* args)
     ExtractFloat(&args, radius);
     if (radius > 40.0f)
         radius = 40.0f;
-    
+
     Unit* unit = getSelectedUnit();
-    
+
     Player* player = m_session->GetPlayer();
     if (!unit)
         unit = player;
@@ -7249,7 +7319,7 @@ bool ChatHandler::HandleMmapTestHeight(char* args)
     unit->GetPosition(gx, gy, gz);
 
     Creature* summoned = unit->SummonCreature(VISUAL_WAYPOINT, gx, gy, gz + 0.5f, 0, TEMPSUMMON_TIMED_DESPAWN, 20000);
-    summoned->CastSpell(summoned, 8599, false); 
+    summoned->CastSpell(summoned, 8599, false);
     uint32 tryed = 1;
     uint32 succeed = 0;
     uint32 startTime = WorldTimer::getMSTime();
@@ -7269,10 +7339,387 @@ bool ChatHandler::HandleMmapTestHeight(char* args)
     return true;
 }
 
-/*bool ChatHandler::HandleServerResetAllRaidCommand(char* args)
+bool ChatHandler::HandleTransportListCommand(char* args)
 {
-    PSendSysMessage("Global raid instances reset, all players in raid instances will be teleported to homebind!");
-    sMapPersistentStateMgr.GetScheduler().ResetAllRaid();
-    return true;
-}*/
+    uint32 mapID;
+    if (!ExtractOptUInt32(&args, mapID, m_session->GetPlayer()->GetMapId()))
+        return false;
 
+    Map* map = sMapMgr.CreateMap(mapID, m_session->GetPlayer());
+    if (!map)
+        return false;
+
+    QueryResult *result = WorldDatabase.PQuery("SELECT entry, name, period FROM transports");
+    if (!result)
+        return false;
+
+    do
+    {
+        Field *fields       = result->Fetch();
+        uint32 entry        = fields[0].GetUInt32();
+        std::string name    = fields[1].GetCppString();
+        uint32 period       = fields[2].GetUInt32();
+
+        ObjectGuid guid = ObjectGuid(HIGHGUID_MO_TRANSPORT, entry);
+        Transport* transport  = map->GetTransport(guid);
+
+        if (!transport)
+            continue;
+
+        GameObjectInfo const* gInfo = ObjectMgr::GetGameObjectInfo(entry);
+
+        if (!gInfo)
+            continue;
+
+        PSendSysMessage("Transport: %s on map %u (%s), %s, passengers " SIZEFMTD ", current coords %f %f %f",
+            transport->GetObjectGuid().GetString().c_str(),
+            mapID,
+            name.c_str(),
+            transport->isActiveObject() ? "active" : "passive",
+            transport->GetTransportKit()->GetPassengers().size(),
+            transport->GetPositionX(),
+            transport->GetPositionY(),
+            transport->GetPositionZ()
+            );
+    } while (result->NextRow());
+
+    delete result;
+    return true;
+}
+
+bool ChatHandler::HandleTransportCurrentCommand(char* args)
+{
+    Player* player = m_session->GetPlayer();
+
+    ObjectGuid guid = player->m_movementInfo.GetTransportGuid();
+    if (!guid)
+    {
+        PSendSysMessage("Player not on Transport!");
+        return true;
+    }
+
+    Map* map = player->GetMap();
+
+    Transport* transport  = NULL;
+
+    if (map)
+        transport = map->GetTransport(guid);
+
+    if (!transport)
+    {
+        PSendSysMessage("Player not on same map with binded transport!");
+        uint32 currentMap = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), true);
+        if (currentMap == UINT32_MAX || currentMap == player->GetMapId())
+            currentMap = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), false);
+        if (currentMap != UINT32_MAX)
+            map = sMapMgr.CreateMap(currentMap, player);
+
+        if (!map)
+            return true;
+
+        transport  = map->GetTransport(guid);
+
+        if (!transport)
+        {
+            PSendSysMessage("Binded transport not in world!!");
+            return true;
+        }
+    }
+
+    GameObjectInfo const* goInfo = transport->GetGOInfo();
+
+    if (!goInfo)
+    {
+        PSendSysMessage(LANG_GAMEOBJECT_NOT_EXIST,guid.GetCounter());
+        return true;
+    }
+
+    PSendSysMessage(LANG_GAMEOBJECT_DETAIL,
+        guid.GetCounter(),
+        goInfo->name,
+        guid.GetCounter(),
+        0,
+        transport->GetPositionX(),
+        transport->GetPositionY(),
+        transport->GetPositionZ(),
+        transport->GetMap()->GetId(),
+        transport->GetOrientation());
+
+    PSendSysMessage("Player position: %f %f %f (offset %f %f %f) delta %f %f %f",
+                player->m_movementInfo.GetPosition().getX(),
+                player->m_movementInfo.GetPosition().getY(),
+                player->m_movementInfo.GetPosition().getZ(),
+                player->m_movementInfo.GetTransportPosition().getX(),
+                player->m_movementInfo.GetTransportPosition().getY(),
+                player->m_movementInfo.GetTransportPosition().getZ(),
+                player->m_movementInfo.GetPosition().getX() - transport->GetPositionX(),
+                player->m_movementInfo.GetPosition().getY() - transport->GetPositionY(),
+                player->m_movementInfo.GetPosition().getZ() - transport->GetPositionZ()
+                );
+
+    return true;
+}
+
+bool ChatHandler::HandleTransportPathCommand(char* args)
+{
+    uint32 transportEntry;
+    if (!ExtractOptUInt32(&args, transportEntry, 0))
+        return false;
+
+    Player* player = m_session->GetPlayer();
+
+    ObjectGuid guid = transportEntry ? ObjectGuid(HIGHGUID_MO_TRANSPORT, transportEntry) :
+                                        player->m_movementInfo.GetTransportGuid();
+    if (!guid)
+    {
+        PSendSysMessage("Bad transport guid!");
+        return true;
+    }
+
+    uint32 currentMap = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), true);
+
+    Map* map = NULL;
+    if (currentMap != UINT32_MAX)
+        map = sMapMgr.CreateMap(currentMap, player);
+
+    Transport* transport  =  NULL;
+
+    if (map)
+        transport = map->GetTransport(guid);
+
+    if (!transport)
+    {
+        uint32 currentMap2 = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), false);
+        if (currentMap2 != UINT32_MAX)
+            map = sMapMgr.CreateMap(currentMap2, player);
+
+        if (map)
+            transport = map->GetTransport(guid);
+
+        if (!transport)
+        {
+            PSendSysMessage("Transport %u not in world! Checked maps %u %u",guid.GetCounter(), currentMap, currentMap2);
+            return true;
+        }
+    }
+    if (transport->IsMOTransport())
+    {
+        PSendSysMessage("Transport: %s on map %u (%s), %s, passengers " SIZEFMTD ", current time %u (map %u xyz %f %f %f)",
+            transport->GetObjectGuid().GetString().c_str(),
+            map->GetId(),
+            ((MOTransport*)transport)->GetName(),
+            transport->isActiveObject() ? "active" : "passive",
+            transport->GetTransportKit()->GetPassengers().size(),
+            ((MOTransport*)transport)->GetCurrent()->first,
+            ((MOTransport*)transport)->GetCurrent()->second.loc.GetMapId(),
+            ((MOTransport*)transport)->GetCurrent()->second.loc.getX(),
+            ((MOTransport*)transport)->GetCurrent()->second.loc.getY(),
+            ((MOTransport*)transport)->GetCurrent()->second.loc.getZ()
+        );
+        PSendSysMessage("Transport: %s on map %u (%s), %s, passengers " SIZEFMTD ", next time %u (map %u xyz %f %f %f)",
+            transport->GetObjectGuid().GetString().c_str(),
+            map->GetId(),
+            ((MOTransport*)transport)->GetName(),
+            transport->isActiveObject() ? "active" : "passive",
+            transport->GetTransportKit()->GetPassengers().size(),
+            ((MOTransport*)transport)->GetNext()->first,
+            ((MOTransport*)transport)->GetNext()->second.loc.GetMapId(),
+            ((MOTransport*)transport)->GetNext()->second.loc.getX(),
+            ((MOTransport*)transport)->GetNext()->second.loc.getY(),
+            ((MOTransport*)transport)->GetNext()->second.loc.getZ()
+        );
+    }
+    else
+    {
+        PSendSysMessage("Transport: %s on map %u, %s, passengers " SIZEFMTD "",
+            transport->GetObjectGuid().GetString().c_str(),
+            map->GetId(),
+            transport->isActiveObject() ? "active" : "passive",
+            transport->GetTransportKit()->GetPassengers().size()
+        );
+    }
+
+    return true;
+}
+
+bool ChatHandler::HandleTransportCommand(char* args)
+{
+    uint32 transportEntry;
+    if (!ExtractOptUInt32(&args, transportEntry,0))
+        return false;
+
+    if (!transportEntry)
+        return false;
+
+    Player* player = m_session->GetPlayer();
+
+    ObjectGuid guid = ObjectGuid(HIGHGUID_MO_TRANSPORT, transportEntry);
+    uint32 currentMap = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), true);
+
+    Map* map = NULL;
+    if (currentMap != UINT32_MAX)
+        map = sMapMgr.CreateMap(currentMap, player);
+
+    Transport* transport  =  NULL;
+
+    if (map)
+        transport = map->GetTransport(guid);
+
+    if (!transport)
+    {
+        uint32 currentMap2 = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), false);
+        if (currentMap2 != UINT32_MAX)
+            map = sMapMgr.CreateMap(currentMap2, player);
+
+        if (map)
+            transport = map->GetTransport(guid);
+
+        if (!transport)
+        {
+            PSendSysMessage("Transport %u not in world! Checked maps %u %u",guid.GetCounter(), currentMap, currentMap2);
+            return true;
+        }
+    }
+
+    PSendSysMessage("Transport: %s on map %u (%s), %s, passengers " SIZEFMTD ", current coords %f %f %f",
+            transport->GetObjectGuid().GetString().c_str(),
+            map->GetId(),
+            transport->GetName(),
+            transport->isActiveObject() ? "active" : "passive",
+            transport->GetTransportKit()->GetPassengers().size(),
+            transport->GetPositionX(),
+            transport->GetPositionY(),
+            transport->GetPositionZ()
+        );
+
+    return true;
+}
+
+bool ChatHandler::HandleTransportGoCommand(char* args)
+{
+    uint32 transportEntry;
+    if (!ExtractOptUInt32(&args, transportEntry,0))
+        return false;
+
+    if (!transportEntry)
+        return false;
+
+    Player* player = m_session->GetPlayer();
+
+    ObjectGuid guid = ObjectGuid(HIGHGUID_MO_TRANSPORT, transportEntry);
+    uint32 currentMap = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), true);
+
+    Map* map = NULL;
+    if (currentMap != UINT32_MAX)
+        map = sMapMgr.CreateMap(currentMap, player);
+
+    Transport* transport  =  NULL;
+
+    if (map)
+        transport = map->GetTransport(guid);
+
+    if (!transport)
+    {
+        uint32 currentMap2 = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), false);
+        if (currentMap2 != UINT32_MAX)
+            map = sMapMgr.CreateMap(currentMap2, player);
+
+        if (map)
+            transport = map->GetTransport(guid);
+
+        if (!transport)
+        {
+            PSendSysMessage("Transport %u not in world! Checked maps %u %u",guid.GetCounter(), currentMap, currentMap2);
+            return true;
+        }
+    }
+    float z = transport->GetPositionZ() +2.0f;
+    HandleGoHelper(player, transport->GetMap()->GetId(), transport->GetPositionX(), transport->GetPositionY(), &z);
+    transport->AddPassenger(player, Position());
+
+    return true;
+}
+
+bool ChatHandler::HandleTransportStartCommand(char* args)
+{
+    uint32 transportEntry;
+    if (!ExtractOptUInt32(&args, transportEntry,0))
+        return false;
+
+    if (!transportEntry)
+        return false;
+
+    Player* player = m_session->GetPlayer();
+
+    ObjectGuid guid = ObjectGuid(HIGHGUID_MO_TRANSPORT, transportEntry);
+    uint32 currentMap = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), true);
+
+    Map* map = NULL;
+    if (currentMap != UINT32_MAX)
+        map = sMapMgr.CreateMap(currentMap, player);
+
+    Transport* transport  =  NULL;
+
+    if (map)
+        transport = map->GetTransport(guid);
+
+    if (!transport)
+    {
+        uint32 currentMap2 = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), false);
+        if (currentMap2 != UINT32_MAX)
+            map = sMapMgr.CreateMap(currentMap2, player);
+
+        if (map)
+            transport = map->GetTransport(guid);
+
+        if (!transport)
+        {
+            PSendSysMessage("Transport %u not in world! Checked maps %u %u",guid.GetCounter(), currentMap, currentMap2);
+            return true;
+        }
+    }
+    transport->Start();
+    return true;
+}
+
+bool ChatHandler::HandleTransportStopCommand(char* args)
+{
+    uint32 transportEntry;
+    if (!ExtractOptUInt32(&args, transportEntry,0))
+        return false;
+
+    if (!transportEntry)
+        return false;
+
+    Player* player = m_session->GetPlayer();
+
+    ObjectGuid guid = ObjectGuid(HIGHGUID_MO_TRANSPORT, transportEntry);
+    uint32 currentMap = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), true);
+
+    Map* map = NULL;
+    if (currentMap != UINT32_MAX)
+        map = sMapMgr.CreateMap(currentMap, player);
+
+    Transport* transport  =  NULL;
+
+    if (map)
+        transport = map->GetTransport(guid);
+
+    if (!transport)
+    {
+        uint32 currentMap2 = MOTransport::GetPossibleMapByEntry(guid.GetCounter(), false);
+        if (currentMap2 != UINT32_MAX)
+            map = sMapMgr.CreateMap(currentMap2, player);
+
+        if (map)
+            transport = map->GetTransport(guid);
+
+        if (!transport)
+        {
+            PSendSysMessage("Transport %u not in world! Checked maps %u %u",guid.GetCounter(), currentMap, currentMap2);
+            return true;
+        }
+    }
+    transport->Stop();
+    return true;
+}

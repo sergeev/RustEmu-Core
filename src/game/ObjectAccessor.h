@@ -131,12 +131,6 @@ class ObjectAccessor : public MaNGOS::Singleton<ObjectAccessor, MaNGOS::ClassLev
     private:
 
         Player2CorpsesMapType   i_player2corpse;
-
-        typedef boost::mutex LockType;
-        typedef MaNGOS::GeneralLock<LockType > Guard;
-
-        LockType i_playerGuard;
-        LockType i_corpseGuard;
 };
 
 #define sObjectAccessor ObjectAccessor::Instance()

@@ -3,7 +3,7 @@
 #####################################
 
 [MangosdConf]
-ConfVersion=2015030914
+ConfVersion=2015031121
 
 ###################################################################################################################
 # CONNECTIONS AND DIRECTORIES
@@ -207,10 +207,6 @@ BindIP = "0.0.0.0"
 #        Expire time for cleanup WorldStates in seconds.
 #        Default: 604800 (1 week)
 #
-#    WorldState.Timer (milliseconds)
-#        Timer for update worldstates
-#        Default: 60000 (1 minute)
-#
 #    MapUpdate.MaxVisitorsInUpdate
 #    MapUpdate.MaxVisitsInUpdate
 #        Limitation for units update time delta per map update cycle.
@@ -258,7 +254,6 @@ MaxCoreStuckTime = 0
 AddonChannel = 1
 CleanCharacterDB = 1
 WorldState.ExpireTime = 604800
-WorldState.Timer     = 60000
 MapUpdate.MaxVisitorsInUpdate = 9
 MapUpdate.MaxVisitsInUpdate = 10
 ObjectLoadingSplitter.MaxAllowedTime = 10
@@ -616,10 +611,6 @@ LogColors = ""
 #        The time in sec. the leader of a group has to reconnect before the lead goes to another player (also applies for a server crash)
 #        Default: 180 (3 min.)
 #
-#    Group.Timer (milliseconds)
-#        Timer for update group events
-#        Default: 1000 (1 second)
-#
 #    AllFlightPaths
 #        Players will start with all flight paths (Note: ALL flight paths, not only player's team)
 #        Default: 0 (false)
@@ -892,10 +883,6 @@ LogColors = ""
 #        Addition for check strict melee distance in CheckRange()
 #        Default: 4 (overall dist ~ 9)
 #
-#    Calendar.Timer (milliseconds)
-#        Timer for update calendar events
-#        Default: 30000 (30 seconds)
-#
 #    Player.FixMovementPackets.Method
 #        Movement packet fixes, taking into account client<->server connection lag.
 #        WARNING! dont change on the running server, players seeing each other will be desynchronized (looks like twitching)
@@ -937,7 +924,6 @@ MaxArenaPoints = 5000
 StartArenaPoints = 0
 InstantLogout = 1
 GroupLeaderReconnectPeriod = 180
-Groups.Timer         = 1000
 DisableWaterBreath = 4
 AllFlightPaths = 0
 AlwaysMaxSkillForLevel = 0
@@ -997,7 +983,6 @@ AllowTransferToCustomMap = 0
 Resistance.CalculationMethod = 1
 Resistance.AddByOverLevel = 0
 Melee.Distance.Addition = 4
-Calendar.Timer       = 30000
 Player.FixMovementPackets.Method = 0
 Player.FixMovementPackets.AddTime = 50
 
@@ -1321,6 +1306,11 @@ Channel.SilentlyGMJoin = 0
 #        Default: 1 (enable)
 #                 0 (disable)
 #
+#    GM.AnnounceBan
+#        If enabled bans and mutes are announced for all characters on realm with system message
+#        Default: 0 (disable)
+#                 1 (enable)
+#
 #    GM.InvisibleAura
 #        A spell that will be cast when a gm uses ".gm visible off" (Must be aura spell)
 #        Default: 37800 (50% Transparency)
@@ -1339,6 +1329,7 @@ GM.LogTrade              = 1
 GM.StartLevel            = 1
 GM.LowerSecurity         = 0
 GM.AllowAchievementGain  = 1
+GM.AnnounceBan           = 0
 GM.InvisibleAura         = 37800
 
 ###################################################################################################################
@@ -1937,3 +1928,44 @@ LFG.DisableDungeonMapIds= ""
 ###################################################################################################################
 
 VMSS.MapFreeMethod = 1
+
+###################################################################################################################
+#    World timers
+#    Please, don't change defaults if not sure
+#
+#    Auctions.Timer (milliseconds)
+#        Timer for update auctions
+#        Default: 60000 (1 minute)
+#
+#    Corpse.Timer (minutes)
+#        Corpse delete timer
+#        Default: 20 minutes
+#
+#    WorldState.Timer (milliseconds)
+#        Timer for update worldstates
+#        Default: 60000 (1 minute)
+#
+#    Calendar.Timer (milliseconds)
+#        Timer for update calendar events
+#        Default: 30000 (30 seconds)
+#
+#    Group.Timer (milliseconds)
+#        Timer for update group events
+#        Default: 1000 (1 second)
+#
+#    Terrain.Timer (milliseconds)
+#        Timer for cleanup terrains
+#        Default: 30000 (30 seconds)
+#
+###################################################################################################################
+
+Auctions.Timer       = 60000
+Weathers.Timer       = 60000
+UpdateUptimeInterval = 10
+Corpse.Timer         = 20
+CharDelete.Timer     = 8
+AHBot.Timer          = 20000
+WorldState.Timer     = 60000
+Calendar.Timer       = 30000
+Groups.Timer         = 1000
+Terrain.Timer        = 30000

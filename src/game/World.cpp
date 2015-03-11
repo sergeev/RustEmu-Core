@@ -639,6 +639,7 @@ void World::LoadConfigSettings(bool reload)
     setConfigMinMax(CONFIG_UINT32_START_GM_LEVEL, "GM.StartLevel", 1, getConfig(CONFIG_UINT32_START_PLAYER_LEVEL), MAX_LEVEL);
     setConfig(CONFIG_BOOL_GM_LOWER_SECURITY, "GM.LowerSecurity", false);
     setConfig(CONFIG_BOOL_GM_ALLOW_ACHIEVEMENT_GAINS, "GM.AllowAchievementGain", true);
+    setConfig(CONFIG_BOOL_GM_ANNOUNCE_BAN, "GM.AnnounceBan", false);
     setConfig(CONFIG_UINT32_GM_INVISIBLE_AURA, "GM.InvisibleAura", 37800);
 
     setConfig(CONFIG_UINT32_GROUP_VISIBILITY, "Visibility.GroupMode", 0);
@@ -1409,14 +1410,26 @@ void World::SetInitialWorldSettings()
     LoginDatabase.PExecute("INSERT INTO uptime (realmid, starttime, startstring, uptime) VALUES('%u', " UI64FMTD ", '%s', 0)",
         getConfig(CONFIG_UINT32_REALMID), uint64(m_startTime), isoDate);
 
-    m_timers[WUPDATE_AUCTIONS].SetInterval(MINUTE * IN_MILLISECONDS);
-    m_timers[WUPDATE_UPTIME].SetInterval(getConfig(CONFIG_UINT32_UPTIME_UPDATE)*MINUTE * IN_MILLISECONDS);
+    m_timers[WUPDATE_AUCTIONS].SetInterval(sConfig.GetIntDefault("Auctions.Timer", 60000));
+    m_timers[WUPDATE_AUCTIONS].Reset();
+
+    m_timers[WUPDATE_UPTIME].SetInterval(sConfig.GetIntDefault("UpdateUptimeInterval", 10) * MINUTE * IN_MILLISECONDS);
+    m_timers[WUPDATE_UPTIME].Reset();
     // Update "uptime" table based on configuration entry in minutes.
-    m_timers[WUPDATE_CORPSES].SetInterval(20 * MINUTE * IN_MILLISECONDS);
-    m_timers[WUPDATE_DELETECHARS].SetInterval(DAY * IN_MILLISECONDS); // check for chars to delete every day
+
+    m_timers[WUPDATE_CORPSES].SetInterval(sConfig.GetIntDefault("Corpse.Timer", 20) * MINUTE * IN_MILLISECONDS);
+    m_timers[WUPDATE_CORPSES].Reset();
+
+    m_timers[WUPDATE_DELETECHARS].SetInterval(sConfig.GetIntDefault("CharDelete.Timer", 8) * HOUR * IN_MILLISECONDS);
+    m_timers[WUPDATE_DELETECHARS].Reset();
 
     // for AhBot
-    m_timers[WUPDATE_AHBOT].SetInterval(20 * IN_MILLISECONDS); // every 20 sec
+    m_timers[WUPDATE_AHBOT].SetInterval(sConfig.GetIntDefault("AHBot.Timer", 20000));
+    m_timers[WUPDATE_AHBOT].Reset();
+
+    // for terrain
+    m_timers[WUPDATE_TERRAIN].SetInterval(sConfig.GetIntDefault("Terrain.Timer", 30000));
+    m_timers[WUPDATE_TERRAIN].Reset();
 
     //for groups (time update for keep leader of group (Group::CheckLeader) )
     m_timers[WUPDATE_GROUPS].SetInterval(sConfig.GetIntDefault("Groups.Timer", 1000));
@@ -1691,7 +1704,11 @@ void World::Update(uint32 diff)
     ProcessCliCommands();
 
     // cleanup unused GridMap objects as well as VMaps
-    sTerrainMgr.Update(diff);
+    if (m_timers[WUPDATE_TERRAIN].Passed())
+    {
+        sTerrainMgr.Update(diff);
+        m_timers[WUPDATE_TERRAIN].Reset();
+    }
 }
 
 namespace MaNGOS
@@ -1950,7 +1967,7 @@ bool World::RemoveBanAccount(BanMode mode, std::string nameOrIP)
         if (mode == BAN_ACCOUNT)
             account = sAccountMgr.GetId(nameOrIP);
         else if (mode == BAN_CHARACTER)
-            account = sObjectMgr.GetPlayerAccountIdByPlayerName(nameOrIP);
+            account = sAccountMgr.GetPlayerAccountIdByPlayerName(nameOrIP);
 
         if (!account)
             return false;
@@ -2523,7 +2540,7 @@ bool World::configNoReload(bool reload, eConfigBoolValues index, char const* fie
     return false;
 }
 
-void World::InvalidatePlayerDataToAllClient(ObjectGuid guid)
+void World::InvalidatePlayer(ObjectGuid const& guid)
 {
     WorldPacket data(SMSG_INVALIDATE_PLAYER, 8);
     data << guid;

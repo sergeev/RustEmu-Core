@@ -167,7 +167,7 @@ namespace MaNGOS
 
     /* Model Searcher class:
     template<class Check>
-    struct MANGOS_DLL_DECL SomeSearcher
+    struct SomeSearcher
     {
         ResultType& i_result;
         Check & i_check;

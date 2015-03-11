@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,6 +71,7 @@ enum PlayerChatTag
     CHAT_TAG_COM                = 0x08,                     // Commentator
     CHAT_TAG_DEV                = 0x10,                     // Developer
 };
+
 typedef uint32 ChatTagFlags;
 
 class MANGOS_DLL_SPEC ChatHandler
@@ -78,7 +79,7 @@ class MANGOS_DLL_SPEC ChatHandler
     public:
         explicit ChatHandler(WorldSession* session);
         explicit ChatHandler(Player* player);
-        ~ChatHandler();
+        virtual ~ChatHandler();
 
         static char* LineFromMessage(char*& pos) { char* start = strtok(pos, "\n"); pos = NULL; return start; }
 
@@ -92,6 +93,10 @@ class MANGOS_DLL_SPEC ChatHandler
         void PSendSysMessage(const char* format, ...) ATTR_PRINTF(2, 3);
         void PSendSysMessage(int32     entry, ...);
 
+        void SendGlobalSysMessage(const char *str);
+        void PSendGlobalSysMessage(const char *format, ...) ATTR_PRINTF(2,3);
+        void PSendGlobalSysMessage(int32 entry, ...  );
+
         bool ParseCommands(const char* text);
         ChatCommand const* FindCommand(char const* text);
 
@@ -103,7 +108,7 @@ class MANGOS_DLL_SPEC ChatHandler
         *
         * Method:    BuildChatPacket build message chat packet generic way
         * FullName:  ChatHandler::BuildChatPacket
-        * Access:    public static
+        * Access:    public static 
         * Returns:   void
         *
         * \param WorldPacket& data             : Provided packet will be filled with requested info
@@ -139,8 +144,6 @@ class MANGOS_DLL_SPEC ChatHandler
 
         bool HasLowerSecurity(Player* target, ObjectGuid guid = ObjectGuid(), bool strong = false);
         bool HasLowerSecurityAccount(WorldSession* target, uint32 account, bool strong = false);
-
-        void SendGlobalSysMessage(const char* str);
 
         bool SetDataForCommandInTable(ChatCommand* table, const char* text, uint32 security, std::string const& help);
         void ExecuteCommand(const char* text);
@@ -204,6 +207,7 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleCastTargetCommand(char* args);
 
         bool HandleCharacterAchievementsCommand(char* args);
+
         bool HandleCharacterCustomizeCommand(char* args);
         bool HandleCharacterDeletedDeleteCommand(char* args);
         bool HandleCharacterDeletedListCommand(char* args);
@@ -230,7 +234,8 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleDebugSpellCheckCommand(char* args);
         bool HandleDebugSpellCoefsCommand(char* args);
         bool HandleDebugSpellModsCommand(char* args);
-        bool HandleDebugUpdateWorldStateCommand(char* args);
+        bool HandleDebugEnterVehicleCommand(char* args);
+        bool HandleDebugSendCalendarResultCommand(char* args);
 
         bool HandleDebugPlayCinematicCommand(char* args);
         bool HandleDebugPlayMovieCommand(char* args);
@@ -355,6 +360,7 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleModifyArenaCommand(char* args);
         bool HandleModifyPhaseCommand(char* args);
         bool HandleModifyGenderCommand(char* args);
+        bool HandleModifyPowerTypeCommand(char* args);
 
         //-----------------------Npc Commands-----------------------
         bool HandleNpcAddCommand(char* args);
@@ -495,8 +501,10 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleReloadSpellScriptTargetCommand(char* args);
         bool HandleReloadSpellTargetPositionCommand(char* args);
         bool HandleReloadSpellThreatsCommand(char* args);
-        bool HandleReloadSpellLinkedCommand(char* args);
         bool HandleReloadSpellPetAurasCommand(char* args);
+        bool HandleReloadSpellDbcCommand(char* args);
+
+        bool HandleReloadSpellLinkedCommand(char* args);
 
         bool HandleResetAchievementsCommand(char* args);
         bool HandleResetAllCommand(char* args);
@@ -525,7 +533,6 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleServerLogLevelCommand(char* args);
         bool HandleServerMotdCommand(char* args);
         bool HandleServerPLimitCommand(char* args);
-        //bool HandleServerResetAllRaidCommand(char* args);
         bool HandleServerRestartCommand(char* args);
         bool HandleServerSetMotdCommand(char* args);
         bool HandleServerShutDownCommand(char* args);
@@ -567,6 +574,7 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleGroupgoCommand(char* args);
         bool HandleRecallCommand(char* args);
         bool HandleAnnounceCommand(char* args);
+        bool HandleNameAnnounceCommand(char* args);
         bool HandleNotifyCommand(char* args);
         bool HandleGPSCommand(char* args);
         bool HandleTaxiCheatCommand(char* args);
@@ -630,6 +638,23 @@ class MANGOS_DLL_SPEC ChatHandler
         bool HandleMmapTestArea(char* args);
         bool HandleMmapTestHeight(char* args);
 
+        // WorldState operations
+        bool HandleWorldStateCommand(char* args);
+        bool HandleWorldStateListCommand(char* args);
+        bool HandleWorldStateListAllCommand(char* args);
+        bool HandleWorldStateAddCommand(char* args);
+        bool HandleWorldStateUpdateCommand(char* args);
+        bool HandleWorldStateReloadCommand(char* args);
+
+        // Transport debugging commands
+        bool HandleTransportListCommand(char* args);
+        bool HandleTransportCurrentCommand(char* args);
+        bool HandleTransportPathCommand(char* args);
+        bool HandleTransportGoCommand(char* args);
+        bool HandleTransportStartCommand(char* args);
+        bool HandleTransportStopCommand(char* args);
+        bool HandleTransportCommand(char* args);
+
         //! Development Commands
         bool HandleSaveAllCommand(char* args);
 
@@ -667,6 +692,7 @@ class MANGOS_DLL_SPEC ChatHandler
         GameTele const* ExtractGameTeleFromLink(char** text);
         bool   ExtractLocationFromLink(char** text, uint32& mapid, float& x, float& y, float& z);
         bool   ExtractRaceMask(char** text, uint32& raceMask, char const** maskName = NULL);
+        bool   ExtractGender(char** text, Gender& gender);
         std::string ExtractPlayerNameFromLink(char** text);
         bool ExtractPlayerTarget(char** args, Player** player, ObjectGuid* player_guid = NULL, std::string* player_name = NULL);
         // select by arg (name/link) or in-game selection online/offline player
@@ -745,15 +771,15 @@ class CliHandler : public ChatHandler
             : m_accountId(accountId), m_loginAccessLevel(accessLevel), m_callbackArg(callbackArg), m_print(zprint) {}
 
         // overwrite functions
-        const char* GetMangosString(int32 entry) const override;
-        uint32 GetAccountId() const override;
-        AccountTypes GetAccessLevel() const override;
-        bool isAvailable(ChatCommand const& cmd) const override;
-        void SendSysMessage(const char* str) override;
-        std::string GetNameLink() const override;
-        bool needReportToTarget(Player* chr) const override;
-        LocaleConstant GetSessionDbcLocale() const override;
-        int GetSessionDbLocaleIndex() const override;
+        const char* GetMangosString(int32 entry) const;
+        uint32 GetAccountId() const;
+        AccountTypes GetAccessLevel() const;
+        bool isAvailable(ChatCommand const& cmd) const;
+        void SendSysMessage(const char* str);
+        std::string GetNameLink() const;
+        bool needReportToTarget(Player* chr) const;
+        LocaleConstant GetSessionDbcLocale() const;
+        int GetSessionDbLocaleIndex() const;
 
     private:
         uint32 m_accountId;
@@ -761,5 +787,8 @@ class CliHandler : public ChatHandler
         void* m_callbackArg;
         Print* m_print;
 };
+
+
+
 
 #endif

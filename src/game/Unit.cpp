@@ -13453,7 +13453,7 @@ void Unit::MonsterMoveWithSpeed(float x, float y, float z, float speed, bool gen
     GetMotionMaster()->MoveWithSpeed(x, y, z, speed, generatePath, forceDestination);
 }
 
-void Unit::MonsterMoveToDestination(float x, float y, float z, float o, float speed, float height, bool isKnockBack, Unit* target /*=NULL*/, bool straightLine /*=false*/)
+void Unit::MonsterMoveToDestination(float x, float y, float z, float o, float speed, float height, bool isKnockBack, Unit* target /*=NULL*/)
 {
     MaNGOS::NormalizeMapCoord(x);
     MaNGOS::NormalizeMapCoord(y);
@@ -13466,7 +13466,7 @@ void Unit::MonsterMoveToDestination(float x, float y, float z, float o, float sp
 
     SetFallInformation(0, z);
 
-    GetMotionMaster()->MoveToDestination(x, y, z, o, target, speed, height, 0, straightLine);
+    GetMotionMaster()->MoveToDestination(x, y, z, o, target, speed, height, 0);
 }
 
 void Unit::Blinkway(uint32 mapid, float x, float y, float z, float dist)

@@ -89,6 +89,7 @@ private:
     // Since GetLocaleByName() is _NOT_ bijective, we have to store the locale as a string. Otherwise we can't differ
     // between enUS and enGB, which is important for the patch system
     std::string localization_name_;
+    std::string os_;
 
     boost::filesystem::fstream patch_;
 };

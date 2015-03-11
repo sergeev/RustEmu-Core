@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -193,6 +193,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             recv_data >> to;
             recv_data >> msg;
 
+            if (ChatHandler(this).ParseCommands(msg.c_str()))
+                break;
+
             if (!processChatmessageFurtherAfterSecurityChecks(msg, lang))
                 return;
 
@@ -280,9 +283,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
 
             if (GetPlayer()->GetGuildId())
-                if (Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId()))
+            {
+                Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
+                if (guild)
                     guild->BroadcastToGuild(this, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
-
+            }
             break;
         }
         case CHAT_MSG_OFFICER:
@@ -303,8 +308,11 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
                 break;
 
             if (GetPlayer()->GetGuildId())
-                if (Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId()))
+            {
+                Guild* guild = sGuildMgr.GetGuildById(GetPlayer()->GetGuildId());
+                if (guild)
                     guild->BroadcastToOfficers(this, msg, lang == LANG_ADDON ? LANG_ADDON : LANG_UNIVERSAL);
+            }
 
             break;
         }
@@ -396,6 +404,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             std::string msg;
             recv_data >> msg;
 
+            if (ChatHandler(this).ParseCommands(msg.c_str()))
+                break;
+
             if (!processChatmessageFurtherAfterSecurityChecks(msg, lang))
                 return;
 
@@ -438,6 +449,9 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recv_data)
             std::string channel, msg;
             recv_data >> channel;
             recv_data >> msg;
+
+            if (ChatHandler(this).ParseCommands(msg.c_str()))
+                break;
 
             if (!processChatmessageFurtherAfterSecurityChecks(msg, lang))
                 return;
@@ -530,7 +544,7 @@ namespace MaNGOS
                 uint32 namlen = (nam ? strlen(nam) : 0) + 1;
 
                 data.Initialize(SMSG_TEXT_EMOTE, (20 + namlen));
-                data << ObjectGuid(i_player.GetObjectGuid());
+                data << i_player.GetObjectGuid();
                 data << uint32(i_text_emote);
                 data << uint32(i_emote_num);
                 data << uint32(namlen);
@@ -609,7 +623,7 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket& recv_data)
 {
     ObjectGuid iguid;
     uint8 unk;
-    // DEBUG_LOG("WORLD: Received opcode CMSG_CHAT_IGNORED");
+    // DEBUG_LOG("WORLD: Received CMSG_CHAT_IGNORED");
 
     recv_data >> iguid;
     recv_data >> unk;                                       // probably related to spam reporting
@@ -623,14 +637,14 @@ void WorldSession::HandleChatIgnoredOpcode(WorldPacket& recv_data)
     player->GetSession()->SendPacket(&data);
 }
 
-void WorldSession::SendPlayerNotFoundNotice(const std::string &name)
+void WorldSession::SendPlayerNotFoundNotice(std::string name)
 {
     WorldPacket data(SMSG_CHAT_PLAYER_NOT_FOUND, name.size() + 1);
     data << name;
     SendPacket(&data);
 }
 
-void WorldSession::SendPlayerAmbiguousNotice(const std::string &name)
+void WorldSession::SendPlayerAmbiguousNotice(std::string name)
 {
     WorldPacket data(SMSG_CHAT_PLAYER_AMBIGUOUS, name.size() + 1);
     data << name;

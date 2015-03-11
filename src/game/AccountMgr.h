@@ -1,5 +1,6 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2013 MangosR2 <http://github.com/MangosR2>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +21,13 @@
 #define _ACCMGR_H
 
 #include "Common.h"
+#include "ObjectGuid.h"
+#include "SharedDefines.h"
 #include "Policies/Singleton.h"
+#include <boost/thread/mutex.hpp>
 #include <string>
+
+class Player;
 
 enum AccountOpResult
 {
@@ -33,9 +39,19 @@ enum AccountOpResult
     AOR_DB_INTERNAL_ERROR
 };
 
+struct PlayerDataCache
+{
+    uint32      lowguid;
+    uint32      account;
+    std::string name;
+    uint8       race;
+};
+
 #define MAX_ACCOUNT_STR 16
 
-class AccountMgr
+typedef UNORDERED_MAP<ObjectGuid, PlayerDataCache> PlayerDataCacheMap;
+
+class AccountMgr : public MaNGOS::Singleton<AccountMgr, MaNGOS::ClassLevelLockable<AccountMgr, boost::mutex> >
 {
     public:
         AccountMgr();
@@ -54,7 +70,25 @@ class AccountMgr
         uint32 GetCharactersCount(uint32 acc_id);
         std::string CalculateShaPassHash(std::string& name, std::string& password);
 
+        ObjectGuid GetPlayerGuidByName(std::string name);
+        bool GetPlayerNameByGUID(ObjectGuid guid, std::string &name);
+        Team GetPlayerTeamByGUID(ObjectGuid guid);
+        uint32 GetPlayerAccountIdByGUID(ObjectGuid guid);
+        uint32 GetPlayerAccountIdByPlayerName(const std::string& name);
+
+        uint32 GetCharactersCount(uint32 acc_id, bool full);
+        void UpdateCharactersCount(uint32 acc_id, uint32 realm_id);
+        void LockAccount(uint32 acc_id, bool lock);
+
+        PlayerDataCache const* GetPlayerDataCache(ObjectGuid guid, bool force = true);
+        PlayerDataCache const* GetPlayerDataCache(const std::string& name);
+        void  ClearPlayerDataCache(ObjectGuid guid);
+        void  MakePlayerDataCache(Player* player);
+
         static bool normalizeString(std::string& utf8str);
+
+    private:
+        PlayerDataCacheMap  mPlayerDataCacheMap;
 };
 
 #define sAccountMgr MaNGOS::Singleton<AccountMgr>::Instance()

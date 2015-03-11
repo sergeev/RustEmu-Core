@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 
 #include "World.h"
 #include "ObjectMgr.h"
+#include "AccountMgr.h"
 
 #include <sstream>
 
@@ -27,25 +28,25 @@ ObjectGuid const ObjectGuid::Null = ObjectGuid();
 
 char const* ObjectGuid::GetTypeName(HighGuid high)
 {
-    switch (high)
+    switch(high)
     {
-    case HIGHGUID_ITEM:         return "Item";
-    case HIGHGUID_PLAYER:       return "Player";
-    case HIGHGUID_GAMEOBJECT:   return "Gameobject";
-    case HIGHGUID_TRANSPORT:    return "Transport";
-    case HIGHGUID_UNIT:         return "Creature";
-    case HIGHGUID_PET:          return "Pet";
-    case HIGHGUID_VEHICLE:      return "Vehicle";
-    case HIGHGUID_DYNAMICOBJECT:return "DynObject";
-    case HIGHGUID_CORPSE:       return "Corpse";
-    case HIGHGUID_MO_TRANSPORT: return "MoTransport";
-    case HIGHGUID_INSTANCE:     return "InstanceID";
-    case HIGHGUID_GROUP:        return "Group";
+        case HIGHGUID_ITEM:         return "Item";
+        case HIGHGUID_PLAYER:       return "Player";
+        case HIGHGUID_GAMEOBJECT:   return "Gameobject";
+        case HIGHGUID_TRANSPORT:    return "Transport";
+        case HIGHGUID_UNIT:         return "Creature";
+        case HIGHGUID_PET:          return "Pet";
+        case HIGHGUID_VEHICLE:      return "Vehicle";
+        case HIGHGUID_DYNAMICOBJECT:return "DynObject";
+        case HIGHGUID_CORPSE:       return "Corpse";
+        case HIGHGUID_MO_TRANSPORT: return "MoTransport";
+        case HIGHGUID_INSTANCE:     return "InstanceID";
+        case HIGHGUID_GROUP:        return "Group";
 
-    case HIGHGUID_CALENDAR_EVENT: return "Calendar event";
-    case HIGHGUID_INVITE:       return "Calendar invite";
-    default:
-        return "<unknown>";
+        case HIGHGUID_CALENDAR_EVENT: return "Calendar event";
+        case HIGHGUID_INVITE:       return "Calendar invite";
+        default:
+            return "<unknown>";
     }
 }
 
@@ -57,7 +58,7 @@ std::string ObjectGuid::GetString() const
     if (IsPlayer())
     {
         std::string name;
-        if (sObjectMgr.GetPlayerNameByGUID(*this, name))
+        if (sAccountMgr.GetPlayerNameByGUID(*this, name))
             str << " " << name;
     }
 
@@ -71,9 +72,9 @@ std::string ObjectGuid::GetString() const
 template<HighGuid high>
 uint32 ObjectGuidGenerator<high>::Generate()
 {
-    if (m_nextGuid >= ObjectGuid::GetMaxCounter(high) - 1)
+    if (m_nextGuid >= ObjectGuid::GetMaxCounter(high)-1)
     {
-        sLog.outError("%s guid overflow!! Can't continue, shutting down server. ", ObjectGuid::GetTypeName(high));
+        sLog.outError("%s guid overflow!! Can't continue, shutting down server. ",ObjectGuid::GetTypeName(high));
         World::StopNow(ERROR_EXIT_CODE);
     }
     return m_nextGuid++;

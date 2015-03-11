@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,25 +24,25 @@
 template<class OBJECT> class GridRefManager;
 
 template<class OBJECT>
-class MANGOS_DLL_SPEC GridReference : public Reference<GridRefManager<OBJECT>, OBJECT>
+class GridReference : public Reference<GridRefManager<OBJECT>, OBJECT>
 {
     protected:
 
-        void targetObjectBuildLink() override
+        void targetObjectBuildLink()
         {
             // called from link()
             this->getTarget()->insertFirst(this);
             this->getTarget()->incSize();
         }
 
-        void targetObjectDestroyLink() override
+        void targetObjectDestroyLink()
         {
             // called from unlink()
             if (this->isValid())
                 this->getTarget()->decSize();
         }
 
-        void sourceObjectDestroyLink() override
+        void sourceObjectDestroyLink()
         {
             // called from invalidate()
             this->getTarget()->decSize();
@@ -60,7 +60,7 @@ class MANGOS_DLL_SPEC GridReference : public Reference<GridRefManager<OBJECT>, O
             this->unlink();
         }
 
-        GridReference* next()
+        GridReference *next()
         {
             return (GridReference*)Reference<GridRefManager<OBJECT>, OBJECT>::next();
         }

@@ -80,8 +80,8 @@ namespace Movement
 
             /* Initializes simple A to B mition, A is current unit's position, B is destination
              */
-            void MoveTo(Vector3 const& destination, bool generatePath = false, bool forceDestination = false, bool straightLine = false);
-            void MoveTo(float x, float y, float z, bool generatePath = false, bool forceDestination = false, bool straightLine = false);
+            void MoveTo(Vector3 const& destination, bool generatePath = false, bool forceDestination = false);
+            void MoveTo(float x, float y, float z, bool generatePath = false, bool forceDestination = false);
 
             /* Sets Id of fisrt point of the path. When N-th path point will be done ILisener will notify that pointId + N done
              * Needed for waypoint movement where path splitten into parts
@@ -156,13 +156,13 @@ namespace Movement
         args.path.assign(controls.begin(), controls.end());
     }
 
-    inline void MoveSplineInit<Unit*>::MoveTo(float x, float y, float z, bool generatePath, bool forceDestination, bool straightLine)
+    inline void MoveSplineInit<Unit*>::MoveTo(float x, float y, float z, bool generatePath, bool forceDestination)
     {
         Vector3 v(x, y, z);
-        MoveTo(v, generatePath, forceDestination, straightLine);
+        MoveTo(v, generatePath, forceDestination);
     }
 
-    inline void MoveSplineInit<Unit*>::MoveTo(const Vector3& dest, bool generatePath, bool forceDestination, bool straightLine)
+    inline void MoveSplineInit<Unit*>::MoveTo(const Vector3& dest, bool generatePath, bool forceDestination)
     {
         if (generatePath)
         {

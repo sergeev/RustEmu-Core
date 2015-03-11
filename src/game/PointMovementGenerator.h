@@ -120,9 +120,9 @@ class JumpMovementGenerator : public EffectMovementGenerator
 class MoveToDestMovementGenerator : public EffectMovementGenerator
 {
     public:
-        explicit MoveToDestMovementGenerator(float x, float y, float z, float o, Unit* target, float horizontalSpeed, float maxHeight, uint32 id, bool straightLine = false) :
+        explicit MoveToDestMovementGenerator(float x, float y, float z, float o, Unit* target, float horizontalSpeed, float maxHeight, uint32 id) :
             EffectMovementGenerator(id),
-            m_x(x), m_y(y), m_z(z), m_o(o), m_target(target), m_horizontalSpeed(horizontalSpeed), m_maxHeight(maxHeight), m_straightLine(straightLine) {}
+            m_x(x), m_y(y), m_z(z), m_o(o), m_target(target), m_horizontalSpeed(horizontalSpeed), m_maxHeight(maxHeight) {}
 
         void Initialize(Unit&) override;
 
@@ -131,7 +131,6 @@ class MoveToDestMovementGenerator : public EffectMovementGenerator
         Unit* m_target;
         float m_horizontalSpeed;
         float m_maxHeight;
-        bool  m_straightLine;
 };
 
 class MoveWithSpeedMovementGenerator : public EffectMovementGenerator

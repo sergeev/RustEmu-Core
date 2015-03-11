@@ -17,6 +17,7 @@
  */
 
 #include "Item.h"
+#include "AccountMgr.h"
 #include "ObjectMgr.h"
 #include "ObjectGuid.h"
 #include "WorldPacket.h"
@@ -1233,7 +1234,7 @@ bool Item::IsBindedNotWith(Player const* player) const
         return owner->GetSession()->GetAccountId() != player->GetSession()->GetAccountId();
     else                            // offline slow case
     {
-        return sObjectMgr.GetPlayerAccountIdByGUID(GetOwnerGuid()) != player->GetSession()->GetAccountId();
+        return sAccountMgr.GetPlayerAccountIdByGUID(GetOwnerGuid()) != player->GetSession()->GetAccountId();
     }
 }
 

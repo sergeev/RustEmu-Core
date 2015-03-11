@@ -13173,7 +13173,7 @@ void Spell::EffectCharge(SpellEffectIndex /*eff_idx*/)
     if (m_caster->IsFalling())
         m_caster->MonsterMoveWithSpeed(loc.x, loc.y, loc.z, speed, false, false);
     else
-        m_caster->MonsterMoveToDestination(loc.x, loc.y, loc.z, loc.o, speed, 0, false, unitTarget, true);
+        m_caster->MonsterMoveToDestination(loc.x, loc.y, loc.z, loc.o, speed, 0, false, unitTarget);
 
     // not all charge effects used in negative spells
     if (unitTarget != m_caster && !IsPositiveSpell(m_spellInfo->Id))
@@ -13208,7 +13208,7 @@ void Spell::EffectCharge2(SpellEffectIndex /*eff_idx*/)
     if (m_caster->IsFalling())
         m_caster->MonsterMoveWithSpeed(loc.x, loc.y, loc.z, speed, false, false);
     else
-        m_caster->MonsterMoveToDestination(loc.x, loc.y, loc.z, loc.o, speed, 0, false, unitTarget, true);
+        m_caster->MonsterMoveToDestination(loc.x, loc.y, loc.z, loc.o, speed, 0, false, unitTarget);
 
     // not all charge effects used in negative spells
     if (unitTarget && unitTarget != m_caster && !IsPositiveSpell(m_spellInfo->Id))

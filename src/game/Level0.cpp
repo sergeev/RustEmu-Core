@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,29 +121,34 @@ bool ChatHandler::HandleServerInfoCommand(char* /*args*/)
     PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
     PSendSysMessage(LANG_UPTIME, str.c_str());
 
+    if (!m_session || m_session->GetSecurity() > SEC_MODERATOR)
+    {
+        SendSysMessage("");
+        PSendSysMessage("Loaded maps [id:name:count:players] (%u):%s", sMapMgr.Maps().size(), sMapMgr.GetStrMaps().c_str());
+    }
+
     return true;
 }
 
 bool ChatHandler::HandleDismountCommand(char* /*args*/)
 {
-    Player* player = m_session->GetPlayer();
     // If player is not mounted, so go out :)
-    if (!player->IsMounted())
+    if (!m_session->GetPlayer()->IsMounted())
     {
         SendSysMessage(LANG_CHAR_NON_MOUNTED);
         SetSentErrorMessage(true);
         return false;
     }
 
-    if (player->IsTaxiFlying())
+    if (m_session->GetPlayer()->IsTaxiFlying())
     {
         SendSysMessage(LANG_YOU_IN_FLIGHT);
         SetSentErrorMessage(true);
         return false;
     }
 
-    player->Unmount();
-    player->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
+    m_session->GetPlayer()->Unmount();
+    m_session->GetPlayer()->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
     return true;
 }
 
@@ -176,11 +181,10 @@ bool ChatHandler::HandleGMListIngameCommand(char* /*args*/)
         HashMapHolder<Player>::MapType& m = sObjectAccessor.GetPlayers();
         for (HashMapHolder<Player>::MapType::const_iterator itr = m.begin(); itr != m.end(); ++itr)
         {
-            Player* player = itr->second;
-            AccountTypes security = player->GetSession()->GetSecurity();
-            if ((player->isGameMaster() || (security > SEC_PLAYER && security <= (AccountTypes)sWorld.getConfig(CONFIG_UINT32_GM_LEVEL_IN_GM_LIST))) &&
-                (!m_session || player->IsVisibleGloballyFor(m_session->GetPlayer())))
-                names.push_back(std::make_pair<std::string, bool>(GetNameLink(player), player->isAcceptWhispers()));
+            AccountTypes itr_sec = itr->second->GetSession()->GetSecurity();
+            if ((itr->second->isGameMaster() || (itr_sec > SEC_PLAYER && itr_sec <= (AccountTypes)sWorld.getConfig(CONFIG_UINT32_GM_LEVEL_IN_GM_LIST))) &&
+                    (!m_session || itr->second->IsVisibleGloballyFor(m_session->GetPlayer())))
+                names.push_back(std::make_pair<std::string, bool>(GetNameLink(itr->second), itr->second->isAcceptWhispers()));
         }
     }
 
@@ -277,16 +281,9 @@ bool ChatHandler::HandleAccountLockCommand(char* args)
         return false;
     }
 
-    if (value)
-    {
-        LoginDatabase.PExecute("UPDATE account SET locked = '1' WHERE id = '%u'", GetAccountId());
-        PSendSysMessage(LANG_COMMAND_ACCLOCKLOCKED);
-    }
-    else
-    {
-        LoginDatabase.PExecute("UPDATE account SET locked = '0' WHERE id = '%u'", GetAccountId());
-        PSendSysMessage(LANG_COMMAND_ACCLOCKUNLOCKED);
-    }
+    sAccountMgr.LockAccount(GetAccountId(), value);
+
+    PSendSysMessage(value ? LANG_COMMAND_ACCLOCKLOCKED : LANG_COMMAND_ACCLOCKUNLOCKED);
 
     return true;
 }

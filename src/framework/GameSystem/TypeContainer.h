@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -215,7 +215,7 @@ class TypeMapContainer
 
         /// inserts a specific object into the container
         template<class SPECIFIC_TYPE>
-        bool insert(SPECIFIC_TYPE* obj)
+        bool insert(SPECIFIC_TYPE *obj)
         {
             SPECIFIC_TYPE* t = MaNGOS::Insert(i_elements, obj);
             return (t != NULL);
@@ -229,8 +229,8 @@ class TypeMapContainer
             return (t != NULL);
         }
 
-        ContainerMapList<OBJECT_TYPES>& GetElements() { return i_elements; }
-        const ContainerMapList<OBJECT_TYPES>& GetElements() const { return i_elements;}
+        ContainerMapList<OBJECT_TYPES> & GetElements() { return i_elements; }
+        const ContainerMapList<OBJECT_TYPES> & GetElements() const { return i_elements;}
 
     private:
 

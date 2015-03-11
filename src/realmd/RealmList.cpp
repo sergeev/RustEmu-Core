@@ -37,16 +37,17 @@ extern DatabaseType LoginDatabase;
 
 static RealmBuildInfo ExpectedRealmdClientBuilds[] =
 {
-    {12340, 3, 3, 5, 'a'},                                  // highest supported build, also auto accept all above for simplify future supported builds testing
-    {11723, 3, 3, 3, 'a'},
-    {11403, 3, 3, 2, ' '},
-    {11159, 3, 3, 0, 'a'},
-    {10505, 3, 2, 2, 'a'},
-    {8606,  2, 4, 3, ' '},
-    {6141,  1, 12, 3, ' '},
-    {6005,  1, 12, 2, ' '},
-    {5875,  1, 12, 1, ' '},
-    {0,     0, 0, 0, ' '}                                   // terminator
+    { 16357, 5, 1, 0, 'a' },
+    { 16135, 5, 0, 5, 'b' },
+    { 15595, 4, 3, 4, ' ' },
+    { 15050, 4, 3, 0, ' ' },
+    { 13623, 4, 0, 6, 'a' },
+    { 12340, 3, 3, 5, 'a' },
+    { 8606, 2, 4, 3, ' ' },
+    { 6141, 1, 12, 3, ' ' },
+    { 6005, 1, 12, 2, ' ' },
+    { 5875, 1, 12, 1, ' ' },
+    { 0, 0, 0, 0, ' ' }                                   // terminator
 };
 
 RealmBuildInfo const* FindBuildInfo(uint16 _build)

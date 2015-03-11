@@ -1,5 +1,6 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2011-2013 MangosR2 <http://github.com/MangosR2>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +21,9 @@
 #include "Database/DatabaseEnv.h"
 #include "ObjectAccessor.h"
 #include "ObjectGuid.h"
+#include "ObjectMgr.h"
 #include "Player.h"
+#include "World.h"
 #include "Policies/Singleton.h"
 #include "Util.h"
 #include "Auth/Sha1.h"
@@ -30,7 +33,9 @@ extern DatabaseType LoginDatabase;
 INSTANTIATE_SINGLETON_1(AccountMgr);
 
 AccountMgr::AccountMgr()
-{}
+{
+    mPlayerDataCacheMap.clear();
+}
 
 AccountMgr::~AccountMgr()
 {}
@@ -108,6 +113,7 @@ AccountOpResult AccountMgr::DeleteAccount(uint32 accid)
 
     bool res =
         LoginDatabase.PExecute("DELETE FROM account WHERE id='%u'", accid) &&
+        LoginDatabase.PExecute("DELETE FROM account_access WHERE id ='%d'", accid) &&
         LoginDatabase.PExecute("DELETE FROM realmcharacters WHERE acctid='%u'", accid);
 
     LoginDatabase.CommitTransaction();
@@ -154,7 +160,6 @@ AccountOpResult AccountMgr::ChangePassword(uint32 accid, std::string new_passwd)
     if (utf8length(new_passwd) > MAX_ACCOUNT_STR)
         return AOR_PASS_TOO_LONG;
 
-    normalizeString(username);
     normalizeString(new_passwd);
 
     // also reset s and v to force update at next realmd login
@@ -181,7 +186,7 @@ uint32 AccountMgr::GetId(std::string username)
 
 AccountTypes AccountMgr::GetSecurity(uint32 acc_id)
 {
-    QueryResult* result = LoginDatabase.PQuery("SELECT gmlevel FROM account WHERE id = '%u'", acc_id);
+    QueryResult* result = LoginDatabase.PQuery("SELECT `gmlevel` FROM `account_access` WHERE `id` = '%u' AND (`RealmID` = '%u' OR `RealmID` = -1)", acc_id, sWorld.getConfig(CONFIG_UINT32_REALMID));
     if (result)
     {
         AccountTypes sec = AccountTypes((*result)[0].GetInt32());
@@ -227,7 +232,6 @@ bool AccountMgr::CheckPassword(uint32 accid, std::string passwd)
         return false;
 
     normalizeString(passwd);
-    normalizeString(username);
 
     QueryResult* result = LoginDatabase.PQuery("SELECT 1 FROM account WHERE id='%u' AND sha_pass_hash='%s'", accid, CalculateShaPassHash(username, passwd).c_str());
     if (result)
@@ -242,13 +246,12 @@ bool AccountMgr::CheckPassword(uint32 accid, std::string passwd)
 bool AccountMgr::normalizeString(std::string& utf8str)
 {
     wchar_t wstr_buf[MAX_ACCOUNT_STR + 1];
-    size_t wstr_len = MAX_ACCOUNT_STR;
 
+    size_t wstr_len = MAX_ACCOUNT_STR;
     if (!Utf8toWStr(utf8str, wstr_buf, wstr_len))
         return false;
 
-    for (uint32 i = 0; i <= wstr_len; ++i)
-        wstr_buf[i] = wcharToUpperOnlyLatin(wstr_buf[i]);
+    std::transform(&wstr_buf[0], wstr_buf + wstr_len, &wstr_buf[0], wcharToUpperOnlyLatin);
 
     return WStrToUtf8(wstr_buf, wstr_len, utf8str);
 }
@@ -266,4 +269,211 @@ std::string AccountMgr::CalculateShaPassHash(std::string& name, std::string& pas
     hexEncodeByteArray(sha.GetDigest(), sha.GetLength(), encoded);
 
     return encoded;
+}
+
+// name must be checked to correctness (if received) before call this function
+ObjectGuid AccountMgr::GetPlayerGuidByName(std::string name)
+{
+    ObjectGuid guid;
+
+    PlayerDataCache const* cache = GetPlayerDataCache(name);
+    if (cache)
+    {
+        guid = ObjectGuid(HIGHGUID_PLAYER, cache->lowguid);
+    }
+
+    return guid;
+}
+
+bool AccountMgr::GetPlayerNameByGUID(ObjectGuid guid, std::string& name)
+{
+    PlayerDataCache const* cache = GetPlayerDataCache(guid);
+    if (cache)
+    {
+        name = cache->name;
+        return true;
+    }
+
+    return false;
+}
+
+Team AccountMgr::GetPlayerTeamByGUID(ObjectGuid guid)
+{
+    PlayerDataCache const* cache = GetPlayerDataCache(guid);
+    if (cache)
+        return Player::TeamForRace(cache->race);
+
+    return TEAM_NONE;
+}
+
+uint32 AccountMgr::GetPlayerAccountIdByGUID(ObjectGuid guid)
+{
+    if (!guid.IsPlayer())
+        return 0;
+
+    PlayerDataCache const* cache = GetPlayerDataCache(guid);
+    if (cache)
+        return cache->account;
+
+    return 0;
+}
+
+uint32 AccountMgr::GetPlayerAccountIdByPlayerName(const std::string& name)
+{
+    PlayerDataCache const* cache = GetPlayerDataCache(name);
+    if (cache)
+        return cache->account;
+
+    return 0;
+}
+
+void AccountMgr::ClearPlayerDataCache(ObjectGuid guid)
+{
+    if (!guid || !guid.IsPlayer())
+        return;
+
+    PlayerDataCache const* cache = GetPlayerDataCache(guid, false);
+
+    if (cache)
+    {
+        uint32 accId = cache->account;
+
+        PlayerDataCacheMap::iterator itr = mPlayerDataCacheMap.find(guid);
+        if (itr != mPlayerDataCacheMap.end())
+            mPlayerDataCacheMap.erase(itr);        
+    }
+
+}
+
+void AccountMgr::MakePlayerDataCache(Player* player)
+{
+    if (!player || !player->GetSession())
+        return;
+
+    ObjectGuid guid = player->GetObjectGuid();
+
+    PlayerDataCache cache;
+    cache.account  = player->GetSession()->GetAccountId();;
+    cache.lowguid  = guid.GetCounter();
+    cache.race     = player->getRace();
+    cache.name     = player->GetName();
+
+    mPlayerDataCacheMap.insert(PlayerDataCacheMap::value_type(guid, cache));
+}
+
+PlayerDataCache const* AccountMgr::GetPlayerDataCache(ObjectGuid guid, bool force)
+{
+    PlayerDataCacheMap::const_iterator itr;
+    {
+        itr = mPlayerDataCacheMap.find(guid);
+        if (itr != mPlayerDataCacheMap.end()) 
+            return &itr->second;
+    }
+    if (!force)
+        return NULL;
+
+    Player* player = sObjectMgr.GetPlayer(guid);
+    if (player)
+    {
+        MakePlayerDataCache(player);
+    }
+    else
+    {
+        QueryResult* result = CharacterDatabase.PQuery("SELECT account, name, race FROM characters WHERE guid = '%u'", guid.GetCounter());
+        if (result)
+        {
+            PlayerDataCache cache;
+            cache.account = (*result)[0].GetUInt32();
+            cache.lowguid = guid.GetCounter();
+            cache.name    = (*result)[1].GetCppString();
+            cache.race    = (*result)[2].GetUInt8();
+
+            mPlayerDataCacheMap.insert(PlayerDataCacheMap::value_type(guid, cache));
+            delete result;
+        }
+    }
+
+    {
+        itr = mPlayerDataCacheMap.find(guid);
+        if (itr != mPlayerDataCacheMap.end()) 
+            return &itr->second;
+    }
+
+    return NULL;
+}
+
+PlayerDataCache const* AccountMgr::GetPlayerDataCache(const std::string& name)
+{
+    {
+        for (PlayerDataCacheMap::const_iterator itr = mPlayerDataCacheMap.begin(); itr != mPlayerDataCacheMap.end(); ++itr)
+            if (itr->second.name == name)
+                return &itr->second;
+    }
+
+    ObjectGuid guid;
+
+    QueryResult* result = CharacterDatabase.PQuery("SELECT account, guid, race FROM characters WHERE name = '%s'", name.c_str());
+    if (result)
+    {
+        PlayerDataCache cache;
+        cache.account  = (*result)[0].GetUInt32();
+        cache.lowguid  = (*result)[1].GetUInt32();
+        cache.race     = (*result)[2].GetUInt8();
+        cache.name     = name;
+
+        guid = ObjectGuid(HIGHGUID_PLAYER, cache.lowguid);
+
+        mPlayerDataCacheMap.insert(PlayerDataCacheMap::value_type(guid, cache));
+        delete result;
+    }
+
+    {
+        PlayerDataCacheMap::const_iterator itr = mPlayerDataCacheMap.find(guid);
+        if (itr != mPlayerDataCacheMap.end()) 
+            return &itr->second;
+    }
+
+    return NULL;
+}
+
+uint32 AccountMgr::GetCharactersCount(uint32 acc_id, bool full)
+{
+    if (full)
+    {
+        QueryResult* result = LoginDatabase.PQuery("SELECT SUM(numchars) FROM realmcharacters WHERE acctid = '%u'", acc_id);
+        if (result)
+        {
+            Field* fields =result->Fetch();
+            uint32 acctcharcount = fields[0].GetUInt32();
+            delete result;
+            return acctcharcount;
+        }
+    }
+    else
+    {
+        QueryResult* result = CharacterDatabase.PQuery("SELECT COUNT(guid) FROM characters WHERE account = '%u'", acc_id);
+        uint8 charcount = 0;
+        if (result)
+        {
+            Field *fields = result->Fetch();
+            charcount = fields[0].GetUInt8();
+            delete result;
+            return charcount;
+        }
+    }
+    return 0;
+}
+
+void AccountMgr::UpdateCharactersCount(uint32 acc_id, uint32 realm_id)
+{
+    uint32 charcount = GetCharactersCount(acc_id, false);
+    LoginDatabase.BeginTransaction();
+    LoginDatabase.PExecute("DELETE FROM realmcharacters WHERE acctid= '%u' AND realmid = '%u'", acc_id, realm_id);
+    LoginDatabase.PExecute("INSERT INTO realmcharacters (numchars, acctid, realmid) VALUES (%u, %u, %u)",  charcount, acc_id, realm_id);
+    LoginDatabase.CommitTransaction();
+}
+
+void AccountMgr::LockAccount(uint32 acc_id, bool lock)
+{
+    LoginDatabase.PExecute( "UPDATE account SET locked = '%u' WHERE id = '%u'", uint32(lock), acc_id);
 }

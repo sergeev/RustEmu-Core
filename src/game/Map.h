@@ -37,7 +37,7 @@
 #include "ScriptMgr.h"
 #include "CreatureLinkingMgr.h"
 #include "vmap/DynamicTree.h"
-
+#include "WorldObjectEvents.h"
 #include <boost/thread/lock_guard.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
@@ -373,7 +373,7 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         uint32 GenerateLocalLowGuid(HighGuid guidhigh);
 
         //get corresponding TerrainData object for this particular map
-        TerrainInfo* GetTerrain() const { return m_TerrainData; }
+        const TerrainInfo * GetTerrain() const { return m_TerrainData; }
 
         void CreateInstanceData(bool load);
         InstanceData* GetInstanceData() const { return i_data; }
@@ -431,6 +431,12 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         LoadingObjectQueueMember* GetNextLoadingObject();
         LoadingObjectsQueue const& GetLoadingObjectsQueue() { return i_loadingObjectQueue; };
         bool IsLoadingObjectsQueueEmpty() const { return i_loadingObjectQueue.empty(); };
+
+        // Event handler
+        WorldObjectEventProcessor* GetEvents();
+        void UpdateEvents(uint32 update_diff);
+        void KillAllEvents(bool force);
+        void AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime = true);
 
         // Random on map generation
         bool GetReachableRandomPosition(Unit* unit, float& x, float& y, float& z, float radius);
@@ -509,7 +515,7 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         NGridType* i_grids[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
 
         //Shared geodata object with map coord info...
-        TerrainInfo* m_TerrainData;
+        TerrainInfo* const m_TerrainData;
         DynamicMapTree m_dyn_tree;
 
         bool m_bLoadedGrids[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
@@ -544,6 +550,8 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         bool                m_broken;
         // WeatherSystem
         WeatherSystem* m_weatherSystem;
+        //EventProcessor
+        WorldObjectEventProcessor m_Events;
 };
 
 class MANGOS_DLL_SPEC WorldMap : public Map

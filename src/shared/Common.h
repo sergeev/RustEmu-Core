@@ -239,4 +239,6 @@ inline char* mangos_strdup(const char* source)
 #define countof(array) (sizeof(array) / sizeof((array)[0]))
 #endif
 
+#define MAX_CLIENT_STAT_VALUE INT16_MAX
+
 #endif

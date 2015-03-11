@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,19 +25,21 @@
 #include <map>
 #include <string>
 
+#define MAX_CHANNEL_PASS_STR 31
+
 class ChannelMgr
 {
     public:
-        typedef std::map<std::wstring, Channel*> ChannelMap;
+        typedef UNORDERED_MAP<std::wstring, Channel*> ChannelMap;
         ChannelMgr() {}
         ~ChannelMgr();
 
-        Channel* GetJoinChannel(const std::string &name, uint32 channel_id);
-        Channel* GetChannel(const std::string &name, Player* p, bool pkt = true);
-        void LeftChannel(const std::string &name);
+        Channel* GetJoinChannel(std::string name, uint32 channel_id);
+        Channel* GetChannel(std::string name, Player* p, bool pkt = true);
+        void LeftChannel(std::string name);
     private:
         ChannelMap channels;
-        void MakeNotOnPacket(WorldPacket* data, const std::string &name);
+        void MakeNotOnPacket(WorldPacket* data, std::string name);
 };
 
 class AllianceChannelMgr : public ChannelMgr {};

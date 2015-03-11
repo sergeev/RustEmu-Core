@@ -33,9 +33,7 @@
 
 #include <cmath>
 
-#define CLASS_LOCK MaNGOS::ClassLevelLockable<ObjectAccessor, boost::mutex>
-INSTANTIATE_SINGLETON_2(ObjectAccessor, CLASS_LOCK);
-INSTANTIATE_CLASS_MUTEX(ObjectAccessor, boost::mutex);
+INSTANTIATE_SINGLETON_1(ObjectAccessor);
 
 ObjectAccessor::ObjectAccessor() {}
 ObjectAccessor::~ObjectAccessor()
@@ -118,7 +116,7 @@ void ObjectAccessor::KickPlayer(ObjectGuid guid)
 Corpse*
 ObjectAccessor::GetCorpseForPlayerGUID(ObjectGuid guid)
 {
-    Guard guard(i_corpseGuard);
+    HashMapHolder<Corpse>::ReadGuard g(HashMapHolder<Corpse>::GetLock());
 
     Player2CorpsesMapType::iterator iter = i_player2corpse.find(guid);
     if (iter == i_player2corpse.end())
@@ -134,7 +132,8 @@ ObjectAccessor::RemoveCorpse(Corpse* corpse)
 {
     MANGOS_ASSERT(corpse && corpse->GetType() != CORPSE_BONES);
 
-    Guard guard(i_corpseGuard);
+    HashMapHolder<Corpse>::WriteGuard g(HashMapHolder<Corpse>::GetLock());
+
     Player2CorpsesMapType::iterator iter = i_player2corpse.find(corpse->GetOwnerGuid());
     if (iter == i_player2corpse.end())
         return;
@@ -153,7 +152,8 @@ ObjectAccessor::AddCorpse(Corpse* corpse)
 {
     MANGOS_ASSERT(corpse && corpse->GetType() != CORPSE_BONES);
 
-    Guard guard(i_corpseGuard);
+    HashMapHolder<Corpse>::WriteGuard g(HashMapHolder<Corpse>::GetLock());
+
     MANGOS_ASSERT(i_player2corpse.find(corpse->GetOwnerGuid()) == i_player2corpse.end());
     i_player2corpse[corpse->GetOwnerGuid()] = corpse;
 
@@ -167,7 +167,8 @@ ObjectAccessor::AddCorpse(Corpse* corpse)
 void
 ObjectAccessor::AddCorpsesToGrid(GridPair const& gridpair, GridType& grid, Map* map)
 {
-    Guard guard(i_corpseGuard);
+    HashMapHolder<Corpse>::ReadGuard g(HashMapHolder<Corpse>::GetLock());
+
     for (Player2CorpsesMapType::iterator iter = i_player2corpse.begin(); iter != i_player2corpse.end(); ++iter)
         if (iter->second->GetGrid() == gridpair)
         {

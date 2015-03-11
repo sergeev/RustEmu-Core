@@ -83,7 +83,8 @@ enum WorldTimers
     WUPDATE_GROUPS      = 6,
     WUPDATE_WORLDSTATE  = 7,
     WUPDATE_CALENDAR    = 8,
-    WUPDATE_COUNT       = 9
+    WUPDATE_TERRAIN     = 9,
+    WUPDATE_COUNT       = 10
 };
 
 /// Configuration elements
@@ -329,6 +330,7 @@ enum eConfigBoolValues
     CONFIG_BOOL_GM_LOG_TRADE,
     CONFIG_BOOL_GM_LOWER_SECURITY,
     CONFIG_BOOL_GM_ALLOW_ACHIEVEMENT_GAINS,
+    CONFIG_BOOL_GM_ANNOUNCE_BAN,
     CONFIG_BOOL_SKILL_PROSPECTING,
     CONFIG_BOOL_ALWAYS_MAX_SKILL_FOR_LEVEL,
     CONFIG_BOOL_WEATHER,
@@ -645,16 +647,7 @@ class World
         void setDisabledMapIdForDungeonFinder(const char* areas);
         bool IsDungeonMapIdDisable(uint32 mapId);
 
-        /**
-        * \brief: force all client to request player data
-        * \param: ObjectGuid guid : guid of the specified player
-        * \returns: void
-        *
-        * Description: InvalidatePlayerDataToAllClient force all connected clients to clear specified player cache
-        * FullName: World::InvalidatePlayerDataToAllClient
-        * Access: public
-        **/
-        void InvalidatePlayerDataToAllClient(ObjectGuid guid);
+        void InvalidatePlayer(ObjectGuid const& guid);
 
     protected:
         void _UpdateGameTime();

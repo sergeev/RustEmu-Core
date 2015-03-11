@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -265,7 +265,7 @@ class MANGOS_DLL_SPEC ObjectGuid
 };
 
 // Some Shared defines
-typedef std::set<ObjectGuid> GuidSet;
+typedef UNORDERED_SET<ObjectGuid> GuidSet;
 typedef std::list<ObjectGuid> GuidList;
 typedef std::vector<ObjectGuid> GuidVector;
 typedef std::queue<ObjectGuid> GuidQueue;

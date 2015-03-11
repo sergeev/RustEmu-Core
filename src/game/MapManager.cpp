@@ -173,18 +173,23 @@ void MapManager::Update(uint32 diff)
         return;
 
     for (MapMapType::iterator iter = m_maps.begin(); iter != m_maps.end(); ++iter)
-        iter->second->Update((uint32)m_timer.GetCurrent());
-
-    // remove all maps which can be unloaded
-    for (MapMapType::const_iterator iter = m_maps.begin(); iter != m_maps.end();)
     {
-        Map* pMap = iter->second;
-        //check if map can be unloaded
-        if (pMap->CanUnload(m_timer.GetCurrent()))
-            iter = m_maps.erase(iter);
-        else
-            ++iter;
-        //map  class be auto-deleted in end of cycle
+        iter->second->Update(m_timer.GetCurrent());
+    }
+
+    // check all maps which can be unloaded
+    {
+        Guard guard(*this);
+        for (MapMapType::const_iterator iter = m_maps.begin(); iter != m_maps.end();)
+        {
+            Map* pMap = iter->second;
+            //check if map can be unloaded
+            if (pMap->CanUnload(m_timer.GetCurrent()))
+                iter = m_maps.erase(iter);
+            else
+                ++iter;
+            //map  class be auto-deleted in end of cycle
+        }
     }
 
     m_timer.SetCurrent(0);

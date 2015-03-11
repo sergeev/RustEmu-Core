@@ -270,7 +270,7 @@ void ChatHandler::HandleCharacterDeletedRestoreHelper(DeletedInfo const& delInfo
         return;
     }
 
-    if (sObjectMgr.GetPlayerGuidByName(delInfo.name))
+    if (sAccountMgr.GetPlayerGuidByName(delInfo.name))
     {
         PSendSysMessage(LANG_CHARACTER_DELETED_SKIP_NAME, delInfo.name.c_str(), delInfo.lowguid, delInfo.accountId);
         return;
@@ -427,7 +427,7 @@ bool ChatHandler::HandleCharacterEraseCommand(char* args)
         target->GetSession()->KickPlayer();
     }
     else
-        account_id = sObjectMgr.GetPlayerAccountIdByGUID(target_guid);
+        account_id = sAccountMgr.GetPlayerAccountIdByGUID(target_guid);
 
     std::string account_name;
     sAccountMgr.GetName(account_id, account_name);
@@ -462,7 +462,8 @@ bool ChatHandler::HandleAccountOnlineListCommand(char* args)
 
     ///- Get the list of accounts ID logged to the realm
     //                                                 0   1         2        3        4
-    QueryResult* result = LoginDatabase.PQuery("SELECT id, username, last_ip, gmlevel, expansion FROM account WHERE active_realm_id = %u", realmID);
+    //QueryResult *result = LoginDatabase.PQuery("SELECT id, username, last_ip, gmlevel, expansion FROM account WHERE active_realm_id = %u", realmID);
+    QueryResult* result = LoginDatabase.PQuery("SELECT a.id, a.username, a.last_ip, aa.gmlevel, a.expansion FROM account a LEFT JOIN account_access aa ON (a.id = aa.id) WHERE active_realm_id = %u", sWorld.getConfig(CONFIG_UINT32_REALMID));
 
     return ShowAccountListHelper(result, &limit);
 }
@@ -471,8 +472,8 @@ bool ChatHandler::HandleAccountOnlineListCommand(char* args)
 bool ChatHandler::HandleAccountCreateCommand(char* args)
 {
     ///- %Parse the command line arguments
-    char* szAcc = ExtractQuotedOrLiteralArg(&args);
-    char* szPassword = ExtractQuotedOrLiteralArg(&args);
+    char *szAcc = ExtractQuotedOrLiteralArg(&args);
+    char *szPassword = ExtractQuotedOrLiteralArg(&args);
     if (!szAcc || !szPassword)
         return false;
 
@@ -488,25 +489,25 @@ bool ChatHandler::HandleAccountCreateCommand(char* args)
         result = sAccountMgr.CreateAccount(account_name, password);
     switch (result)
     {
-        case AOR_OK:
-            PSendSysMessage(LANG_ACCOUNT_CREATED, account_name.c_str());
-            break;
-        case AOR_NAME_TOO_LONG:
-            SendSysMessage(LANG_ACCOUNT_TOO_LONG);
-            SetSentErrorMessage(true);
-            return false;
-        case AOR_NAME_ALREDY_EXIST:
-            SendSysMessage(LANG_ACCOUNT_ALREADY_EXIST);
-            SetSentErrorMessage(true);
-            return false;
-        case AOR_DB_INTERNAL_ERROR:
-            PSendSysMessage(LANG_ACCOUNT_NOT_CREATED_SQL_ERROR, account_name.c_str());
-            SetSentErrorMessage(true);
-            return false;
-        default:
-            PSendSysMessage(LANG_ACCOUNT_NOT_CREATED, account_name.c_str());
-            SetSentErrorMessage(true);
-            return false;
+    case AOR_OK:
+        PSendSysMessage(LANG_ACCOUNT_CREATED, account_name.c_str());
+        break;
+    case AOR_NAME_TOO_LONG:
+        SendSysMessage(LANG_ACCOUNT_TOO_LONG);
+        SetSentErrorMessage(true);
+        return false;
+    case AOR_NAME_ALREDY_EXIST:
+        SendSysMessage(LANG_ACCOUNT_ALREADY_EXIST);
+        SetSentErrorMessage(true);
+        return false;
+    case AOR_DB_INTERNAL_ERROR:
+        PSendSysMessage(LANG_ACCOUNT_NOT_CREATED_SQL_ERROR, account_name.c_str());
+        SetSentErrorMessage(true);
+        return false;
+    default:
+        PSendSysMessage(LANG_ACCOUNT_NOT_CREATED, account_name.c_str());
+        SetSentErrorMessage(true);
+        return false;
     }
 
     return true;

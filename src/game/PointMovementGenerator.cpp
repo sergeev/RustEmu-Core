@@ -205,7 +205,7 @@ void MoveToDestMovementGenerator::Initialize(Unit& unit)
         return;
 
     Movement::MoveSplineInit<Unit*> init(unit);
-    init.MoveTo(m_x, m_y, m_z, bool(m_target), bool(m_target), m_straightLine);
+    init.MoveTo(m_x, m_y, m_z, bool(m_target), bool(m_target));
     if (m_maxHeight > M_NULL_F)
         init.SetParabolic(m_maxHeight, 0.0f);
     init.SetVelocity(m_horizontalSpeed);

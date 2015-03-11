@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,9 @@
 template
 <
 class ACTIVE_OBJECT,
-      class WORLD_OBJECT_TYPES,
-      class GRID_OBJECT_TYPES
-      >
+class WORLD_OBJECT_TYPES,
+class GRID_OBJECT_TYPES
+>
 class GridLoader
 {
     public:
@@ -47,7 +47,7 @@ class GridLoader
         /** Loads the grid
          */
         template<class LOADER>
-        void Load(Grid<ACTIVE_OBJECT, WORLD_OBJECT_TYPES, GRID_OBJECT_TYPES>& grid, LOADER& loader)
+        void Load(Grid<ACTIVE_OBJECT,WORLD_OBJECT_TYPES, GRID_OBJECT_TYPES> &grid, LOADER &loader)
         {
             loader.Load(grid);
         }
@@ -55,7 +55,7 @@ class GridLoader
         /** Stop the grid
          */
         template<class STOPER>
-        void Stop(Grid<ACTIVE_OBJECT, WORLD_OBJECT_TYPES, GRID_OBJECT_TYPES>& grid, STOPER& stoper)
+        void Stop(Grid<ACTIVE_OBJECT,WORLD_OBJECT_TYPES, GRID_OBJECT_TYPES> &grid, STOPER &stoper)
         {
             stoper.Stop(grid);
         }
@@ -63,7 +63,7 @@ class GridLoader
         /** Unloads the grid
          */
         template<class UNLOADER>
-        void Unload(Grid<ACTIVE_OBJECT, WORLD_OBJECT_TYPES, GRID_OBJECT_TYPES>& grid, UNLOADER& unloader)
+        void Unload(Grid<ACTIVE_OBJECT,WORLD_OBJECT_TYPES, GRID_OBJECT_TYPES> &grid, UNLOADER &unloader)
         {
             unloader.Unload(grid);
         }

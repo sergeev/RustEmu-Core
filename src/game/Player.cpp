@@ -602,7 +602,7 @@ Player::~Player()
     // Clear cache need only if player true loaded, not in broken state
     if (m_uint32Values && !GetObjectGuid().IsEmpty())
     {
-        // sAccountMgr.ClearPlayerDataCache(GetObjectGuid()); maybe rly need to implement it?
+        sAccountMgr.ClearPlayerDataCache(GetObjectGuid());
         sMapPersistentStateMgr.AddToUnbindQueue(GetObjectGuid());
         sLFGMgr.RemoveLFGState(GetObjectGuid());
     }
@@ -4314,7 +4314,7 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
 
                     CharacterDatabase.PExecute("DELETE FROM mail_items WHERE mail_id = %u", mail_id);
 
-                    uint32 pl_account = sObjectMgr.GetPlayerAccountIdByGUID(playerguid);
+                    uint32 pl_account = sAccountMgr.GetPlayerAccountIdByGUID(playerguid);
 
                     draft.SetMoney(money).SendReturnToSender(pl_account, playerguid, ObjectGuid(HIGHGUID_PLAYER, sender));
                 }
@@ -4418,8 +4418,10 @@ void Player::DeleteFromDB(ObjectGuid playerguid, uint32 accountId, bool updateRe
             break;
     }
 
+    sAccountMgr.ClearPlayerDataCache(playerguid);
+
     if (updateRealmChars)
-        sWorld.UpdateRealmCharCount(accountId);
+        sAccountMgr.UpdateCharactersCount(accountId, sWorld.getConfig(CONFIG_UINT32_REALMID));
 }
 
 /**
@@ -15660,8 +15662,8 @@ bool Player::LoadFromDB(ObjectGuid guid, SqlQueryHolder* holder)
     //"resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, dungeon_difficulty,"
     // 39           40                41                42                    43          44          45              46           47               48              49
     //"arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk,"
-    // 50      51      52      53      54      55      56      57      58         59          60             61              62      63           64          65
-    //"health, power1, power2, power3, power4, power5, power6, power7, specCount, activeSpec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, grantableLevels  FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
+    // 50      51      52      53      54      55      56      57      58         59          60             61              62      63           64        
+    //"health, power1, power2, power3, power4, power5, power6, power7, specCount, activeSpec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars  FROM characters WHERE guid = '%u'", GUID_LOPART(m_guid));
     QueryResult* result = holder->GetResult(PLAYER_LOGIN_QUERY_LOADFROM);
 
     if (!result)

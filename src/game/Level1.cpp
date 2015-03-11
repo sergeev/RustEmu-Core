@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -129,6 +129,32 @@ bool ChatHandler::HandleAnnounceCommand(char* args)
         return false;
 
     sWorld.SendWorldText(LANG_SYSTEMMESSAGE, args);
+    return true;
+}
+
+// global nameannounce
+bool ChatHandler::HandleNameAnnounceCommand(char* args)
+{
+  int32 strid = 0;
+
+    if (!*args)
+        return false;
+
+    switch(m_session->GetSecurity())
+    {
+      case SEC_MODERATOR:
+        strid = LANG_SYSTEMMESSAGE_MODERATOR;
+        break;
+      case SEC_GAMEMASTER:
+        strid = LANG_SYSTEMMESSAGE_GAMEMASTER;
+        break;
+      case SEC_ADMINISTRATOR:
+        strid = LANG_SYSTEMMESSAGE_ADMINISTRATOR;
+        break;
+      default:
+        return false;
+    }
+      sWorld.SendWorldText(strid, m_session->GetPlayerName(), args);
     return true;
 }
 
@@ -301,7 +327,7 @@ bool ChatHandler::HandleGPSCommand(char* args)
         zone_y = 0;
     }
 
-    Map const* map = obj->GetMap();
+    Map const *map = obj->GetMap();
     float ground_z = map->GetHeight(obj->GetPhaseMask(), obj->GetPositionX(), obj->GetPositionY(), MAX_HEIGHT);
     float floor_z = map->GetHeight(obj->GetPhaseMask(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ());
 
@@ -312,7 +338,6 @@ bool ChatHandler::HandleGPSCommand(char* args)
 
     uint32 have_map = GridMap::ExistMap(obj->GetMapId(), gx, gy) ? 1 : 0;
     uint32 have_vmap = GridMap::ExistVMap(obj->GetMapId(), gx, gy) ? 1 : 0;
-
     TerrainInfo const* terrain = obj->GetTerrain();
 
     if (have_vmap)
@@ -357,12 +382,25 @@ bool ChatHandler::HandleGPSCommand(char* args)
     // Additional vmap debugging help
 #ifdef _DEBUG_VMAPS
     PSendSysMessage("Static terrain height (maps only): %f", obj->GetTerrain()->GetHeightStatic(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ(), false));
-
     if (VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager())
-        PSendSysMessage("Vmap Terrain Height %f", vmgr->getHeight(obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ() + 2.0f, 10000.0f));
+        PSendSysMessage("Vmap Terrain Height %f", vmgr->getHeight(obj->GetMapId(), obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ()+2.0f, 10000.0f));
 
     PSendSysMessage("Static map height (maps and vmaps): %f", obj->GetTerrain()->GetHeightStatic(obj->GetPositionX(), obj->GetPositionY(), obj->GetPositionZ()));
 #endif
+
+    if (obj->IsBoarded())
+    {
+        PSendSysMessage("Object on transport raw position: %f %f %f %f (transport offset %f %f %f %f)",
+                obj->GetPositionX(),
+                obj->GetPositionY(),
+                obj->GetPositionZ(),
+                obj->GetOrientation(),
+                obj->GetTransOffsetX(),
+                obj->GetTransOffsetY(),
+                obj->GetTransOffsetZ(),
+                obj->GetTransOffsetO()
+                );
+    }
 
     return true;
 }
@@ -376,8 +414,8 @@ bool ChatHandler::HandleNamegoCommand(char* args)
     if (!ExtractPlayerTarget(&args, &target, &target_guid, &target_name))
         return false;
 
-    Player* player = m_session->GetPlayer();
-    if (target == player || target_guid == player->GetObjectGuid())
+    Player* _player = m_session->GetPlayer();
+    if (target == _player || target_guid == _player->GetObjectGuid())
     {
         PSendSysMessage(LANG_CANT_TELEPORT_SELF);
         SetSentErrorMessage(true);
@@ -398,7 +436,10 @@ bool ChatHandler::HandleNamegoCommand(char* args)
             return false;
         }
 
-        Map* pMap = player->GetMap();
+        Map* pMap = m_session->GetPlayer()->GetMap();
+
+        if (!pMap)
+            return false;
 
         if (pMap->IsBattleGroundOrArena())
         {
@@ -410,7 +451,7 @@ bool ChatHandler::HandleNamegoCommand(char* args)
                 return false;
             }
             // if both players are in different bgs
-            else if (target->GetBattleGroundId() && player->GetBattleGroundId() != target->GetBattleGroundId())
+            else if (target->GetBattleGroundId() && m_session->GetPlayer()->GetBattleGroundId() != target->GetBattleGroundId())
             {
                 PSendSysMessage(LANG_CANNOT_GO_TO_BG_FROM_BG, nameLink.c_str());
                 SetSentErrorMessage(true);
@@ -418,7 +459,7 @@ bool ChatHandler::HandleNamegoCommand(char* args)
             }
             // all's well, set bg id
             // when porting out from the bg, it will be reset to 0
-            target->SetBattleGroundId(player->GetBattleGroundId(), player->GetBattleGroundTypeId());
+            target->SetBattleGroundId(m_session->GetPlayer()->GetBattleGroundId(), m_session->GetPlayer()->GetBattleGroundTypeId());
             // remember current position as entry point for return at bg end teleportation
             if (!target->GetMap()->IsBattleGroundOrArena())
                 target->SetBattleGroundEntryPoint();
@@ -435,9 +476,9 @@ bool ChatHandler::HandleNamegoCommand(char* args)
             }
 
             // we are in instance, and can summon only player in our group with us as lead
-            if (!player->GetGroup() || !target->GetGroup() ||
-                (target->GetGroup()->GetLeaderGuid() != player->GetObjectGuid()) ||
-                (player->GetGroup()->GetLeaderGuid() != player->GetObjectGuid()))
+            if (!m_session->GetPlayer()->GetGroup() || !target->GetGroup() ||
+                    (target->GetGroup()->GetLeaderGuid() != m_session->GetPlayer()->GetObjectGuid()) ||
+                    (m_session->GetPlayer()->GetGroup()->GetLeaderGuid() != m_session->GetPlayer()->GetObjectGuid()))
                 // the last check is a bit excessive, but let it be, just in case
             {
                 PSendSysMessage(LANG_CANNOT_SUMMON_TO_INST, nameLink.c_str());
@@ -448,12 +489,12 @@ bool ChatHandler::HandleNamegoCommand(char* args)
 
         PSendSysMessage(LANG_SUMMONING, nameLink.c_str(), "");
         if (needReportToTarget(target))
-            ChatHandler(target).PSendSysMessage(LANG_SUMMONED_BY, playerLink(player->GetName()).c_str());
+            ChatHandler(target).PSendSysMessage(LANG_SUMMONED_BY, playerLink(_player->GetName()).c_str());
 
-        // stop flight if need
         target->InterruptTaxiFlying();
 
         // before GM
+
         if (m_session->GetPlayer()->IsOnTransport())
         {
             WorldLocation loc = m_session->GetPlayer()->GetTransport()->GetPosition();
@@ -474,12 +515,12 @@ bool ChatHandler::HandleNamegoCommand(char* args)
         PSendSysMessage(LANG_SUMMONING, nameLink.c_str(), GetMangosString(LANG_OFFLINE));
 
         // in point where GM stay
-        Player::SavePositionInDB(target_guid, player->GetMapId(),
-            player->GetPositionX(),
-            player->GetPositionY(),
-            player->GetPositionZ(),
-            player->GetOrientation(),
-            player->GetZoneId());
+        Player::SavePositionInDB(target_guid, m_session->GetPlayer()->GetMapId(),
+                                 m_session->GetPlayer()->GetPositionX(),
+                                 m_session->GetPlayer()->GetPositionY(),
+                                 m_session->GetPlayer()->GetPositionZ(),
+                                 m_session->GetPlayer()->GetOrientation(),
+                                 m_session->GetPlayer()->GetZoneId());
     }
 
     return true;
@@ -591,8 +632,7 @@ bool ChatHandler::HandleGonameCommand(char* args)
         if (needReportToTarget(target))
             ChatHandler(target).PSendSysMessage(LANG_APPEARING_TO, GetNameLink().c_str());
 
-        // stop flight if need
-        target->InterruptTaxiFlying();
+        _player->InterruptTaxiFlying();
 
         // to point to see at target with same orientation
         float x, y, z;
@@ -602,7 +642,7 @@ bool ChatHandler::HandleGonameCommand(char* args)
         else
             target->GetPosition(x, y, z);
 
-        _player->TeleportTo(target->GetMapId(), x, y, z, _player->GetAngle(target), TELE_TO_GM_MODE);
+        _player->TeleportTo(target->GetMapId(), x, y, z + 0.5f, _player->GetAngle(target), TELE_TO_GM_MODE);
     }
     else
     {
@@ -620,6 +660,8 @@ bool ChatHandler::HandleGonameCommand(char* args)
         bool in_flight;
         if (!Player::LoadPositionFromDB(target_guid, map, x, y, z, o, in_flight))
             return false;
+
+        z += 0.5f;
 
         return HandleGoHelper(_player, map, x, y, &z);
     }
@@ -664,24 +706,30 @@ bool ChatHandler::HandleModifyHPCommand(char* args)
         return false;
     }
 
-    Player* chr = getSelectedPlayer();
-    if (chr == NULL)
+    Unit *target = getSelectedUnit();
+    if (!target)
     {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
         return false;
     }
 
-    // check online security
-    if (HasLowerSecurity(chr))
-        return false;
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+        Player* plr = (Player*)target;
 
-    PSendSysMessage(LANG_YOU_CHANGE_HP, GetNameLink(chr).c_str(), hp, hpm);
-    if (needReportToTarget(chr))
-        ChatHandler(chr).PSendSysMessage(LANG_YOURS_HP_CHANGED, GetNameLink().c_str(), hp, hpm);
+        // check online security
+        if (HasLowerSecurity(plr))
+            return false;
 
-    chr->SetMaxHealth(hpm);
-    chr->SetHealth(hp);
+        PSendSysMessage(LANG_YOU_CHANGE_HP, GetNameLink(plr).c_str(), hp, hpm);
+
+        if (needReportToTarget(plr))
+            ChatHandler(plr).PSendSysMessage(LANG_YOURS_HP_CHANGED, GetNameLink().c_str(), hp, hpm);
+    }
+
+    target->SetMaxHealth(hpm);
+    target->SetHealth(hp);
 
     return true;
 }
@@ -702,24 +750,30 @@ bool ChatHandler::HandleModifyManaCommand(char* args)
         return false;
     }
 
-    Player* chr = getSelectedPlayer();
-    if (chr == NULL)
+    Unit *target = getSelectedUnit();
+    if (!target)
     {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
         return false;
     }
 
-    // check online security
-    if (HasLowerSecurity(chr))
-        return false;
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+        Player* plr = (Player*)target;
 
-    PSendSysMessage(LANG_YOU_CHANGE_MANA, GetNameLink(chr).c_str(), mana, manam);
-    if (needReportToTarget(chr))
-        ChatHandler(chr).PSendSysMessage(LANG_YOURS_MANA_CHANGED, GetNameLink().c_str(), mana, manam);
+        // check online security
+        if (HasLowerSecurity(plr))
+            return false;
 
-    chr->SetMaxPower(POWER_MANA, manam);
-    chr->SetPower(POWER_MANA, mana);
+        PSendSysMessage(LANG_YOU_CHANGE_MANA, GetNameLink(plr).c_str(), mana, manam);
+
+        if (needReportToTarget(plr))
+            ChatHandler(plr).PSendSysMessage(LANG_YOURS_MANA_CHANGED, GetNameLink().c_str(), mana, manam);
+    }
+
+    target->SetMaxPower(POWER_MANA,manam);
+    target->SetPower(POWER_MANA, mana);
 
     return true;
 }
@@ -740,26 +794,32 @@ bool ChatHandler::HandleModifyEnergyCommand(char* args)
         return false;
     }
 
-    Player* chr = getSelectedPlayer();
-    if (!chr)
+    Unit* target = getSelectedUnit();
+    if (!target)
     {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
         return false;
     }
 
-    // check online security
-    if (HasLowerSecurity(chr))
-        return false;
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+        Player* plr = (Player*)target;
 
-    PSendSysMessage(LANG_YOU_CHANGE_ENERGY, GetNameLink(chr).c_str(), energy / 10, energym / 10);
-    if (needReportToTarget(chr))
-        ChatHandler(chr).PSendSysMessage(LANG_YOURS_ENERGY_CHANGED, GetNameLink().c_str(), energy / 10, energym / 10);
+        // check online security
+        if (HasLowerSecurity(plr))
+            return false;
 
-    chr->SetMaxPower(POWER_ENERGY, energym);
-    chr->SetPower(POWER_ENERGY, energy);
+        PSendSysMessage(LANG_YOU_CHANGE_ENERGY, GetNameLink(plr).c_str(), energy, energym);
 
-    DETAIL_LOG(GetMangosString(LANG_CURRENT_ENERGY), chr->GetMaxPower(POWER_ENERGY));
+        if (needReportToTarget(plr))
+            ChatHandler(plr).PSendSysMessage(LANG_YOURS_ENERGY_CHANGED, GetNameLink().c_str(), energy, energym);
+    }
+
+    target->SetMaxPower(POWER_ENERGY, energym);
+    target->SetPower(POWER_ENERGY, energy);
+
+    DETAIL_LOG(GetMangosString(LANG_CURRENT_ENERGY), target->GetMaxPower(POWER_ENERGY));
 
     return true;
 }
@@ -780,24 +840,30 @@ bool ChatHandler::HandleModifyRageCommand(char* args)
         return false;
     }
 
-    Player* chr = getSelectedPlayer();
-    if (chr == NULL)
+    Unit* target = getSelectedUnit();
+    if (!target)
     {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
         return false;
     }
 
-    // check online security
-    if (HasLowerSecurity(chr))
-        return false;
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+        Player* plr = (Player*)target;
 
-    PSendSysMessage(LANG_YOU_CHANGE_RAGE, GetNameLink(chr).c_str(), rage / 10, ragem / 10);
-    if (needReportToTarget(chr))
-        ChatHandler(chr).PSendSysMessage(LANG_YOURS_RAGE_CHANGED, GetNameLink().c_str(), rage / 10, ragem / 10);
+        // check online security
+        if (HasLowerSecurity(plr))
+            return false;
 
-    chr->SetMaxPower(POWER_RAGE, ragem);
-    chr->SetPower(POWER_RAGE, rage);
+        PSendSysMessage(LANG_YOU_CHANGE_RAGE, GetNameLink(plr).c_str(), rage, ragem);
+
+        if (needReportToTarget(plr))
+            ChatHandler(plr).PSendSysMessage(LANG_YOURS_RAGE_CHANGED, GetNameLink().c_str(), rage, ragem);
+    }
+
+    target->SetMaxPower(POWER_RAGE, ragem);
+    target->SetPower(POWER_RAGE, rage);
 
     return true;
 }
@@ -818,20 +884,30 @@ bool ChatHandler::HandleModifyRunicPowerCommand(char* args)
         return false;
     }
 
-    Player* chr = getSelectedPlayer();
-    if (chr == NULL)
+    Unit* target = getSelectedUnit();
+    if (!target)
     {
-        SendSysMessage(LANG_NO_CHAR_SELECTED);
+        SendSysMessage(LANG_SELECT_CHAR_OR_CREATURE);
         SetSentErrorMessage(true);
         return false;
     }
 
-    PSendSysMessage(LANG_YOU_CHANGE_RUNIC_POWER, GetNameLink(chr).c_str(), rune / 10, runem / 10);
-    if (needReportToTarget(chr))
-        ChatHandler(chr).PSendSysMessage(LANG_YOURS_RUNIC_POWER_CHANGED, GetNameLink().c_str(), rune / 10, runem / 10);
+    if (target->GetTypeId() == TYPEID_PLAYER)
+    {
+        Player* plr = (Player*)target;
 
-    chr->SetMaxPower(POWER_RUNIC_POWER, runem);
-    chr->SetPower(POWER_RUNIC_POWER, rune);
+        // check online security
+        if (HasLowerSecurity(plr))
+            return false;
+
+        PSendSysMessage(LANG_YOU_CHANGE_RUNIC_POWER, GetNameLink(plr).c_str(), rune, runem);
+
+        if (needReportToTarget(plr))
+            ChatHandler(plr).PSendSysMessage(LANG_YOURS_RUNIC_POWER_CHANGED, GetNameLink().c_str(), rune, runem);
+    }
+
+    target->SetMaxPower(POWER_RUNIC_POWER, runem);
+    target->SetPower(POWER_RUNIC_POWER, rune);
 
     return true;
 }
@@ -1210,7 +1286,7 @@ bool ChatHandler::HandleModifyScaleCommand(char* args)
         return false;
 
     float Scale = (float)atof(args);
-    if (Scale > 10.0f || Scale <= 0.0f)
+    if (Scale > 15.0f || Scale <= 0.0f)
     {
         SendSysMessage(LANG_BAD_VALUE);
         SetSentErrorMessage(true);
@@ -1837,7 +1913,7 @@ bool ChatHandler::HandleTeleNameCommand(char* args)
 
         PSendSysMessage(LANG_TELEPORTING_TO, nameLink.c_str(), GetMangosString(LANG_OFFLINE), tele->name.c_str());
         Player::SavePositionInDB(target_guid, tele->loc.GetMapId(),
-            tele->loc.x, tele->loc.y, tele->loc.z, tele->loc.orientation, tele->loc.GetZoneId());
+                                 tele->loc.x, tele->loc.y, tele->loc.z, tele->loc.orientation, tele->loc.GetZoneId());
     }
 
     return true;
@@ -1933,14 +2009,13 @@ bool ChatHandler::HandleGroupgoCommand(char* args)
         return false;
     }
 
-    Player* player = m_session->GetPlayer();
-    Map* gmMap = player->GetMap();
+    Map* gmMap = m_session->GetPlayer()->GetMap();
     bool to_instance =  gmMap->Instanceable();
 
     // we are in instance, and can summon only player in our group with us as lead
     if (to_instance && (
-        !player->GetGroup() || (grp->GetLeaderGuid() != player->GetObjectGuid()) ||
-        (player->GetGroup()->GetLeaderGuid() != player->GetObjectGuid())))
+                !m_session->GetPlayer()->GetGroup() || (grp->GetLeaderGuid() != m_session->GetPlayer()->GetObjectGuid()) ||
+                (m_session->GetPlayer()->GetGroup()->GetLeaderGuid() != m_session->GetPlayer()->GetObjectGuid())))
         // the last check is a bit excessive, but let it be, just in case
     {
         SendSysMessage(LANG_CANNOT_SUMMON_TO_INST);
@@ -1985,9 +2060,7 @@ bool ChatHandler::HandleGroupgoCommand(char* args)
         if (needReportToTarget(pl))
             ChatHandler(pl).PSendSysMessage(LANG_SUMMONED_BY, nameLink.c_str());
 
-        // stop flight if need
         pl->InterruptTaxiFlying();
-
         // before GM
         float x, y, z;
         m_session->GetPlayer()->GetClosePoint(x, y, z, pl->GetObjectBoundingRadius());
@@ -2031,7 +2104,6 @@ bool ChatHandler::HandleGoHelper(Player* player, uint32 mapid, float x, float y,
         z = map->GetWaterOrGroundLevel(x, y, MAX_HEIGHT);
     }
 
-    // stop flight if need
     player->InterruptTaxiFlying();
 
     player->TeleportTo(mapid, x, y, z, ort);
@@ -2055,7 +2127,7 @@ bool ChatHandler::HandleGoTaxinodeCommand(char* args)
         return false;
     }
 
-    if (node->x == 0.0f && node->y == 0.0f && node->z == 0.0f)
+    if (fabs(node->x) < M_NULL_F && fabs(node->y) < M_NULL_F && fabs(node->z) < M_NULL_F)
     {
         PSendSysMessage(LANG_INVALID_TARGET_COORD, node->x, node->y, node->map_id);
         SetSentErrorMessage(true);
@@ -2093,6 +2165,8 @@ bool ChatHandler::HandleGoCommand(char* args)
 
     return HandleGoHelper(_player, mapid, x, y, &z);
 }
+
+
 
 // teleport at coordinates
 bool ChatHandler::HandleGoXYCommand(char* args)

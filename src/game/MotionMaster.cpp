@@ -364,12 +364,12 @@ void MotionMaster::MoveJump(float x, float y, float z, float horizontalSpeed, fl
     Mutate(new JumpMovementGenerator(x, y, z, horizontalSpeed, max_height, id), UNIT_ACTION_EFFECT);
 }
 
-void MotionMaster::MoveToDestination(float x, float y, float z, float o, Unit* target, float horizontalSpeed, float max_height, uint32 id, bool straightLine /*=false*/)
+void MotionMaster::MoveToDestination(float x, float y, float z, float o, Unit* target, float horizontalSpeed, float max_height, uint32 id)
 {
     if (horizontalSpeed <= 0.1f)
         return;
 
-    Mutate(new MoveToDestMovementGenerator(x, y, z, o, target, horizontalSpeed, max_height, id, straightLine), UNIT_ACTION_EFFECT);
+    Mutate(new MoveToDestMovementGenerator(x, y, z, o, target, horizontalSpeed, max_height, id), UNIT_ACTION_EFFECT);
 }
 
 void MotionMaster::MoveSkyDiving(float x, float y, float z, float o, float horizontalSpeed, float max_height, bool eject)

@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +25,13 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/thread/mutex.hpp>
-
 #include "Common.h"
 #include "SharedDefines.h"
 #include "ObjectGuid.h"
-#include "AuctionHouseMgr.h"
-#include "Item.h"
 #include "LFG.h"
 #include "LFGMgr.h"
+#include "AuctionHouseMgr.h"
+#include "Item.h"
 
 struct ItemPrototype;
 struct AuctionEntry;
@@ -162,42 +161,42 @@ enum TutorialDataState
     TUTORIALDATA_NEW       = 2
 };
 
-// class to deal with packet processing
-// allows to determine if next packet is safe to be processed
+//class to deal with packet processing
+//allows to determine if next packet is safe to be processed
 class PacketFilter
 {
     public:
-        explicit PacketFilter(WorldSession* pSession) : m_pSession(pSession) {}
+        explicit PacketFilter(WorldSession * pSession) : m_pSession(pSession) {}
         virtual ~PacketFilter() {}
 
         virtual bool Process(WorldPacket* /*packet*/) { return true; }
         virtual bool ProcessLogout() const { return true; }
 
     protected:
-        WorldSession* const m_pSession;
+        WorldSession * const m_pSession;
 };
 
-// process only thread-safe packets in Map::Update()
+//process only thread-safe packets in Map::Update()
 class MapSessionFilter : public PacketFilter
 {
     public:
-        explicit MapSessionFilter(WorldSession* pSession) : PacketFilter(pSession) {}
+        explicit MapSessionFilter(WorldSession * pSession) : PacketFilter(pSession) {}
         ~MapSessionFilter() {}
 
-        virtual bool Process(WorldPacket* packet) override;
-        // in Map::Update() we do not process player logout!
-        virtual bool ProcessLogout() const override { return false; }
+        virtual bool Process(WorldPacket * packet);
+        //in Map::Update() we do not process player logout!
+        virtual bool ProcessLogout() const { return false; }
 };
 
-// class used to filer only thread-unsafe packets from queue
-// in order to update only be used in World::UpdateSessions()
+//class used to filer only thread-unsafe packets from queue
+//in order to update only be used in World::UpdateSessions()
 class WorldSessionFilter : public PacketFilter
 {
     public:
-        explicit WorldSessionFilter(WorldSession* pSession) : PacketFilter(pSession) {}
+        explicit WorldSessionFilter(WorldSession * pSession) : PacketFilter(pSession) {}
         ~WorldSessionFilter() {}
 
-        virtual bool Process(WorldPacket* packet) override;
+        virtual bool Process(WorldPacket* packet);
 };
 
 /// Player session in the World
@@ -215,13 +214,13 @@ class MANGOS_DLL_SPEC WorldSession
 
         void SizeError(WorldPacket const& packet, uint32 size) const;
 
-        void ReadAddonsInfo(WorldPacket& data);
+        void ReadAddonsInfo(WorldPacket &data);
         void SendAddonsInfo();
 
         void SendPacket(WorldPacket const* packet);
-        void SendNotification(const char* format, ...) ATTR_PRINTF(2, 3);
-        void SendNotification(int32 string_id, ...);
-        void SendPetNameInvalid(uint32 error, const std::string& name, DeclinedName* declinedName);
+        void SendNotification(const char *format,...) ATTR_PRINTF(2,3);
+        void SendNotification(int32 string_id,...);
+        void SendPetNameInvalid(uint32 error, const std::string& name, DeclinedName *declinedName);
         void SendPartyResult(PartyOperation operation, const std::string& member, PartyResult res);
         void SendGroupInvite(Player* player, bool alreadyInGroup = false);
         void SendAreaTriggerMessage(const char* Text, ...) ATTR_PRINTF(2, 3);
@@ -236,7 +235,7 @@ class MANGOS_DLL_SPEC WorldSession
         char const* GetPlayerName() const;
         void SetSecurity(AccountTypes security) { _security = security; }
         std::string const& GetRemoteAddress() { return m_Address; }
-        void SetPlayer(Player* plr);
+        void SetPlayer(Player *plr);
         uint8 Expansion() const { return m_expansion; }
 
         /// Session in auth.queue currently
@@ -269,10 +268,10 @@ class MANGOS_DLL_SPEC WorldSession
 
         void SendNameQueryOpcode(Player* p);
         void SendNameQueryOpcodeFromDB(ObjectGuid guid);
-        static void SendNameQueryOpcodeFromDBCallBack(QueryResult* result, uint32 accountId);
+        static void SendNameQueryOpcodeFromDBCallBack(QueryResult *result, uint32 accountId);
 
         void SendTrainerList(ObjectGuid guid);
-        void SendTrainerList(ObjectGuid guid, const std::string& strTitle);
+        void SendTrainerList(ObjectGuid guid, const std::string& strTitle );
 
         void SendListInventory(ObjectGuid guid);
         bool CheckBanker(ObjectGuid guid);
@@ -282,8 +281,8 @@ class MANGOS_DLL_SPEC WorldSession
         void SendTabardVendorActivate(ObjectGuid guid);
         void SendSpiritResurrect();
         void SendBindPoint(Creature* npc);
-        void SendGMTicketGetTicket(uint32 status, GMTicket* ticket = NULL);
-        void SendGMResponse(GMTicket* ticket);
+        void SendGMTicketGetTicket(uint32 status, GMTicket *ticket = NULL);
+        void SendGMResponse(GMTicket *ticket);
 
         void SendBattlegGroundList(ObjectGuid guid, BattleGroundTypeId bgTypeId);
 
@@ -293,56 +292,56 @@ class MANGOS_DLL_SPEC WorldSession
 
         void SendPetitionQueryOpcode(ObjectGuid petitionguid);
 
-        // pet
+        //pet
         void SendPetNameQuery(ObjectGuid guid, uint32 petnumber);
         void SendStablePet(ObjectGuid guid);
         void SendStableResult(uint8 res);
         bool CheckStableMaster(ObjectGuid guid);
 
         // Account Data
-        AccountData* GetAccountData(AccountDataType type) { return &m_accountData[type]; }
-        void SetAccountData(AccountDataType type, time_t time_, const std::string &data);
+        AccountData *GetAccountData(AccountDataType type) { return &m_accountData[type]; }
+        void SetAccountData(AccountDataType type, time_t time_, std::string data);
         void SendAccountDataTimes(uint32 mask);
         void LoadGlobalAccountData();
         void LoadAccountData(QueryResult* result, uint32 mask);
         void LoadTutorialsData();
         void SendTutorialsData();
         void SaveTutorialsData();
-        uint32 GetTutorialInt(uint32 intId)
+        uint32 GetTutorialInt(uint32 intId )
         {
             return m_Tutorials[intId];
         }
 
         void SetTutorialInt(uint32 intId, uint32 value)
         {
-            if (m_Tutorials[intId] != value)
+            if(m_Tutorials[intId] != value)
             {
                 m_Tutorials[intId] = value;
-                if (m_tutorialState == TUTORIALDATA_UNCHANGED)
+                if(m_tutorialState == TUTORIALDATA_UNCHANGED)
                     m_tutorialState = TUTORIALDATA_CHANGED;
             }
         }
-        // used with item_page table
-        bool SendItemInfo(uint32 itemid, WorldPacket data);
+        //used with item_page table
+        bool SendItemInfo( uint32 itemid, WorldPacket data );
 
-        // auction
-        void SendAuctionHello(Unit* unit);
-        void SendAuctionCommandResult(AuctionEntry* auc, AuctionAction Action, AuctionError ErrorCode, InventoryResult invError = EQUIP_ERR_OK);
-        void SendAuctionBidderNotification(AuctionEntry* auction);
-        void SendAuctionOwnerNotification(AuctionEntry* auction);
+        //auction
+        void SendAuctionHello(Unit *unit);
+        void SendAuctionCommandResult(AuctionEntry *auc, AuctionAction Action, AuctionError ErrorCode, InventoryResult invError = EQUIP_ERR_OK);
+        void SendAuctionBidderNotification(AuctionEntry *auction);
+        void SendAuctionOwnerNotification(AuctionEntry *auction);
         void SendAuctionRemovedNotification(AuctionEntry* auction);
-        static void SendAuctionOutbiddedMail(AuctionEntry* auction);
-        void SendAuctionCancelledToBidderMail(AuctionEntry* auction);
+        static void SendAuctionOutbiddedMail(AuctionEntry *auction);
+        void SendAuctionCancelledToBidderMail(AuctionEntry *auction);
         void BuildListAuctionItems(std::vector<AuctionEntry*> const& auctions, WorldPacket& data, std::wstring const& searchedname, uint32 listfrom, uint32 levelmin,
-                                   uint32 levelmax, uint32 usable, uint32 inventoryType, uint32 itemClass, uint32 itemSubClass, uint32 quality, uint32& count, uint32& totalcount, bool isFull);
+            uint32 levelmax, uint32 usable, uint32 inventoryType, uint32 itemClass, uint32 itemSubClass, uint32 quality, uint32& count, uint32& totalcount, bool isFull);
 
         AuctionHouseEntry const* GetCheckedAuctionHouseForAuctioneer(ObjectGuid guid);
 
-        // Item Enchantment
+        //Item Enchantment
         void SendEnchantmentLog(ObjectGuid targetGuid, ObjectGuid casterGuid, uint32 itemId, uint32 spellId);
         void SendItemEnchantTimeUpdate(ObjectGuid playerGuid, ObjectGuid itemGuid, uint32 slot, uint32 duration);
 
-        // Taxi
+        //Taxi
         void SendTaxiStatus(ObjectGuid guid);
         void SendTaxiMenu(Creature* unit);
         void SendDoFlight(uint32 mountDisplayId, uint32 path, uint32 pathNode = 0);
@@ -354,9 +353,9 @@ class MANGOS_DLL_SPEC WorldSession
         void SendArenaTeamCommandResult(uint32 team_action, const std::string& team, const std::string& player, uint32 error_id);
         void SendNotInArenaTeamPacket(uint8 type);
         void SendPetitionShowList(ObjectGuid guid);
-        void SendSaveGuildEmblem(uint32 msg);
+        void SendSaveGuildEmblem( uint32 msg );
 
-        void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
+        void BuildPartyMemberStatsChangedPacket(Player *player, WorldPacket *data);
 
         void DoLootRelease(ObjectGuid lguid);
 
@@ -366,11 +365,12 @@ class MANGOS_DLL_SPEC WorldSession
         // Locales
         LocaleConstant GetSessionDbcLocale() const { return m_sessionDbcLocale; }
         int GetSessionDbLocaleIndex() const { return m_sessionDbLocaleIndex; }
-        const char* GetMangosString(int32 entry) const;
+        const char *GetMangosString(int32 entry) const;
 
         uint32 GetLatency() const { return m_latency; }
         void SetLatency(uint32 latency) { m_latency = latency; }
-        uint32 getDialogStatus(Player* pPlayer, Object* questgiver, uint32 defstatus);
+        void ResetClientTimeDelay() { m_clientTimeDelay = 0; }
+        uint32 getDialogStatus(Player *pPlayer, Object* questgiver, uint32 defstatus);
 
         // LFG
         // TRUE values set by client sending CMSG_LFG_SET_AUTOJOIN and CMSG_LFM_CLEAR_AUTOFILL before player login
@@ -385,7 +385,7 @@ class MANGOS_DLL_SPEC WorldSession
     public:                                                 // opcodes handlers
 
         void Handle_NULL(WorldPacket& recvPacket);          // not used
-        void Handle_EarlyProccess(WorldPacket& recvPacket); // just mark packets processed in WorldSocket::OnRead
+        void Handle_EarlyProccess( WorldPacket& recvPacket);// just mark packets processed in WorldSocket::OnRead
         void Handle_ServerSide(WorldPacket& recvPacket);    // sever side only, can't be accepted from client
         void Handle_Deprecated(WorldPacket& recvPacket);    // never used anymore by client
 
@@ -393,8 +393,8 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleCharDeleteOpcode(WorldPacket& recvPacket);
         void HandleCharCreateOpcode(WorldPacket& recvPacket);
         void HandlePlayerLoginOpcode(WorldPacket& recvPacket);
-        void HandleCharEnum(QueryResult* result);
-        void HandlePlayerLogin(LoginQueryHolder* holder);
+        void HandleCharEnum(QueryResult * result);
+        void HandlePlayerLogin(LoginQueryHolder * holder);
 
         // played time
         void HandlePlayedTime(WorldPacket& recvPacket);
@@ -410,11 +410,11 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleInspectHonorStatsOpcode(WorldPacket& recvPacket);
 
         void HandleMoveWaterWalkAck(WorldPacket& recvPacket);
-        void HandleFeatherFallAck(WorldPacket& recv_data);
+        void HandleFeatherFallAck(WorldPacket &recv_data);
 
-        void HandleMoveHoverAck(WorldPacket& recv_data);
+        void HandleMoveHoverAck( WorldPacket & recv_data );
 
-        void HandleMountSpecialAnimOpcode(WorldPacket& recvdata);
+        void HandleMountSpecialAnimOpcode(WorldPacket &recvdata);
 
         // character view
         void HandleShowingHelmOpcode(WorldPacket& recv_data);
@@ -427,7 +427,7 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleMoveKnockBackAck(WorldPacket& recvPacket);
 
         void HandleMoveTeleportAckOpcode(WorldPacket& recvPacket);
-        void HandleForceSpeedChangeAckOpcodes(WorldPacket& recv_data);
+        void HandleForceSpeedChangeAckOpcodes( WorldPacket & recv_data );
 
         void HandlePingOpcode(WorldPacket& recvPacket);
         void HandleAuthSessionOpcode(WorldPacket& recvPacket);
@@ -460,10 +460,10 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleEmoteOpcode(WorldPacket& recvPacket);
         void HandleContactListOpcode(WorldPacket& recvPacket);
         void HandleAddFriendOpcode(WorldPacket& recvPacket);
-        static void HandleAddFriendOpcodeCallBack(QueryResult* result, uint32 accountId, std::string friendNote);
+        static void HandleAddFriendOpcodeCallBack(QueryResult *result, uint32 accountId, std::string friendNote);
         void HandleDelFriendOpcode(WorldPacket& recvPacket);
         void HandleAddIgnoreOpcode(WorldPacket& recvPacket);
-        static void HandleAddIgnoreOpcodeCallBack(QueryResult* result, uint32 accountId);
+        static void HandleAddIgnoreOpcodeCallBack(QueryResult *result, uint32 accountId);
         void HandleDelIgnoreOpcode(WorldPacket& recvPacket);
         void HandleSetContactNotesOpcode(WorldPacket& recvPacket);
         void HandleBugOpcode(WorldPacket& recvPacket);
@@ -472,9 +472,9 @@ class MANGOS_DLL_SPEC WorldSession
 
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
 
-        void HandleSetFactionAtWarOpcode(WorldPacket& recv_data);
-        void HandleSetWatchedFactionOpcode(WorldPacket& recv_data);
-        void HandleSetFactionInactiveOpcode(WorldPacket& recv_data);
+        void HandleSetFactionAtWarOpcode( WorldPacket & recv_data );
+        void HandleSetWatchedFactionOpcode(WorldPacket & recv_data);
+        void HandleSetFactionInactiveOpcode(WorldPacket & recv_data);
 
         void HandleUpdateAccountData(WorldPacket& recvPacket);
         void HandleRequestAccountData(WorldPacket& recvPacket);
@@ -495,9 +495,9 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleMoveWorldportAckOpcode();                // for server-side calls
 
         void HandleMovementOpcodes(WorldPacket& recvPacket);
-        void HandleSetActiveMoverOpcode(WorldPacket& recv_data);
-        void HandleMoveNotActiveMoverOpcode(WorldPacket& recv_data);
-        void HandleMoveTimeSkippedOpcode(WorldPacket& recv_data);
+        void HandleSetActiveMoverOpcode(WorldPacket &recv_data);
+        void HandleMoveNotActiveMoverOpcode(WorldPacket &recv_data);
+        void HandleMoveTimeSkippedOpcode(WorldPacket &recv_data);
 
         void HandleDismissControlledVehicle(WorldPacket &recv_data);
         void HandleRequestVehicleExit(WorldPacket &recv_data);
@@ -508,7 +508,7 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleEjectPassenger(WorldPacket &recv_data);
         void HandleChangeSeatsOnControlledVehicle(WorldPacket &recv_data);
 
-        void HandleRequestRaidInfoOpcode(WorldPacket& recv_data);
+        void HandleRequestRaidInfoOpcode( WorldPacket & recv_data );
 
         void HandleGroupInviteOpcode(WorldPacket& recvPacket);
         void HandleGroupAcceptOpcode(WorldPacket& recvPacket);
@@ -517,18 +517,18 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleGroupUninviteGuidOpcode(WorldPacket& recvPacket);
         void HandleGroupSetLeaderOpcode(WorldPacket& recvPacket);
         void HandleGroupDisbandOpcode(WorldPacket& recvPacket);
-        void HandleOptOutOfLootOpcode(WorldPacket& recv_data);
-        void HandleSetAllowLowLevelRaidOpcode(WorldPacket& recv_data);
+        void HandleOptOutOfLootOpcode( WorldPacket &recv_data );
+        void HandleSetAllowLowLevelRaidOpcode( WorldPacket & recv_data );
         void HandleLootMethodOpcode(WorldPacket& recvPacket);
-        void HandleLootRoll(WorldPacket& recv_data);
-        void HandleRequestPartyMemberStatsOpcode(WorldPacket& recv_data);
-        void HandleRaidTargetUpdateOpcode(WorldPacket& recv_data);
-        void HandleRaidReadyCheckOpcode(WorldPacket& recv_data);
-        void HandleRaidReadyCheckFinishedOpcode(WorldPacket& recv_data);
-        void HandleGroupRaidConvertOpcode(WorldPacket& recv_data);
-        void HandleGroupChangeSubGroupOpcode(WorldPacket& recv_data);
-        void HandleGroupAssistantLeaderOpcode(WorldPacket& recv_data);
-        void HandlePartyAssignmentOpcode(WorldPacket& recv_data);
+        void HandleLootRoll( WorldPacket &recv_data );
+        void HandleRequestPartyMemberStatsOpcode( WorldPacket &recv_data );
+        void HandleRaidTargetUpdateOpcode( WorldPacket & recv_data );
+        void HandleRaidReadyCheckOpcode( WorldPacket & recv_data );
+        void HandleRaidReadyCheckFinishedOpcode( WorldPacket & recv_data );
+        void HandleGroupRaidConvertOpcode( WorldPacket & recv_data );
+        void HandleGroupChangeSubGroupOpcode( WorldPacket & recv_data );
+        void HandleGroupAssistantLeaderOpcode( WorldPacket & recv_data );
+        void HandlePartyAssignmentOpcode( WorldPacket & recv_data );
 
         void HandlePetitionBuyOpcode(WorldPacket& recv_data);
         void HandlePetitionShowSignOpcode(WorldPacket& recv_data);
@@ -636,9 +636,9 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleListInventoryOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBagItemOpcode(WorldPacket& recvPacket);
         void HandleReadItemOpcode(WorldPacket& recvPacket);
-        void HandleAutoEquipItemSlotOpcode(WorldPacket& recvPacket);
-        void HandleSwapItem(WorldPacket& recvPacket);
-        void HandleBuybackItem(WorldPacket& recvPacket);
+        void HandleAutoEquipItemSlotOpcode(WorldPacket & recvPacket);
+        void HandleSwapItem( WorldPacket & recvPacket);
+        void HandleBuybackItem(WorldPacket & recvPacket);
         void HandleAutoBankItemOpcode(WorldPacket& recvPacket);
         void HandleAutoStoreBankItemOpcode(WorldPacket& recvPacket);
         void HandleWrapItemOpcode(WorldPacket& recvPacket);
@@ -668,8 +668,8 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleQuestgiverChooseRewardOpcode(WorldPacket& recvPacket);
         void HandleQuestgiverRequestRewardOpcode(WorldPacket& recvPacket);
         void HandleQuestQueryOpcode(WorldPacket& recvPacket);
-        void HandleQuestgiverCancel(WorldPacket& recv_data);
-        void HandleQuestLogSwapQuest(WorldPacket& recv_data);
+        void HandleQuestgiverCancel(WorldPacket& recv_data );
+        void HandleQuestLogSwapQuest(WorldPacket& recv_data );
         void HandleQuestLogRemoveQuest(WorldPacket& recv_data);
         void HandleQuestConfirmAccept(WorldPacket& recv_data);
         void HandleQuestgiverCompleteQuest(WorldPacket& recv_data);
@@ -680,17 +680,17 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleQuestPushResult(WorldPacket& recvPacket);
 
         bool processChatmessageFurtherAfterSecurityChecks(std::string&, uint32);
-        void SendPlayerNotFoundNotice(const std::string &name);
-        void SendPlayerAmbiguousNotice(const std::string &name);
+        void SendPlayerNotFoundNotice(std::string name);
+        void SendPlayerAmbiguousNotice(std::string name);
         void SendWrongFactionNotice();
         void SendChatRestrictedNotice(ChatRestrictionType restriction);
         void HandleMessagechatOpcode(WorldPacket& recvPacket);
         void HandleTextEmoteOpcode(WorldPacket& recvPacket);
         void HandleChatIgnoredOpcode(WorldPacket& recvPacket);
 
-        void HandleReclaimCorpseOpcode(WorldPacket& recvPacket);
-        void HandleCorpseQueryOpcode(WorldPacket& recvPacket);
-        void HandleCorpseMapPositionQueryOpcode(WorldPacket& recvPacket);
+        void HandleReclaimCorpseOpcode( WorldPacket& recvPacket );
+        void HandleCorpseQueryOpcode( WorldPacket& recvPacket );
+        void HandleCorpseMapPositionQueryOpcode( WorldPacket& recvPacket );
         void HandleResurrectResponseOpcode(WorldPacket& recvPacket);
         void HandleSummonResponseOpcode(WorldPacket& recv_data);
 
@@ -720,22 +720,22 @@ class MANGOS_DLL_SPEC WorldSession
         void HandlePageQuerySkippedOpcode(WorldPacket& recvPacket);
         void HandlePageTextQueryOpcode(WorldPacket& recvPacket);
 
-        void HandleTutorialFlagOpcode(WorldPacket& recv_data);
-        void HandleTutorialClearOpcode(WorldPacket& recv_data);
-        void HandleTutorialResetOpcode(WorldPacket& recv_data);
+        void HandleTutorialFlagOpcode ( WorldPacket & recv_data );
+        void HandleTutorialClearOpcode( WorldPacket & recv_data );
+        void HandleTutorialResetOpcode( WorldPacket & recv_data );
 
         //Pet
-        void HandlePetAction(WorldPacket & recv_data);
+        void HandlePetAction( WorldPacket & recv_data );
         void HandlePetStopAttack(WorldPacket& recv_data);
-        void HandlePetNameQueryOpcode(WorldPacket & recv_data);
-        void HandlePetSetAction(WorldPacket & recv_data);
-        void HandlePetAbandon(WorldPacket & recv_data);
-        void HandlePetRename(WorldPacket & recv_data);
-        void HandlePetCancelAuraOpcode(WorldPacket& recvPacket);
-        void HandlePetSpellAutocastOpcode(WorldPacket& recvPacket);
-        void HandlePetCastSpellOpcode(WorldPacket& recvPacket);
-        void HandlePetLearnTalent(WorldPacket& recvPacket);
-        void HandleLearnPreviewTalentsPet(WorldPacket& recvPacket);
+        void HandlePetNameQueryOpcode( WorldPacket & recv_data );
+        void HandlePetSetAction( WorldPacket & recv_data );
+        void HandlePetAbandon( WorldPacket & recv_data );
+        void HandlePetRename( WorldPacket & recv_data );
+        void HandlePetCancelAuraOpcode( WorldPacket& recvPacket );
+        void HandlePetSpellAutocastOpcode( WorldPacket& recvPacket );
+        void HandlePetCastSpellOpcode( WorldPacket& recvPacket );
+        void HandlePetLearnTalent( WorldPacket& recvPacket );
+        void HandleLearnPreviewTalentsPet( WorldPacket& recvPacket );
 
         void HandleSetActionBarTogglesOpcode(WorldPacket& recv_data);
 
@@ -745,17 +745,17 @@ class MANGOS_DLL_SPEC WorldSession
 
         void HandleTotemDestroyed(WorldPacket& recv_data);
 
-        // BattleGround
-        void HandleBattlemasterHelloOpcode(WorldPacket& recv_data);
-        void HandleBattlemasterJoinOpcode(WorldPacket& recv_data);
+        //BattleGround
+        void HandleBattlemasterHelloOpcode(WorldPacket &recv_data);
+        void HandleBattlemasterJoinOpcode(WorldPacket &recv_data);
         void HandleBattleGroundPlayerPositionsOpcode(WorldPacket& recv_data);
-        void HandlePVPLogDataOpcode(WorldPacket& recv_data);
-        void HandleBattlefieldStatusOpcode(WorldPacket& recv_data);
-        void HandleBattleFieldPortOpcode(WorldPacket& recv_data);
-        void HandleBattlefieldListOpcode(WorldPacket& recv_data);
-        void HandleLeaveBattlefieldOpcode(WorldPacket& recv_data);
-        void HandleBattlemasterJoinArena(WorldPacket& recv_data);
-        void HandleReportPvPAFK(WorldPacket& recv_data);
+        void HandlePVPLogDataOpcode( WorldPacket &recv_data );
+        void HandleBattlefieldStatusOpcode(WorldPacket &recv_data);
+        void HandleBattleFieldPortOpcode( WorldPacket &recv_data );
+        void HandleBattlefieldListOpcode( WorldPacket &recv_data );
+        void HandleLeaveBattlefieldOpcode( WorldPacket &recv_data );
+        void HandleBattlemasterJoinArena( WorldPacket &recv_data );
+        void HandleReportPvPAFK( WorldPacket &recv_data );
 
         void HandleWardenDataOpcode(WorldPacket& recv_data);
         void HandleWorldTeleportOpcode(WorldPacket& recv_data);
@@ -770,54 +770,10 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleTimeSyncResp(WorldPacket& recv_data);
         void HandleWhoisOpcode(WorldPacket& recv_data);
         void HandleResetInstancesOpcode(WorldPacket& recv_data);
-        void HandleHearthandResurrect(WorldPacket& recv_data);
+        void HandleHearthandResurrect(WorldPacket & recv_data);
         void HandleInstanceLockResponse(WorldPacket& recv_data);
         void HandleSetSavedInstanceExtend(WorldPacket& recv_data);
         void HandleUpdateMissileTrajectory(WorldPacket& recv_data);
-
-        // LFG
-        void HandleLfgJoinOpcode(WorldPacket& recv_data);
-        void HandleLfgLeaveOpcode(WorldPacket& recv_data);
-        void HandleLfgClearOpcode(WorldPacket& recv_data);
-        void HandleSetLfgCommentOpcode(WorldPacket& recv_data);
-        void HandleLfgSetRolesOpcode(WorldPacket& recv_data);
-        void HandleLfgGetStatus(WorldPacket& recv_data);
-        //
-        void HandleLfgSetBootVoteOpcode(WorldPacket &recv_data);
-        void HandleLfgProposalResultOpcode(WorldPacket &recv_data);
-        void HandleLfgPlayerLockInfoRequestOpcode(WorldPacket &recv_data);
-        void HandleLfgTeleportOpcode(WorldPacket &recv_data);
-        void HandleLfgPartyLockInfoRequestOpcode(WorldPacket &recv_data);
-        // send data
-        void SendLfgUpdatePlayer(LFGUpdateType updateType, LFGType type);
-        void SendLfgUpdateParty(LFGUpdateType updateType, LFGType type);
-        void SendLfgUpdateSearch(bool update);
-        void SendLfgJoinResult(LFGJoinResult checkResult, uint8 checkValue = 0, bool withLockMap = false);
-        void SendLfgPlayerReward(LFGDungeonEntry const* dungeon, const LFGReward* reward, const Quest* qRew, bool isSecond = false);
-        void SendLfgQueueStatus(LFGDungeonEntry const* dungeon, LFGQueueStatus* status);
-        void SendLfgRoleChosen(ObjectGuid guid, uint8 roles);
-        void SendLfgRoleCheckUpdate();
-        void SendLfgBootPlayer();
-        void SendLfgUpdateProposal(LFGProposal* proposal);
-        void SendLfgOfferContinue(LFGDungeonEntry const* dungeon);
-        void SendLfgTeleportError(LFGTeleportError msg);
-        // LFR
-        void HandleLfrSearchOpcode(WorldPacket& recv_data);
-        void HandleLfrLeaveOpcode(WorldPacket& recv_data);
-        // send data
-        void SendLfgUpdateList(uint32 dungeonID);
-        void SendLfgDisabled();
-
-        // BattleField system
-        void SendBfInvitePlayerToWar(ObjectGuid battlefieldGuid, uint32 uiZoneId, uint32 uiTimeToAccept);
-        void SendBfInvitePlayerToQueue(ObjectGuid battlefieldGuid);
-        void SendBfQueueInviteResponse(ObjectGuid battlefieldGuid, ObjectGuid queueGuid, uint32 uiZoneId, bool bCanQueue, bool bFull);
-        void SendBfEntered(ObjectGuid battlefieldGuid);
-        void SendBfLeaveMessage(ObjectGuid battlefieldGuid, BattlefieldLeaveReason reason);
-        void HandleBfQueueInviteResponse(WorldPacket& recv_data);
-        void HandleBfQueueRequest(WorldPacket& recv_data);
-        void HandleBfEntryInviteResponse(WorldPacket& recv_data);
-        void HandleBfExitRequest(WorldPacket& recv_data);
 
         // Arena Team
         void HandleInspectArenaTeamsOpcode(WorldPacket& recv_data);
@@ -846,7 +802,7 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleItemRefundInfoRequest(WorldPacket& recv_data);
         void HandleItemRefund(WorldPacket& recv_data);
 
-        void HandleChannelVoiceOnOpcode(WorldPacket& recv_data);
+        void HandleChannelVoiceOnOpcode(WorldPacket & recv_data);
         void HandleVoiceSessionEnableOpcode(WorldPacket& recv_data);
         void HandleSetActiveVoiceChannel(WorldPacket& recv_data);
         void HandleSetTaxiBenchmarkOpcode(WorldPacket& recv_data);
@@ -898,6 +854,50 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleQueryQuestsCompletedOpcode(WorldPacket& recv_data);
         void HandleQuestPOIQueryOpcode(WorldPacket& recv_data);
 
+        // LFG
+        void HandleLfgJoinOpcode(WorldPacket& recv_data);
+        void HandleLfgLeaveOpcode(WorldPacket& recv_data);
+        void HandleLfgClearOpcode(WorldPacket& recv_data);
+        void HandleSetLfgCommentOpcode(WorldPacket& recv_data);
+        void HandleLfgSetRolesOpcode(WorldPacket& recv_data);
+        void HandleLfgGetStatus(WorldPacket& recv_data);
+        //
+        void HandleLfgSetBootVoteOpcode(WorldPacket &recv_data);
+        void HandleLfgProposalResultOpcode(WorldPacket &recv_data);
+        void HandleLfgPlayerLockInfoRequestOpcode(WorldPacket &recv_data);
+        void HandleLfgTeleportOpcode(WorldPacket &recv_data);
+        void HandleLfgPartyLockInfoRequestOpcode(WorldPacket &recv_data);
+        // send data
+        void SendLfgUpdatePlayer(LFGUpdateType updateType, LFGType type);
+        void SendLfgUpdateParty(LFGUpdateType updateType, LFGType type);
+        void SendLfgUpdateSearch(bool update);
+        void SendLfgJoinResult(LFGJoinResult checkResult, uint8 checkValue = 0, bool withLockMap = false);
+        void SendLfgPlayerReward(LFGDungeonEntry const* dungeon, const LFGReward* reward, const Quest* qRew, bool isSecond = false);
+        void SendLfgQueueStatus(LFGDungeonEntry const* dungeon, LFGQueueStatus* status);
+        void SendLfgRoleChosen(ObjectGuid guid, uint8 roles);
+        void SendLfgRoleCheckUpdate();
+        void SendLfgBootPlayer();
+        void SendLfgUpdateProposal(LFGProposal* proposal);
+        void SendLfgOfferContinue(LFGDungeonEntry const* dungeon);
+        void SendLfgTeleportError(LFGTeleportError msg);
+        // LFR
+        void HandleLfrSearchOpcode(WorldPacket& recv_data);
+        void HandleLfrLeaveOpcode(WorldPacket& recv_data);
+        // send data
+        void SendLfgUpdateList(uint32 dungeonID);
+        void SendLfgDisabled();
+
+        // BattleField system
+        void SendBfInvitePlayerToWar(ObjectGuid battlefieldGuid, uint32 uiZoneId, uint32 uiTimeToAccept);
+        void SendBfInvitePlayerToQueue(ObjectGuid battlefieldGuid);
+        void SendBfQueueInviteResponse(ObjectGuid battlefieldGuid, ObjectGuid queueGuid, uint32 uiZoneId, bool bCanQueue, bool bFull);
+        void SendBfEntered(ObjectGuid battlefieldGuid);
+        void SendBfLeaveMessage(ObjectGuid battlefieldGuid, BattlefieldLeaveReason reason);
+        void HandleBfQueueInviteResponse(WorldPacket& recv_data);
+        void HandleBfQueueRequest(WorldPacket& recv_data);
+        void HandleBfEntryInviteResponse(WorldPacket& recv_data);
+        void HandleBfExitRequest(WorldPacket& recv_data);
+
     private:
         // private trade methods
         void moveItems(Item* myItems[], Item* hisItems[]);
@@ -914,7 +914,7 @@ class MANGOS_DLL_SPEC WorldSession
         void LogUnprocessedTail(WorldPacket* packet);
 
         uint32 m_GUIDLow;                                   // set logged or recently logout player (while m_playerRecentlyLogout set)
-        Player* _player;
+        Player *_player;
         boost::shared_ptr<WorldSocket> m_Socket;
         std::string m_Address;
 

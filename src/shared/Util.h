@@ -1,5 +1,5 @@
 /*
- * This file is part of the CMaNGOS Project. See AUTHORS file for Copyright information
+ * Copyright (C) 2005-2012 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-struct Tokens : public std::vector<char*>
+struct Tokens: public std::vector<char*>
 {
     Tokens(const std::string &src, const char sep, uint32 vectorReserve = 0);
     ~Tokens() { delete[] m_str; }
@@ -37,13 +37,9 @@ void stripLineInvisibleChars(std::string &src);
 std::string secsToTimeString(time_t timeInSecs, bool shortText = false, bool hoursOnly = false);
 uint32 TimeStringToSecs(const std::string& timestring);
 std::string TimeToTimestampStr(time_t t);
-time_t timeBitFieldsToSecs(uint32 packedDate);
 
-inline uint32 secsToTimeBitFields(time_t secs)
-{
-    tm* lt = localtime(&secs);
-    return (lt->tm_year - 100) << 24 | lt->tm_mon  << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min;
-}
+time_t timeBitFieldsToTimeStamp(uint32 bits);
+uint32 secsToTimeBitFields(time_t secs);
 
 /* Return a random number in the range min..max; (max-min) must be smaller than 32768. */
 MANGOS_DLL_SPEC int32 irand(int32 min, int32 max);
@@ -88,7 +84,7 @@ inline void ApplyModUInt32Var(uint32& var, int32 val, bool apply)
 {
     int32 cur = var;
     cur += (apply ? val : -val);
-    if (cur < 0)
+    if(cur < 0)
         cur = 0;
     var = cur;
 }
@@ -96,7 +92,7 @@ inline void ApplyModUInt32Var(uint32& var, int32 val, bool apply)
 inline void ApplyModFloatVar(float& var, float  val, bool apply)
 {
     var += (apply ? val : -val);
-    if (var < 0)
+    if(var < 0)
         var = 0;
 }
 
@@ -122,64 +118,64 @@ bool WStrToUtf8(std::wstring wstr, std::string& utf8str);
 bool WStrToUtf8(wchar_t* wstr, size_t size, std::string& utf8str);
 
 size_t utf8length(std::string& utf8str);                    // set string to "" if invalid utf8 sequence
-void utf8truncate(std::string& utf8str, size_t len);
+void utf8truncate(std::string& utf8str,size_t len);
 
 inline bool isBasicLatinCharacter(wchar_t wchar)
 {
-    if (wchar >= L'a' && wchar <= L'z')                     // LATIN SMALL LETTER A - LATIN SMALL LETTER Z
+    if(wchar >= L'a' && wchar <= L'z')                      // LATIN SMALL LETTER A - LATIN SMALL LETTER Z
         return true;
-    if (wchar >= L'A' && wchar <= L'Z')                     // LATIN CAPITAL LETTER A - LATIN CAPITAL LETTER Z
+    if(wchar >= L'A' && wchar <= L'Z')                      // LATIN CAPITAL LETTER A - LATIN CAPITAL LETTER Z
         return true;
     return false;
 }
 
 inline bool isExtendedLatinCharacter(wchar_t wchar)
 {
-    if (isBasicLatinCharacter(wchar))
+    if(isBasicLatinCharacter(wchar))
         return true;
-    if (wchar >= 0x00C0 && wchar <= 0x00D6)                 // LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER O WITH DIAERESIS
+    if(wchar >= 0x00C0 && wchar <= 0x00D6)                  // LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER O WITH DIAERESIS
         return true;
-    if (wchar >= 0x00D8 && wchar <= 0x00DF)                 // LATIN CAPITAL LETTER O WITH STROKE - LATIN CAPITAL LETTER THORN
+    if(wchar >= 0x00D8 && wchar <= 0x00DF)                  // LATIN CAPITAL LETTER O WITH STROKE - LATIN CAPITAL LETTER THORN
         return true;
-    if (wchar == 0x00DF)                                    // LATIN SMALL LETTER SHARP S
+    if(wchar == 0x00DF)                                     // LATIN SMALL LETTER SHARP S
         return true;
-    if (wchar >= 0x00E0 && wchar <= 0x00F6)                 // LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER O WITH DIAERESIS
+    if(wchar >= 0x00E0 && wchar <= 0x00F6)                  // LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER O WITH DIAERESIS
         return true;
-    if (wchar >= 0x00F8 && wchar <= 0x00FE)                 // LATIN SMALL LETTER O WITH STROKE - LATIN SMALL LETTER THORN
+    if(wchar >= 0x00F8 && wchar <= 0x00FE)                  // LATIN SMALL LETTER O WITH STROKE - LATIN SMALL LETTER THORN
         return true;
-    if (wchar >= 0x0100 && wchar <= 0x012F)                 // LATIN CAPITAL LETTER A WITH MACRON - LATIN SMALL LETTER I WITH OGONEK
+    if(wchar >= 0x0100 && wchar <= 0x012F)                  // LATIN CAPITAL LETTER A WITH MACRON - LATIN SMALL LETTER I WITH OGONEK
         return true;
-    if (wchar == 0x1E9E)                                    // LATIN CAPITAL LETTER SHARP S
+    if(wchar == 0x1E9E)                                     // LATIN CAPITAL LETTER SHARP S
         return true;
     return false;
 }
 
 inline bool isCyrillicCharacter(wchar_t wchar)
 {
-    if (wchar >= 0x0410 && wchar <= 0x044F)                 // CYRILLIC CAPITAL LETTER A - CYRILLIC SMALL LETTER YA
+    if(wchar >= 0x0410 && wchar <= 0x044F)                  // CYRILLIC CAPITAL LETTER A - CYRILLIC SMALL LETTER YA
         return true;
-    if (wchar == 0x0401 || wchar == 0x0451)                 // CYRILLIC CAPITAL LETTER IO, CYRILLIC SMALL LETTER IO
+    if(wchar == 0x0401 || wchar == 0x0451)                  // CYRILLIC CAPITAL LETTER IO, CYRILLIC SMALL LETTER IO
         return true;
     return false;
 }
 
 inline bool isEastAsianCharacter(wchar_t wchar)
 {
-    if (wchar >= 0x1100 && wchar <= 0x11F9)                 // Hangul Jamo
+    if(wchar >= 0x1100 && wchar <= 0x11F9)                  // Hangul Jamo
         return true;
-    if (wchar >= 0x3041 && wchar <= 0x30FF)                 // Hiragana + Katakana
+    if(wchar >= 0x3041 && wchar <= 0x30FF)                  // Hiragana + Katakana
         return true;
-    if (wchar >= 0x3131 && wchar <= 0x318E)                 // Hangul Compatibility Jamo
+    if(wchar >= 0x3131 && wchar <= 0x318E)                  // Hangul Compatibility Jamo
         return true;
-    if (wchar >= 0x31F0 && wchar <= 0x31FF)                 // Katakana Phonetic Ext.
+    if(wchar >= 0x31F0 && wchar <= 0x31FF)                  // Katakana Phonetic Ext.
         return true;
-    if (wchar >= 0x3400 && wchar <= 0x4DB5)                 // CJK Ideographs Ext. A
+    if(wchar >= 0x3400 && wchar <= 0x4DB5)                  // CJK Ideographs Ext. A
         return true;
-    if (wchar >= 0x4E00 && wchar <= 0x9FC3)                 // Unified CJK Ideographs
+    if(wchar >= 0x4E00 && wchar <= 0x9FC3)                  // Unified CJK Ideographs
         return true;
-    if (wchar >= 0xAC00 && wchar <= 0xD7A3)                 // Hangul Syllables
+    if(wchar >= 0xAC00 && wchar <= 0xD7A3)                  // Hangul Syllables
         return true;
-    if (wchar >= 0xFF01 && wchar <= 0xFFEE)                 // Halfwidth forms
+    if(wchar >= 0xFF01 && wchar <= 0xFFEE)                  // Halfwidth forms
         return true;
     return false;
 }
@@ -191,12 +187,12 @@ inline bool isWhiteSpace(char c)
 
 inline bool isNumeric(wchar_t wchar)
 {
-    return (wchar >= L'0' && wchar <= L'9');
+    return (wchar >= L'0' && wchar <=L'9');
 }
 
 inline bool isNumeric(char c)
 {
-    return (c >= '0' && c <= '9');
+    return (c >= '0' && c <='9');
 }
 
 inline bool isNumericOrSpace(wchar_t wchar)
@@ -206,7 +202,7 @@ inline bool isNumericOrSpace(wchar_t wchar)
 
 inline bool isNumeric(char const* str)
 {
-    for (char const* c = str; *c; ++c)
+    for(char const* c = str; *c; ++c)
         if (!isNumeric(*c))
             return false;
 
@@ -215,7 +211,7 @@ inline bool isNumeric(char const* str)
 
 inline bool isNumeric(std::string const& str)
 {
-    for (std::string::const_iterator itr = str.begin(); itr != str.end(); ++itr)
+    for(std::string::const_iterator itr = str.begin(); itr != str.end(); ++itr)
         if (!isNumeric(*itr))
             return false;
 
@@ -224,73 +220,73 @@ inline bool isNumeric(std::string const& str)
 
 inline bool isNumeric(std::wstring const& str)
 {
-    for (std::wstring::const_iterator itr = str.begin(); itr != str.end(); ++itr)
+    for(std::wstring::const_iterator itr = str.begin(); itr != str.end(); ++itr)
         if (!isNumeric(*itr))
             return false;
 
     return true;
 }
 
-inline bool isBasicLatinString(const std::wstring &wstr, bool numericOrSpace)
+inline bool isBasicLatinString(std::wstring wstr, bool numericOrSpace)
 {
-    for (size_t i = 0; i < wstr.size(); ++i)
-        if (!isBasicLatinCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
+    for(size_t i = 0; i < wstr.size(); ++i)
+        if(!isBasicLatinCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
             return false;
     return true;
 }
 
-inline bool isExtendedLatinString(const std::wstring &wstr, bool numericOrSpace)
+inline bool isExtendedLatinString(std::wstring wstr, bool numericOrSpace)
 {
-    for (size_t i = 0; i < wstr.size(); ++i)
-        if (!isExtendedLatinCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
+    for(size_t i = 0; i < wstr.size(); ++i)
+        if(!isExtendedLatinCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
             return false;
     return true;
 }
 
-inline bool isCyrillicString(const std::wstring &wstr, bool numericOrSpace)
+inline bool isCyrillicString(std::wstring wstr, bool numericOrSpace)
 {
-    for (size_t i = 0; i < wstr.size(); ++i)
-        if (!isCyrillicCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
+    for(size_t i = 0; i < wstr.size(); ++i)
+        if(!isCyrillicCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
             return false;
     return true;
 }
 
-inline bool isEastAsianString(const std::wstring &wstr, bool numericOrSpace)
+inline bool isEastAsianString(std::wstring wstr, bool numericOrSpace)
 {
-    for (size_t i = 0; i < wstr.size(); ++i)
-        if (!isEastAsianCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
+    for(size_t i = 0; i < wstr.size(); ++i)
+        if(!isEastAsianCharacter(wstr[i]) && (!numericOrSpace || !isNumericOrSpace(wstr[i])))
             return false;
     return true;
 }
 
 inline void strToUpper(std::string& str)
 {
-    std::transform(str.begin(), str.end(), str.begin(), toupper);
+    std::transform( str.begin(), str.end(), str.begin(), toupper );
 }
 
 inline void strToLower(std::string& str)
 {
-    std::transform(str.begin(), str.end(), str.begin(), tolower);
+    std::transform( str.begin(), str.end(), str.begin(), tolower );
 }
 
 inline wchar_t wcharToUpper(wchar_t wchar)
 {
-    if (wchar >= L'a' && wchar <= L'z')                     // LATIN SMALL LETTER A - LATIN SMALL LETTER Z
-        return wchar_t(uint16(wchar) - 0x0020);
-    if (wchar == 0x00DF)                                    // LATIN SMALL LETTER SHARP S
+    if(wchar >= L'a' && wchar <= L'z')                      // LATIN SMALL LETTER A - LATIN SMALL LETTER Z
+        return wchar_t(uint16(wchar)-0x0020);
+    if(wchar == 0x00DF)                                     // LATIN SMALL LETTER SHARP S
         return wchar_t(0x1E9E);
-    if (wchar >= 0x00E0 && wchar <= 0x00F6)                 // LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER O WITH DIAERESIS
-        return wchar_t(uint16(wchar) - 0x0020);
-    if (wchar >= 0x00F8 && wchar <= 0x00FE)                 // LATIN SMALL LETTER O WITH STROKE - LATIN SMALL LETTER THORN
-        return wchar_t(uint16(wchar) - 0x0020);
-    if (wchar >= 0x0101 && wchar <= 0x012F)                 // LATIN SMALL LETTER A WITH MACRON - LATIN SMALL LETTER I WITH OGONEK (only %2=1)
+    if(wchar >= 0x00E0 && wchar <= 0x00F6)                  // LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER O WITH DIAERESIS
+        return wchar_t(uint16(wchar)-0x0020);
+    if(wchar >= 0x00F8 && wchar <= 0x00FE)                  // LATIN SMALL LETTER O WITH STROKE - LATIN SMALL LETTER THORN
+        return wchar_t(uint16(wchar)-0x0020);
+    if(wchar >= 0x0101 && wchar <= 0x012F)                  // LATIN SMALL LETTER A WITH MACRON - LATIN SMALL LETTER I WITH OGONEK (only %2=1)
     {
-        if (wchar % 2 == 1)
-            return wchar_t(uint16(wchar) - 0x0001);
+        if(wchar % 2 == 1)
+            return wchar_t(uint16(wchar)-0x0001);
     }
-    if (wchar >= 0x0430 && wchar <= 0x044F)                 // CYRILLIC SMALL LETTER A - CYRILLIC SMALL LETTER YA
-        return wchar_t(uint16(wchar) - 0x0020);
-    if (wchar == 0x0451)                                    // CYRILLIC SMALL LETTER IO
+    if(wchar >= 0x0430 && wchar <= 0x044F)                  // CYRILLIC SMALL LETTER A - CYRILLIC SMALL LETTER YA
+        return wchar_t(uint16(wchar)-0x0020);
+    if(wchar == 0x0451)                                     // CYRILLIC SMALL LETTER IO
         return wchar_t(0x0401);
 
     return wchar;
@@ -303,63 +299,66 @@ inline wchar_t wcharToUpperOnlyLatin(wchar_t wchar)
 
 inline wchar_t wcharToLower(wchar_t wchar)
 {
-    if (wchar >= L'A' && wchar <= L'Z')                     // LATIN CAPITAL LETTER A - LATIN CAPITAL LETTER Z
-        return wchar_t(uint16(wchar) + 0x0020);
-    if (wchar >= 0x00C0 && wchar <= 0x00D6)                 // LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER O WITH DIAERESIS
-        return wchar_t(uint16(wchar) + 0x0020);
-    if (wchar >= 0x00D8 && wchar <= 0x00DE)                 // LATIN CAPITAL LETTER O WITH STROKE - LATIN CAPITAL LETTER THORN
-        return wchar_t(uint16(wchar) + 0x0020);
-    if (wchar >= 0x0100 && wchar <= 0x012E)                 // LATIN CAPITAL LETTER A WITH MACRON - LATIN CAPITAL LETTER I WITH OGONEK (only %2=0)
+    if(wchar >= L'A' && wchar <= L'Z')                      // LATIN CAPITAL LETTER A - LATIN CAPITAL LETTER Z
+        return wchar_t(uint16(wchar)+0x0020);
+    if(wchar >= 0x00C0 && wchar <= 0x00D6)                  // LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER O WITH DIAERESIS
+        return wchar_t(uint16(wchar)+0x0020);
+    if(wchar >= 0x00D8 && wchar <= 0x00DE)                  // LATIN CAPITAL LETTER O WITH STROKE - LATIN CAPITAL LETTER THORN
+        return wchar_t(uint16(wchar)+0x0020);
+    if(wchar >= 0x0100 && wchar <= 0x012E)                  // LATIN CAPITAL LETTER A WITH MACRON - LATIN CAPITAL LETTER I WITH OGONEK (only %2=0)
     {
-        if (wchar % 2 == 0)
-            return wchar_t(uint16(wchar) + 0x0001);
+        if(wchar % 2 == 0)
+            return wchar_t(uint16(wchar)+0x0001);
     }
-    if (wchar == 0x1E9E)                                    // LATIN CAPITAL LETTER SHARP S
+    if(wchar == 0x1E9E)                                     // LATIN CAPITAL LETTER SHARP S
         return wchar_t(0x00DF);
-    if (wchar == 0x0401)                                    // CYRILLIC CAPITAL LETTER IO
+    if(wchar == 0x0401)                                     // CYRILLIC CAPITAL LETTER IO
         return wchar_t(0x0451);
-    if (wchar >= 0x0410 && wchar <= 0x042F)                 // CYRILLIC CAPITAL LETTER A - CYRILLIC CAPITAL LETTER YA
-        return wchar_t(uint16(wchar) + 0x0020);
+    if(wchar >= 0x0410 && wchar <= 0x042F)                  // CYRILLIC CAPITAL LETTER A - CYRILLIC CAPITAL LETTER YA
+        return wchar_t(uint16(wchar)+0x0020);
 
     return wchar;
 }
 
 inline void wstrToUpper(std::wstring& str)
 {
-    std::transform(str.begin(), str.end(), str.begin(), wcharToUpper);
+    std::transform( str.begin(), str.end(), str.begin(), wcharToUpper );
 }
 
 inline void wstrToLower(std::wstring& str)
 {
-    std::transform(str.begin(), str.end(), str.begin(), wcharToLower);
+    std::transform( str.begin(), str.end(), str.begin(), wcharToLower );
 }
 
 std::wstring GetMainPartOfName(std::wstring wname, uint32 declension);
 
 bool utf8ToConsole(const std::string& utf8str, std::string& conStr);
-bool consoleToUtf8(const std::string& conStr, std::string& utf8str);
+bool consoleToUtf8(const std::string& conStr,std::string& utf8str);
 bool Utf8FitTo(const std::string& str, std::wstring search);
-void utf8printf(FILE* out, const char* str, ...);
-void vutf8printf(FILE* out, const char* str, va_list* ap);
+void utf8printf(FILE *out, const char *str, ...);
+void vutf8printf(FILE *out, const char *str, va_list* ap);
 
 bool IsIPAddress(char const* ipaddress);
 uint32 CreatePIDFile(const std::string& filename);
 
 void hexEncodeByteArray(uint8* bytes, uint32 arrayLen, std::string& result);
+
 /* Round float value to "pct" accuracy */
 inline float round_pct(float value)
 {
-    return ((value < 0.0f ? ceil(value * 100.0f - 0.5f) : floor(value * 100.0f + 0.5f)) / 100.0f);
+    return ((value < 0.0f ? ceil(value * 100.0f - 0.5f) : floor(value * 100.0f + 0.5f))/100.0f);
 };
 
 // SGI STL select1st implementation
 template<typename T_PAIR>
-struct select1st : public std::unary_function<T_PAIR, typename T_PAIR::first_type>
+struct select1st: public std::unary_function<T_PAIR, typename T_PAIR::first_type>
 {
     const typename T_PAIR::first_type& operator()(const T_PAIR& container) const
     {
         return container.first;
     }
 };
+
+MANGOS_DLL_SPEC float GetExactDistance2d(float x1, float y1, float x2, float y2);
 
 #endif

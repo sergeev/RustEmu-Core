@@ -24,6 +24,7 @@
 #include "SharedDefines.h"
 #include "DBCEnums.h"
 #include "BattleGround.h"
+#include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 
 typedef std::map<uint32, BattleGround*> BattleGroundSet;
