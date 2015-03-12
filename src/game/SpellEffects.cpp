@@ -1546,6 +1546,51 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                     m_caster->CastSpell(unitTarget, spell_list[urand(0, 5)], true);
                     return;
                 }
+                case 18541:  // Ritual of Doom Effect (Summon Doomguard and kill one random member of party)
+                {
+                    Player* pcaster = (Player*)m_caster;
+                    if (!(pcaster->GetGroup()))
+                    return;
+
+                    Group* group = pcaster->GetGroup();
+
+                    if (group->GetMembersCount() < 5) //check count of members in party
+                        return;
+
+                    typedef std::vector<Player*> possibleTargets;
+                    possibleTargets group_list;
+
+                    for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+                    {
+                        Player* member = itr->getSource();
+
+                        if (member->GetGUIDLow() == pcaster->GetGUIDLow()) // i think summoner can't die, right?
+                        {
+                            continue;
+                        }
+
+                        if (member)
+                        {
+                            group_list.push_back(member);
+                        }
+                    }
+                    // Ok if exist players in group, take a random player for death ?? TODO: to know, how player must to die? pet must kill him?
+                    if (!group_list.empty())
+                    {
+                        typedef std::list < std::pair<uint32, ObjectGuid> > SuccessList;
+                        SuccessList success_list;
+                        int32 list_size = group_list.size();
+
+                        pcaster->CastSpell(((Player*)m_caster), 60478, false); // summon doomguard
+
+                        // Random select member of party
+                        Player* randommember = group_list[urand(0, list_size - 1)];
+
+                        pcaster->DealDamage(randommember, randommember->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    }
+
+                    return;
+                }
                 case 19395:                                 // Gordunni Trap
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
@@ -13589,7 +13634,18 @@ void Spell::EffectTransmitted(SpellEffectIndex eff_idx)
     Map *cMap = m_caster->GetMap();
 
     if (goinfo->type == GAMEOBJECT_TYPE_SUMMONING_RITUAL)
+    {        
         loc = m_caster->GetPosition();
+        float dist;
+        if (m_spellInfo->EffectRadiusIndex[eff_idx])
+            dist = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[eff_idx]));
+        else
+            dist = 2.5f;
+
+        loc.x = loc.x + dist * cos(loc.o);
+        loc.y = loc.y + dist * sin(loc.o);
+        loc.z = m_caster->GetTerrain()->GetHeightStatic(loc.x, loc.y, loc.z + 4.0f, true);
+    }
 
     GameObject* pGameObj = new GameObject;
 
