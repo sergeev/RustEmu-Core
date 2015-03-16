@@ -68,7 +68,7 @@ void Corpse::RemoveFromWorld(bool remove)
 
 bool Corpse::Create(uint32 guidlow)
 {
-    Object::_Create(guidlow, 0, HIGHGUID_CORPSE);
+    Object::_Create(ObjectGuid(HIGHGUID_CORPSE, guidlow));
     return true;
 }
 
@@ -157,15 +157,15 @@ bool Corpse::LoadFromDB(uint32 lowguid, Field* fields)
     ////   7     8            9         10         11      12    13     14           15            16              17       18
     //    "time, corpse_type, instance, phaseMask, gender, race, class, playerBytes, playerBytes2, equipmentCache, guildId, playerFlags FROM corpse"
     uint32 playerLowGuid = fields[1].GetUInt32();
-    WorldLocation position(fields[6].GetUInt32(),   //MapId
-        fields[2].GetFloat(),    // x
-        fields[3].GetFloat(),    // y
-        fields[4].GetFloat(),    // z
-        fields[5].GetFloat(),    // orientation
-        fields[10].GetUInt32(),  // PhaseMask
-        fields[9].GetUInt32());  // InstanceId
+    WorldLocation position( fields[6].GetUInt32(),   //MapId
+                            fields[2].GetFloat(),    // x
+                            fields[3].GetFloat(),    // y
+                            fields[4].GetFloat(),    // z
+                            fields[5].GetFloat(),    // orientation
+                            fields[10].GetUInt32(),  // PhaseMask
+                            fields[9].GetUInt32());  // InstanceId
 
-    Object::_Create(lowguid, 0, HIGHGUID_CORPSE);
+    Object::_Create(ObjectGuid(HIGHGUID_CORPSE, lowguid));
 
     m_time = time_t(fields[7].GetUInt64());
     m_type = CorpseType(fields[8].GetUInt32());
@@ -257,7 +257,8 @@ bool Corpse::isVisibleForInState(Player const* u, WorldObject const* viewPoint, 
 
 bool Corpse::IsHostileTo(Unit const* unit) const
 {
-    if (Player* owner = sObjectMgr.GetPlayer(GetOwnerGuid()))
+    Player* owner = sObjectMgr.GetPlayer(GetOwnerGuid());
+    if (owner)
         return owner->IsHostileTo(unit);
     else
         return false;
@@ -265,7 +266,8 @@ bool Corpse::IsHostileTo(Unit const* unit) const
 
 bool Corpse::IsFriendlyTo(Unit const* unit) const
 {
-    if (Player* owner = sObjectMgr.GetPlayer(GetOwnerGuid()))
+    Player* owner = sObjectMgr.GetPlayer(GetOwnerGuid());
+    if (owner)
         return owner->IsFriendlyTo(unit);
     else
         return true;
