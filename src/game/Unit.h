@@ -1901,7 +1901,13 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         uint32 m_invisibilityMask;
 
         ShapeshiftForm GetShapeshiftForm() const { return ShapeshiftForm(GetByteValue(UNIT_FIELD_BYTES_2, 3)); }
-        void  SetShapeshiftForm(ShapeshiftForm form) { SetByteValue(UNIT_FIELD_BYTES_2, 3, form); }
+        void  SetShapeshiftForm(ShapeshiftForm form)
+        {
+            SetByteValue(UNIT_FIELD_BYTES_2, 3, form);
+            // always update this field to prevent problems with shapeshifting
+            if (GetTypeId() == TYPEID_PLAYER)
+                ForceValuesUpdateAtIndex(UNIT_FIELD_BYTES_2);
+        }
 
         bool IsInFeralForm() const
         {
@@ -2241,6 +2247,11 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void AddPetAura(PetAura const* petSpell);
         void RemovePetAura(PetAura const* petSpell);
 
+        // Frozen Mod
+        inline void SetSpoofSamePlayerFaction(bool b) { m_spoofSamePlayerFaction = b; }
+        inline bool IsSpoofSamePlayerFaction(void)    { return m_spoofSamePlayerFaction; }
+        // Frozen Mod
+
         // Movement info
         MovementInfo m_movementInfo;
         MovementInfo const& GetMovementInfo() const { return m_movementInfo; };
@@ -2349,6 +2360,10 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         uint32 m_reactiveTimer[MAX_REACTIVE];
         uint32 m_regenTimer;
         uint32 m_lastManaUseTimer;
+
+        // Frozen Mod
+        bool m_spoofSamePlayerFaction : 1;
+        // Frozen Mod
 
         VehicleKit* m_pVehicleKit;
         VehicleKit* m_pVehicle;

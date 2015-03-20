@@ -220,7 +220,7 @@ FriendInfo SocialMgr::GetFriendInfo(Player* player, ObjectGuid const& friend_gui
 
         pFriend->isAFK() ? friendInfo.Status |= FRIEND_STATUS_AFK : friendInfo.Status &= ~FRIEND_STATUS_AFK;
         pFriend->isDND() ? friendInfo.Status |= FRIEND_STATUS_DND : friendInfo.Status &= ~FRIEND_STATUS_DND;
-        //pFriend->IsReferAFriendLinked(player) ? friendInfo.Status |= FRIEND_STATUS_RAF : friendInfo.Status &= ~FRIEND_STATUS_RAF;
+        pFriend->IsReferAFriendLinked(player) ? friendInfo.Status |= FRIEND_STATUS_RAF : friendInfo.Status &= ~FRIEND_STATUS_RAF;
 
         friendInfo.Area  = pFriend->GetMap() ? pFriend->GetZoneId() : 0;
         friendInfo.Level = pFriend->getLevel();

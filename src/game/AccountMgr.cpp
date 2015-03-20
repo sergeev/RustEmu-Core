@@ -35,6 +35,7 @@ INSTANTIATE_SINGLETON_1(AccountMgr);
 AccountMgr::AccountMgr()
 {
     mPlayerDataCacheMap.clear();
+    mRAFLinkedMap.clear();
 }
 
 AccountMgr::~AccountMgr()
@@ -271,6 +272,87 @@ std::string AccountMgr::CalculateShaPassHash(std::string& name, std::string& pas
     return encoded;
 }
 
+RafLinkedList* AccountMgr::GetRAFAccounts(uint32 accid, bool referred)
+{
+
+    RafLinkedMap::iterator itr = mRAFLinkedMap.find(std::pair<uint32,bool>(accid, referred));
+    if (itr == mRAFLinkedMap.end())
+    {
+        QueryResult* result;
+
+        if (referred)
+            result = LoginDatabase.PQuery("SELECT `friend_id` FROM `account_friends` WHERE `id` = %u AND `expire_date` > NOW() LIMIT %u", accid, sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERERS));
+        else
+            result = LoginDatabase.PQuery("SELECT `id` FROM `account_friends` WHERE `friend_id` = %u AND `expire_date` > NOW() LIMIT %u", accid, sWorld.getConfig(CONFIG_UINT32_RAF_MAXREFERALS));
+
+        RafLinkedList acclist;
+
+        if (result)
+        {
+            do
+            {
+                Field* fields = result->Fetch();
+                uint32 refaccid = fields[0].GetUInt32();
+                acclist.push_back(refaccid);
+            }
+            while (result->NextRow());
+            delete result;
+        }
+        mRAFLinkedMap.insert(RafLinkedMap::value_type(std::pair<uint32,bool>(accid, referred), acclist));
+        itr = mRAFLinkedMap.find(std::pair<uint32,bool>(accid, referred));
+    }
+
+    return &itr->second;
+}
+
+AccountOpResult AccountMgr::AddRAFLink(uint32 accid, uint32 friendid)
+{
+    if (!LoginDatabase.PExecute("INSERT INTO `account_friends`  (`id`, `friend_id`, `expire_date`) VALUES (%u,%u,NOW() + INTERVAL 3 MONTH)", accid, friendid))
+        return AOR_DB_INTERNAL_ERROR;
+
+    RafLinkedList* referred = GetRAFAccounts(accid, true);
+    if (referred)
+        referred->push_back(friendid);
+
+    RafLinkedList* referal = GetRAFAccounts(friendid, false);
+    if (referal)
+        referal->push_back(accid);
+
+    return AOR_OK;
+}
+
+AccountOpResult AccountMgr::DeleteRAFLink(uint32 accid, uint32 friendid)
+{
+    if (!LoginDatabase.PExecute("DELETE FROM `account_friends` WHERE `id` = %u AND `friend_id` = %u", accid, friendid))
+        return AOR_DB_INTERNAL_ERROR;
+
+    RafLinkedList* referred = GetRAFAccounts(accid, true);
+    if (referred)
+    {
+        for (RafLinkedList::iterator itr1 = referred->begin(); itr1 != referred->end();)
+        {
+            if (*itr1 == accid)
+                itr1 = referred->erase(itr1);
+            else
+                ++itr1;
+        }
+    }
+
+    RafLinkedList* referal = GetRAFAccounts(friendid, false);
+    if (referal)
+    {
+        for (RafLinkedList::iterator itr1 = referal->begin(); itr1 != referal->end();)
+        {
+            if (*itr1 == friendid)
+                itr1 = referal->erase(itr1);
+            else
+                ++itr1;
+        }
+    }
+
+    return AOR_OK;
+}
+
 // name must be checked to correctness (if received) before call this function
 ObjectGuid AccountMgr::GetPlayerGuidByName(std::string name)
 {
@@ -340,7 +422,14 @@ void AccountMgr::ClearPlayerDataCache(ObjectGuid guid)
 
         PlayerDataCacheMap::iterator itr = mPlayerDataCacheMap.find(guid);
         if (itr != mPlayerDataCacheMap.end())
-            mPlayerDataCacheMap.erase(itr);        
+            mPlayerDataCacheMap.erase(itr);
+
+        RafLinkedMap::iterator itr1 = mRAFLinkedMap.find(std::pair<uint32,bool>(accId, true));
+        if (itr1 != mRAFLinkedMap.end())
+            mRAFLinkedMap.erase(itr1);
+        itr1 = mRAFLinkedMap.find(std::pair<uint32,bool>(accId, false));
+        if (itr1 != mRAFLinkedMap.end())
+            mRAFLinkedMap.erase(itr1);
     }
 
 }

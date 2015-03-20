@@ -75,7 +75,7 @@ bool LoginQueryHolder::Initialize()
         "position_x, position_y, position_z, map, orientation, taximask, cinematic, totaltime, leveltime, rest_bonus, logout_time, is_logout_resting, resettalents_cost,"
         "resettalents_time, trans_x, trans_y, trans_z, trans_o, transguid, extra_flags, stable_slots, at_login, zone, online, death_expire_time, taxi_path, dungeon_difficulty,"
         "arenaPoints, totalHonorPoints, todayHonorPoints, yesterdayHonorPoints, totalKills, todayKills, yesterdayKills, chosenTitle, knownCurrencies, watchedFaction, drunk,"
-        "health, power1, power2, power3, power4, power5, power6, power7, specCount, activeSpec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars FROM characters WHERE guid = '%u'", m_guid.GetCounter());
+        "health, power1, power2, power3, power4, power5, power6, power7, specCount, activeSpec, exploredZones, equipmentCache, ammoId, knownTitles, actionBars, grantableLevels FROM characters WHERE guid = '%u'", m_guid.GetCounter());
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADGROUP,           "SELECT groupId FROM group_member WHERE memberGuid ='%u'", m_guid.GetCounter());
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADBOUNDINSTANCES,  "SELECT id, permanent, map, difficulty, extend, resettime FROM character_instance LEFT JOIN instance ON instance = id WHERE guid = '%u'", m_guid.GetCounter());
     res &= SetPQuery(PLAYER_LOGIN_QUERY_LOADAURAS,           "SELECT caster_guid,item_guid,spell,stackcount,remaincharges,basepoints0,basepoints1,basepoints2,periodictime0,periodictime1,periodictime2,maxduration,remaintime,effIndexMask FROM character_aura WHERE guid = '%u'", m_guid.GetCounter());
@@ -1172,6 +1172,290 @@ void WorldSession::HandleRemoveGlyphOpcode(WorldPacket& recv_data)
         _player->SetGlyph(slot, 0);
         _player->SendTalentsInfoData(false);
     }
+}
+
+void WorldSession::HandleCharFactionOrRaceChangeOpcode(WorldPacket& recv_data)
+{
+    ObjectGuid guid;
+    std::string newname;
+    uint8 gender, skin, face, hairStyle, hairColor, facialHair, newRace;
+    recv_data >> guid;
+    recv_data >> newname;
+    recv_data >> gender >> skin >> hairColor >> hairStyle >> facialHair >> face >> newRace;
+
+    QueryResult* result = CharacterDatabase.PQuery("SELECT at_login, name, race FROM characters WHERE guid ='%u'", guid.GetCounter());
+    if (!result)
+    {
+        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+        data << uint8(CHAR_CREATE_ERROR);
+        SendPacket(&data);
+        return;
+    }
+
+    Field* fields = result->Fetch();
+    uint32 at_loginFlags = fields[0].GetUInt32();
+    std::string oldname = fields[1].GetCppString();
+    uint8 oldRace = fields[2].GetUInt8();
+    AtLoginFlags used_loginFlag = recv_data.GetOpcode() == CMSG_CHAR_FACTION_CHANGE ? AT_LOGIN_CHANGE_FACTION : AT_LOGIN_CHANGE_RACE;
+    delete result;
+
+    if (!(at_loginFlags & used_loginFlag))
+    {
+        WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+        data << uint8(CHAR_CREATE_ERROR);
+        SendPacket(&data);
+        return;
+    }
+
+    if (sWorld.getConfig(CONFIG_BOOL_FACTION_AND_RACE_CHANGE_WITHOUT_RENAMING))
+        newname = oldname;
+    else
+    {
+        // prevent character rename to invalid name
+        if (!normalizePlayerName(newname))
+        {
+            WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+            data << uint8(CHAR_NAME_NO_NAME);
+            SendPacket(&data);
+            return;
+        }
+
+        uint8 res = ObjectMgr::CheckPlayerName(newname,true);
+        if (res != CHAR_NAME_SUCCESS)
+        {
+            WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+            data << uint8(res);
+            SendPacket(&data);
+            return;
+        }
+
+        // check name limitations
+        if (GetSecurity() == SEC_PLAYER && sObjectMgr.IsReservedName(newname))
+        {
+            WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+            data << uint8(CHAR_NAME_RESERVED);
+            SendPacket(&data);
+            return;
+        }
+
+        // character with this name already exist
+        if (sAccountMgr.GetPlayerGuidByName(newname))
+        {
+            ObjectGuid newguid = sAccountMgr.GetPlayerGuidByName(newname);
+            if (newguid != guid)
+            {
+                WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1);
+                data << uint8(CHAR_CREATE_NAME_IN_USE);
+                SendPacket(&data);
+                return;
+            }
+        }
+    }
+
+    // The player was uninvited already on logout so just remove from group
+    // immediately remove from group before start change process
+    QueryResult* resultGroup = CharacterDatabase.PQuery("SELECT groupId FROM group_member WHERE memberGuid='%u'", guid.GetCounter());
+    if (resultGroup)
+    {
+        uint32 groupId = (*resultGroup)[0].GetUInt32();
+        delete resultGroup;
+
+        ObjectGuid groupGuid = ObjectGuid(HIGHGUID_GROUP, groupId);
+        Group* group = sObjectMgr.GetGroup(groupGuid);
+
+        if (group)
+            group->RemoveMember(guid, 0);
+    }
+
+    CharacterDatabase.escape_string(newname);
+    Player::Customize(guid, gender, skin, face, hairStyle, hairColor, facialHair);
+    CharacterDatabase.BeginTransaction();
+    CharacterDatabase.PExecute("UPDATE characters SET name = '%s', race = '%u', at_login = at_login & ~ %u WHERE guid ='%u'", newname.c_str(), newRace, uint32(used_loginFlag), guid.GetCounter());
+    CharacterDatabase.PExecute("DELETE FROM character_declinedname WHERE guid ='%u'", guid.GetCounter());
+    uint32 deletedGuild = 0;
+
+    // Search old faction.
+    PvpTeamIndex oldTeam = ((1 << (oldRace - 1)) & RACEMASK_ALLIANCE) ? TEAM_INDEX_ALLIANCE : TEAM_INDEX_HORDE;
+
+    // Search each faction is targeted
+    PvpTeamIndex newTeam = ((1 << (newRace - 1)) & RACEMASK_ALLIANCE) ? TEAM_INDEX_ALLIANCE : TEAM_INDEX_HORDE;
+
+    if (used_loginFlag == AT_LOGIN_CHANGE_FACTION && newTeam != oldTeam)
+    {
+        // Delete all Flypaths
+        CharacterDatabase.PExecute("UPDATE characters SET taxi_path = '' WHERE guid ='%u'", guid.GetCounter());
+        // Delete all current quests
+        CharacterDatabase.PExecute("DELETE FROM `character_queststatus` WHERE `status` = 3 AND guid ='%u'", guid.GetCounter());
+        // Reset guild
+        if (uint32 guildId = Player::GetGuildIdFromDB(guid))
+        {
+            Guild* guild = sGuildMgr.GetGuildById(guildId);
+            if (guild)
+                if (guild->DelMember(guid))
+                    deletedGuild = guildId;
+        }
+
+        // Delete Friend List
+        // Cleanup friends for online players
+        if (QueryResult* resultFriend = CharacterDatabase.PQuery("SELECT DISTINCT guid FROM character_social WHERE friend = '%u'", guid.GetCounter()))
+        {
+            do
+            {
+                Field* fieldsFriend = resultFriend->Fetch();
+                if (Player* sFriend = sObjectAccessor.FindPlayer(ObjectGuid(HIGHGUID_PLAYER, fieldsFriend[0].GetUInt32())))
+                {
+                    if (sFriend->IsInWorld())
+                    {
+                        sFriend->GetSocial()->RemoveFromSocialList(guid, false, true);
+                        sSocialMgr.SendFriendStatus(sFriend, FRIEND_REMOVED, guid, false);
+                    }
+                }
+            }
+            while (resultFriend->NextRow());
+            delete resultFriend;
+        }
+        // Cleanup friends for offline players
+        CharacterDatabase.PExecute("DELETE FROM character_social WHERE guid = '%u' OR friend='%u'", guid.GetCounter(), guid.GetCounter());
+        // Leave Arena Teams
+        Player::LeaveAllArenaTeams(guid);
+        // Remove signs from petitions (also remove petitions if owner)
+        // NOTE: This is the same as call Player::RemovePetitionsAndSigns(guid, 10); but this can't be called in a Transaction because it initialize another one!!
+        if (QueryResult *result = CharacterDatabase.PQuery("SELECT ownerguid,petitionguid FROM petition_sign WHERE playerguid = '%u'", guid.GetCounter()))
+        {
+            do // this part effectively does nothing, since the deletion / modification only takes place _after_ the PetitionQuery. Though I don't know if the result remains intact if I execute the delete query beforehand.
+            { // and SendPetitionQueryOpcode reads data from the DB
+                Field *fields = result->Fetch();
+                ObjectGuid ownerguid = ObjectGuid(HIGHGUID_PLAYER, fields[0].GetUInt32());
+                ObjectGuid petitionguid = ObjectGuid(HIGHGUID_ITEM, fields[1].GetUInt32());
+
+                // send update if charter owner in game
+                Player* owner = sObjectMgr.GetPlayer(ownerguid);
+                if (owner)
+                    owner->GetSession()->SendPetitionQueryOpcode(petitionguid);
+            }
+            while (result->NextRow());
+
+            delete result;
+
+            CharacterDatabase.PExecute("DELETE FROM petition_sign WHERE playerguid = '%u'", guid.GetCounter());
+        }
+        CharacterDatabase.PExecute("DELETE FROM petition WHERE ownerguid = '%u'", guid.GetCounter());
+        CharacterDatabase.PExecute("DELETE FROM petition_sign WHERE ownerguid = '%u'", guid.GetCounter());
+        // Reset Language (will be added automatically after faction change)
+        CharacterDatabase.PExecute("DELETE FROM `character_spell` WHERE `spell` IN (668, 7340, 671, 672, 814, 29932, 17737, 816, 7341, 669, 813, 670) AND guid ='%u'", guid.GetCounter());
+
+        // Reset homebind
+        CharacterDatabase.PExecute("DELETE FROM `character_homebind` WHERE guid = '%u'", guid.GetCounter());
+        if (newTeam == TEAM_INDEX_ALLIANCE)
+            CharacterDatabase.PExecute("INSERT INTO `character_homebind` VALUES ('%u','0','1519','-8867.68','673.373','97.9034')", guid.GetCounter());
+        else
+            CharacterDatabase.PExecute("INSERT INTO `character_homebind` VALUES ('%u','1','1637','1633.33','-4439.11','15.7588')", guid.GetCounter());
+
+        // Achievement conversion
+        if (QueryResult *result2 = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_achievements"))
+        {
+            do
+            {
+                Field *fields2 = result2->Fetch();
+                uint32 achiev_alliance = fields2[0].GetUInt32();
+                uint32 achiev_horde = fields2[1].GetUInt32();
+                CharacterDatabase.PExecute("UPDATE IGNORE `character_achievement` set achievement = '%u' where achievement = '%u' AND guid = '%u'",
+                    newTeam == TEAM_INDEX_ALLIANCE ? achiev_alliance : achiev_horde, newTeam == TEAM_INDEX_ALLIANCE ? achiev_horde : achiev_alliance, guid.GetCounter());
+            }
+            while (result2->NextRow());
+        }
+
+        // Item conversion
+        if (QueryResult *result2 = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_items"))
+        {
+            do
+            {
+                Field *fields2 = result2->Fetch();
+                uint32 item_alliance = fields2[0].GetUInt32();
+                uint32 item_horde = fields2[1].GetUInt32();
+                CharacterDatabase.PExecute("UPDATE IGNORE `character_inventory` set item = '%u' where item = '%u' AND guid = '%u'",
+                    newTeam == TEAM_INDEX_ALLIANCE ? item_alliance : item_horde, newTeam == TEAM_INDEX_ALLIANCE ? item_horde : item_alliance, guid.GetCounter());
+
+                CharacterDatabase.PExecute("UPDATE IGNORE `item_instance` SET `data`=CONCAT(CAST(SUBSTRING_INDEX(`data`, ' ', 3) AS CHAR), ' ', '%u', ' ', CAST(SUBSTRING_INDEX(TRIM(`data`), ' ', (4-64))AS CHAR)) WHERE CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(`data`, ' ', 4), ' ', '-1') AS UNSIGNED) = '%u' AND owner_guid = '%u'",
+                        newTeam == TEAM_INDEX_ALLIANCE ? item_alliance : item_horde, newTeam == TEAM_INDEX_ALLIANCE ? item_horde : item_alliance, guid.GetCounter());
+            }
+            while (result2->NextRow());
+        }
+
+        // Spell conversion
+        if (QueryResult *result2 = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_spells"))
+        {
+            do
+            {
+                Field *fields2 = result2->Fetch();
+                uint32 spell_alliance = fields2[0].GetUInt32();
+                uint32 spell_horde = fields2[1].GetUInt32();
+                CharacterDatabase.PExecute("UPDATE IGNORE `character_spell` set spell = '%u' where spell = '%u' AND guid = '%u'",
+                    newTeam == TEAM_INDEX_ALLIANCE ? spell_alliance : spell_horde, newTeam == TEAM_INDEX_ALLIANCE ? spell_horde : spell_alliance, guid.GetCounter());
+            }
+            while (result2->NextRow());
+        }
+
+        // Reputation conversion
+        if (QueryResult *result2 = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_reputations"))
+        {
+            do
+            {
+                Field *fields2 = result2->Fetch();
+                uint32 reputation_alliance = fields2[0].GetUInt32();
+                uint32 reputation_horde = fields2[1].GetUInt32();
+                CharacterDatabase.PExecute("DELETE FROM character_reputation WHERE faction = '%u' AND guid = '%u'", newTeam == TEAM_INDEX_ALLIANCE ? reputation_alliance : reputation_horde, guid.GetCounter());
+                CharacterDatabase.PExecute("UPDATE IGNORE `character_reputation` set faction = '%u' where faction = '%u' AND guid = '%u'",
+                    newTeam == TEAM_INDEX_ALLIANCE ? reputation_alliance : reputation_horde, newTeam == TEAM_INDEX_ALLIANCE ? reputation_horde : reputation_alliance, guid.GetCounter());
+            }
+            while (result2->NextRow());
+        }
+
+        // Quest conversion
+        if (QueryResult *result2 = WorldDatabase.Query("SELECT alliance_id, horde_id FROM player_factionchange_quests"))
+        {
+            do
+            {
+                Field *fields2 = result2->Fetch();
+                uint32 quest_alliance = fields2[0].GetUInt32();
+                uint32 quest_horde = fields2[1].GetUInt32();
+                CharacterDatabase.PExecute("UPDATE IGNORE `character_queststatus` SET quest = '%u' WHERE quest = '%u' AND guid = '%u'",
+                    newTeam == TEAM_INDEX_ALLIANCE ? quest_alliance : quest_horde, newTeam == TEAM_INDEX_ALLIANCE ? quest_horde : quest_alliance, guid.GetCounter());
+            }
+            while (result2->NextRow());
+        }
+    }
+    CharacterDatabase.CommitTransaction();
+
+    if (deletedGuild)
+    {
+        Guild* guild = sGuildMgr.GetGuildById(deletedGuild);
+        if (guild)
+        {
+            guild->Disband();
+            delete guild;
+        }
+    }
+
+    std::string IP_str = GetRemoteAddress();
+    sLog.outChar("Account: %d (IP: %s), Character guid: %u Change Race/Faction to: %s", GetAccountId(), IP_str.c_str(), guid.GetCounter(), newname.c_str());
+
+    sWorld.InvalidatePlayer(guid);
+
+    WorldPacket data(SMSG_CHAR_FACTION_CHANGE, 1 + 8 + (newname.size() + 1) + 7);
+    data << uint8(RESPONSE_SUCCESS);
+    data << guid;
+    data << newname;
+    data << uint8(gender);
+    data << uint8(skin);
+    data << uint8(face);
+    data << uint8(hairStyle);
+    data << uint8(hairColor);
+    data << uint8(facialHair);
+    data << uint8(newRace);
+    SendPacket(&data);
+
+    sAccountMgr.ClearPlayerDataCache(guid);
 }
 
 void WorldSession::HandleCharCustomizeOpcode(WorldPacket& recv_data)

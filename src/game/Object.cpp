@@ -29,6 +29,7 @@
 #include "ObjectGuid.h"
 #include "UpdateData.h"
 #include "UpdateMask.h"
+#include "Util.h"
 #include "MapManager.h"
 #include "Log.h"
 #include "Transports.h"
@@ -2149,6 +2150,17 @@ bool WorldObject::IsControlledByPlayer() const
             return false;
     }
 }
+
+// Frozen Mod
+void Object::ForceValuesUpdateAtIndex(uint16 index)
+{
+    MANGOS_ASSERT(index < m_valuesCount || PrintIndexError(index, true));
+
+    m_changedValues[index] = true; // makes server think the field changed
+
+    MarkForClientUpdate();
+}
+// Frozen Mod
 
 bool WorldObject::PrintCoordinatesError(float x, float y, float z, char const* descr) const
 {

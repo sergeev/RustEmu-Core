@@ -294,6 +294,10 @@ Unit::Unit() :
     m_comboPoints = 0;
 
     m_originalFaction = 0;
+
+    // Frozen Mod
+    m_spoofSamePlayerFaction = false;
+    // Frozen Mod
 }
 
 Unit::~Unit()

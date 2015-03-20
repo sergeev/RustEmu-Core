@@ -23,6 +23,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "World.h"
+#include "AccountMgr.h"
 #include "ObjectMgr.h"
 #include "Player.h"
 #include "Group.h"
@@ -221,10 +222,10 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& recv_data)
         if (!group->Create(group->GetLeaderGuid(), group->GetLeaderName()))
             return;
 
-        DEBUG_LOG("WorldSession::HandleGroupAcceptOpcode %s accept group invite, %s created.",GetPlayer()->GetObjectGuid().GetString().c_str(), group->GetObjectGuid().GetString().c_str());
+        DEBUG_LOG("WorldSession::HandleGroupAcceptOpcode %s accept group invite, %s created.", GetPlayer()->GetObjectGuid().GetString().c_str(), group->GetObjectGuid().GetString().c_str());
     }
     else
-        DEBUG_LOG("WorldSession::HandleGroupAcceptOpcode %s accept %s invite.",GetPlayer()->GetObjectGuid().GetString().c_str(), group->GetObjectGuid().GetString().c_str());
+        DEBUG_LOG("WorldSession::HandleGroupAcceptOpcode %s accept %s invite.", GetPlayer()->GetObjectGuid().GetString().c_str(), group->GetObjectGuid().GetString().c_str());
 
     // Need to recheck groups, when we doing multi invites in one time, or we will create more then 1 group.
     Group* checkgroup = sObjectMgr.GetGroup(leader->GetGroupGuid());
@@ -244,6 +245,10 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& recv_data)
     // everything is fine, do it, PLAYER'S GROUP IS SET IN ADDMEMBER!!!
     if (!group->AddMember(GetPlayer()->GetObjectGuid(), GetPlayer()->GetName()))
         return;
+
+    // Frozen Mod
+    group->BroadcastGroupUpdate();
+    // Frozen Mod
 }
 
 void WorldSession::HandleGroupDeclineOpcode(WorldPacket& /*recv_data*/ )
@@ -881,7 +886,7 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket& recv_data)
     if (player->GetVehicle())
         updateFlags |= GROUP_UPDATE_FLAG_VEHICLE_SEAT;
 
-    uint16 playerStatus = MEMBER_STATUS_ONLINE;
+    uint16 playerStatus = player->IsReferAFriendLinked(player) ? (MEMBER_STATUS_ONLINE | MEMBER_STATUS_RAF) : MEMBER_STATUS_ONLINE;
 
     if (player->IsPvP())
         playerStatus |= MEMBER_STATUS_PVP;

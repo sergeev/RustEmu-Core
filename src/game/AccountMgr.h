@@ -50,6 +50,16 @@ struct PlayerDataCache
 #define MAX_ACCOUNT_STR 16
 
 typedef UNORDERED_MAP<ObjectGuid, PlayerDataCache> PlayerDataCacheMap;
+typedef std::vector<uint32> RafLinkedList;
+typedef std::pair<uint32, bool> RafLinkedPair;
+typedef UNORDERED_MAP<RafLinkedPair, RafLinkedList > RafLinkedMap;
+
+HASH_NAMESPACE_START
+template<> class hash <RafLinkedPair>
+{
+    public: size_t operator()(const RafLinkedPair& __x) const { return (size_t)(uint32(__x.second) << 31) | (__x.first); }
+};
+HASH_NAMESPACE_END
 
 class AccountMgr : public MaNGOS::Singleton<AccountMgr, MaNGOS::ClassLevelLockable<AccountMgr, boost::mutex> >
 {
@@ -78,6 +88,7 @@ class AccountMgr : public MaNGOS::Singleton<AccountMgr, MaNGOS::ClassLevelLockab
 
         uint32 GetCharactersCount(uint32 acc_id, bool full);
         void UpdateCharactersCount(uint32 acc_id, uint32 realm_id);
+
         void LockAccount(uint32 acc_id, bool lock);
 
         PlayerDataCache const* GetPlayerDataCache(ObjectGuid guid, bool force = true);
@@ -85,10 +96,15 @@ class AccountMgr : public MaNGOS::Singleton<AccountMgr, MaNGOS::ClassLevelLockab
         void  ClearPlayerDataCache(ObjectGuid guid);
         void  MakePlayerDataCache(Player* player);
 
+        RafLinkedList* GetRAFAccounts(uint32 accid, bool referred = true);
+        AccountOpResult AddRAFLink(uint32 accid, uint32 friendid);
+        AccountOpResult DeleteRAFLink(uint32 accid, uint32 friendid);
+
         static bool normalizeString(std::string& utf8str);
 
     private:
         PlayerDataCacheMap  mPlayerDataCacheMap;
+        RafLinkedMap        mRAFLinkedMap;
 };
 
 #define sAccountMgr MaNGOS::Singleton<AccountMgr>::Instance()

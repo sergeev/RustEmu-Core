@@ -29,6 +29,7 @@
 #include "WorldObjectEvents.h"
 #include "WorldLocation.h"
 #include "LootMgr.h"
+#include "Util.h"
 
 #include <set>
 #include <string>
@@ -245,8 +246,9 @@ class MANGOS_DLL_SPEC Object
 
         void ApplyPercentModFloatValue(uint16 index, float val, bool apply)
         {
-            val = val != -100.0f ? val : -99.9f;
-            SetFloatValue(index, GetFloatValue(index) * (apply ? (100.0f + val) / 100.0f : 100.0f / (100.0f + val)));
+            float var = GetFloatValue(index);
+            ApplyPercentModFloatVar(var, val, apply);
+            SetFloatValue(index, var);
         }
 
         void SetFlag( uint16 index, uint32 newFlag );
@@ -366,6 +368,10 @@ class MANGOS_DLL_SPEC Object
         bool LoadValues(const char* data);
 
         uint16 GetValuesCount() const { return m_valuesCount; }
+
+        // Frozen Mod
+        void ForceValuesUpdateAtIndex(uint16);
+        // Frozen Mod
 
         virtual bool HasQuest(uint32 /* quest_id */) const { return false; }
         virtual bool HasInvolvedQuest(uint32 /* quest_id */) const { return false; }

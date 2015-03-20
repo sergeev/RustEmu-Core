@@ -7188,6 +7188,116 @@ bool ChatHandler::HandleModifyGenderCommand(char* args)
     return true;
 }
 
+// Set friends for account
+bool ChatHandler::HandleAccountFriendAddCommand(char* args)
+{
+    ///- Get the command line arguments
+    std::string account_name;
+    uint32 targetAccountId = ExtractAccountId(&args, &account_name);
+
+    if (!targetAccountId)
+        return false;
+
+    std::string account_friend_name;
+    uint32 friendAccountId = ExtractAccountId(&args, &account_friend_name);
+
+    if (!friendAccountId)
+        return false;
+
+    AccountOpResult result = sAccountMgr.AddRAFLink(targetAccountId, friendAccountId);
+
+    switch (result)
+    {
+    case AOR_OK:
+        SendSysMessage(LANG_COMMAND_FRIEND);
+        PSendSysMessage("Added RAF link from referral account %u (%s) to referred %u (%s)", targetAccountId, account_name.c_str(), friendAccountId, account_friend_name.c_str());
+        break;
+    default:
+        SendSysMessage(LANG_COMMAND_FRIEND_ERROR);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    return true;
+}
+
+// Delete friends for account
+bool ChatHandler::HandleAccountFriendDeleteCommand(char* args)
+{
+    ///- Get the command line arguments
+    std::string account_name;
+    uint32 targetAccountId = ExtractAccountId(&args, &account_name);
+
+    if (!targetAccountId)
+        return false;
+
+    std::string account_friend_name;
+    uint32 friendAccountId = ExtractAccountId(&args, &account_friend_name);
+
+    if (!friendAccountId)
+        return false;
+
+    AccountOpResult result = sAccountMgr.DeleteRAFLink(targetAccountId, friendAccountId);
+
+    switch (result)
+    {
+    case AOR_OK:
+        SendSysMessage(LANG_COMMAND_FRIEND);
+        PSendSysMessage("Deleted RAF link from referral account %u (%s) to referred %u (%s)", targetAccountId, account_name.c_str(), friendAccountId, account_friend_name.c_str());
+        break;
+    default:
+        SendSysMessage(LANG_COMMAND_FRIEND_ERROR);
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    return true;
+}
+
+// List friends for account
+bool ChatHandler::HandleAccountFriendListCommand(char* args)
+{
+    ///- Get the command line arguments
+    std::string account_name;
+    uint32 targetAccountId = ExtractAccountId(&args, &account_name);
+
+    if (!targetAccountId)
+        return false;
+
+    RafLinkedList const* referredAccounts = sAccountMgr.GetRAFAccounts(targetAccountId, true);
+    RafLinkedList const* referalAccounts = sAccountMgr.GetRAFAccounts(targetAccountId, false);
+
+    if (!referredAccounts || !referalAccounts)
+    {
+        PSendSysMessage("Account %u (%s) not has RAF links!", targetAccountId, account_name.c_str());
+        return true;
+    }
+
+    if (!referredAccounts->empty())
+    {
+        PSendSysMessage("Account %u (%s) has " SIZEFMTD " referred accounts:", targetAccountId, account_name.c_str(), referredAccounts->size());
+        for (RafLinkedList::const_iterator itr = referredAccounts->begin(); itr != referredAccounts->end(); ++itr)
+        {
+            uint32 accId = *itr;
+            std::string acc_name;
+            sAccountMgr.GetName(accId, acc_name);
+            PSendSysMessage("        Referred account %u (%s)", accId, acc_name.c_str());
+        }
+    }
+    if (!referalAccounts->empty())
+    {
+        PSendSysMessage("Account %u (%s) has " SIZEFMTD " referral accounts:", targetAccountId, account_name.c_str(), referalAccounts->size());
+        for (RafLinkedList::const_iterator itr = referalAccounts->begin(); itr != referalAccounts->end(); ++itr)
+        {
+            uint32 accId = *itr;
+            std::string acc_name;
+            sAccountMgr.GetName(accId, acc_name);
+            PSendSysMessage("        Referal account %u (%s)", accId, acc_name.c_str());
+        }
+    }
+    return true;
+}
+
 bool ChatHandler::HandleShowGearScoreCommand(char* args)
 {
     Player* player = getSelectedPlayer();
