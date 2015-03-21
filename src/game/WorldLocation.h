@@ -142,8 +142,8 @@ struct MANGOS_DLL_SPEC WorldLocation : public Position
     }
 
     // Returns and set current ACTIVE position!
-    Position const& value() { return GetPosition(); };
-    Position const& GetPosition() { return GetTransportGuid().IsEmpty() ? ((Position)*this) : GetTransportPos(); };
+    Position value() { return GetPosition(); };
+    Position GetPosition() { return GetTransportGuid().IsEmpty() ? ((Position)*this) : GetTransportPos(); };
     void SetPosition(Position const& pos);
 
     uint32 GetZoneId() const;

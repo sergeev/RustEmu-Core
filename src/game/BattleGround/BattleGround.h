@@ -342,7 +342,7 @@ class BattleGround
 
         // Method for change BG creatures faction after spawn (by new event)
         virtual BattleGroundSpawnFactions GetSpawnFactionFor(ObjectGuid const& guid) const;
-        virtual Team GetSpawnTeamFor(ObjectGuid const& guid) const { return TEAM_NONE; }
+        virtual Team GetSpawnTeamFor(ObjectGuid const& /*guid*/) const { return TEAM_NONE; }
 
         // Set methods:
         void SetName(char const* Name)      { m_Name = Name; }

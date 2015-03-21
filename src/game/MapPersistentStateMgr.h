@@ -118,10 +118,10 @@ class MapPersistentState
                 UnloadIfEmpty();
         }
 
-        virtual void AddToBindList(ObjectGuid const& guid) {};
-        virtual void RemoveFromBindList(ObjectGuid const& guid) {};
+        virtual void AddToBindList(ObjectGuid const& /*guid*/) {};
+        virtual void RemoveFromBindList(ObjectGuid const& /*guid*/) {};
 
-        bool const& IsRequiresRemove() const { return m_needRemove; };
+        bool IsRequiresRemove() const { return m_needRemove; };
 
         time_t GetCreatureRespawnTime(uint32 loguid) const
         {

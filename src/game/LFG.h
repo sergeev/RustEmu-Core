@@ -252,7 +252,7 @@ struct LFGProposal
     void Start();
 
     void SetDeleted() { m_bDeleted = true; };
-    bool const IsDeleted() const { return m_bDeleted; };
+    bool IsDeleted() const { return m_bDeleted; };
 
     bool IsExpired() { return ( m_cancelTime > 0 && m_cancelTime < time_t(time(NULL)));};
 
@@ -296,7 +296,7 @@ public:
 
 protected:
     LFGStateStructure(ObjectGuid const& guid)
-        : m_guid(guid), m_type(LFG_TYPE_NONE), m_uiFlags(0), m_bUpdate(false), m_state(LFG_STATE_NONE), m_proposal(NULL) {};
+          : m_type(LFG_TYPE_NONE), m_uiFlags(0), m_bUpdate(false), m_state(LFG_STATE_NONE), m_proposal(NULL), m_guid(guid) {};
     LFGType          m_type;
     uint32           m_uiFlags;
     bool             m_bUpdate;
@@ -384,7 +384,7 @@ public:
     time_t GetBootCancelTime() { return m_bootCancelTime; };
     uint8 GetVotesNeeded() const;
     void  SetVotesNeeded(uint8 votes);
-    uint8 const GetKicksLeft() const;
+    uint8 GetKicksLeft() const;
     void  DecreaseKicksLeft();
 
     // Role checks

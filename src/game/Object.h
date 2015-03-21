@@ -174,9 +174,9 @@ class MANGOS_DLL_SPEC Object
 
         virtual GuidSet const* GetObjectsUpdateQueue() { return NULL; };
         bool IsMarkedForClientUpdate() const { return m_objectUpdated; };
-        virtual Object* GetDependentObject(ObjectGuid const& guid) { return NULL; };
-        virtual void RemoveUpdateObject(ObjectGuid const& guid) {};
-        virtual void AddUpdateObject(ObjectGuid const& guid) {};
+        virtual Object* GetDependentObject(ObjectGuid const& /*guid*/) { return NULL; };
+        virtual void RemoveUpdateObject(ObjectGuid const& /*guid*/) {};
+        virtual void AddUpdateObject(ObjectGuid const& /*guid*/) {};
 
         void SetFieldNotifyFlag(uint16 flag) { m_fieldNotifyFlags |= flag; }
         void RemoveFieldNotifyFlag(uint16 flag) { m_fieldNotifyFlags &= ~flag; }

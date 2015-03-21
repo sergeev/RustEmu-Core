@@ -409,7 +409,7 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         CreatureLinkingHolder* GetCreatureLinkingHolder() { return &m_creatureLinkingHolder; }
 
         // map restarting system
-        bool const IsBroken() { return m_broken; };
+        bool IsBroken() { return m_broken; };
         void SetBroken( bool _value = true ) { m_broken = _value; };
         void ForcedUnload();
 

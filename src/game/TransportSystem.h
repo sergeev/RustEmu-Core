@@ -52,7 +52,7 @@ class TransportBase;
 class MANGOS_DLL_SPEC TransportInfo
 {
     public:
-        TransportInfo(WorldObject& owner, TransportBase& transport, Position const& pos, int8 seat) :
+        TransportInfo(WorldObject& owner, TransportBase& transport, Position const& /*pos*/, int8 seat) :
             m_owner(owner), m_transport(transport), m_seat(seat)
         {/*SetTransportPosition(pos)*/};
 
@@ -109,14 +109,14 @@ class MANGOS_DLL_SPEC TransportBase
 
         Position CalculateGlobalPositionOf(Position const& pos) const;
 
-        bool const HasPassengers() const { return (m_passengers.size() > 0); }
+        bool HasPassengers() const { return (m_passengers.size() > 0); }
 
         // Helper functions to add/ remove a passenger from the list
         void BoardPassenger(WorldObject* passenger, Position const& pos, int8 seat);
         void UnBoardPassenger(WorldObject* passenger);
 
     private:
-        virtual Position CalculateBoardingPositionOf(Position const& pos) const { return Position(); };
+        virtual Position CalculateBoardingPositionOf(Position const& /*pos*/) const { return Position(); };
 
     protected:
         WorldObject* m_owner;                               ///< The transporting unit

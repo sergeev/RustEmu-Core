@@ -1676,7 +1676,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         // recommend use MonsterMove/MonsterMoveWithSpeed for most case that correctly work with movegens
         // if used additional args in ... part then floats must explicitly casted to double
         virtual bool SetPosition(Position const& pos, bool teleport = false);
-        virtual void SetFallInformation(uint32 time, float z) {};
+        virtual void SetFallInformation(uint32 /*time*/, float /*z*/) {};
 
         void MonsterMoveWithSpeed(float x, float y, float z, float speed, bool generatePath = true, bool forceDestination = false);
         // recommend use MonsterMove/MonsterMoveWithSpeed for most case that correctly work with movegens
@@ -1691,8 +1691,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         bool IsRooted() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_ROOT); }
         bool IsSwimming() const { return m_movementInfo.HasMovementFlag(MOVEFLAG_SWIMMING); }
 
-        virtual void SetRoot(bool enabled) {}
-        virtual void SetWaterWalk(bool enabled) {}
+        virtual void SetRoot(bool /*enabled*/) {}
+        virtual void SetWaterWalk(bool /*enabled*/) {}
 
         void SetInFront(Unit const* target);
         void SetFacingTo(float ori);

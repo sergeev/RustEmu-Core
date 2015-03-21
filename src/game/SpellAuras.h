@@ -493,7 +493,7 @@ class MANGOS_DLL_SPEC Aura
 
         SpellAuraHolder* GetHolder() { return m_spellAuraHolder; }
         SpellAuraHolder* GetHolder() const { return m_spellAuraHolder; }
-        AuraClassType const GetAuraClassType() const { return m_classType; }
+        AuraClassType GetAuraClassType() const { return m_classType; }
 
         bool IsLastAuraOnHolder();
 

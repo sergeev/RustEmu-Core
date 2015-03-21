@@ -175,7 +175,7 @@ void LFGGroupState::SetVotesNeeded(uint8 votes)
     m_uiVotesNeeded = votes;
 }
 
-uint8 const LFGGroupState::GetKicksLeft() const
+uint8 LFGGroupState::GetKicksLeft() const
 {
     return m_uiKicksLeft;
 }
