@@ -636,7 +636,11 @@ void Aura::Update(uint32 diff)
         {
             // update before applying (aura can be removed in TriggerSpell or PeriodicTick calls)
             m_periodicTimer += m_modifier.periodictime;
-            ++m_periodicTick;                               // for some infinity auras in some cases can overflow and reset
+            
+            if ( ++m_periodicTick == 0 ) {
+              m_periodicTick = 2;          /* Only first go can be 1 */
+            }
+            
             PeriodicTick();
         }
     }
@@ -8971,6 +8975,10 @@ void Aura::PeriodicTick()
             pCaster->ProcDamageAndSpell(&damageInfo);
             pCaster->DealDamage(target, &damageInfo, true);
 
+            if ( ( m_periodicTick == 1 ) && ( target->GetTypeId( ) == TYPEID_UNIT ) ) {
+              target->AttackedBy( pCaster );
+            }
+            
             // Drain Soul (chance soul shard)
             if (pCaster->GetTypeId() == TYPEID_PLAYER && spellProto->SpellFamilyName == SPELLFAMILY_WARLOCK && spellProto->GetSpellFamilyFlags().test<CF_WARLOCK_DRAIN_SOUL>())
             {
@@ -9064,6 +9072,10 @@ void Aura::PeriodicTick()
             pCaster->ProcDamageAndSpell(&damageInfo);
             int32 new_damage = pCaster->DealDamage(target, &damageInfo, false);
 
+            if ( ( m_periodicTick == 1 ) && ( target->GetTypeId( ) == TYPEID_UNIT ) ) {
+              target->AttackedBy( pCaster );
+            }
+            
             if (!target->isAlive() && pCaster->IsNonMeleeSpellCasted(false))
                 for (uint32 i = CURRENT_FIRST_NON_MELEE_SPELL; i < CURRENT_MAX_SPELL; ++i)
                     if (Spell* spell = pCaster->GetCurrentSpell(CurrentSpellTypes(i)))

@@ -34,6 +34,14 @@ void CreatureAI::AttackedBy(Unit* attacker)
 {
     if (!m_creature->getVictim())
         AttackStart(attacker);
+
+    DEBUG_FILTER_LOG( LOG_FILTER_COMBAT, "%s: %s by %s", __PRETTY_FUNCTION__,
+                      m_creature->GetGuidStr( ).c_str( ),
+                      attacker->GetGuidStr( ).c_str( ) );
+    
+    m_creature->SetCombatStartPosition( m_creature->GetPositionX( ),
+                                        m_creature->GetPositionY( ),
+                                        m_creature->GetPositionZ( ) );    
 }
 
 Unit* CreatureAI::SelectVictim()
