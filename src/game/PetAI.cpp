@@ -603,7 +603,7 @@ void PetAI::UpdateAI(const uint32 diff)
     {
         typedef std::vector<std::pair<ObjectGuid, uint32> > TargetSpellList;
         TargetSpellList targetSpellStore;
-
+        
         for (uint8 i = 0; i < m_creature->GetPetAutoSpellSize(); ++i)
         {
             uint32 spellID = m_creature->GetPetAutoSpellOnPos(i);
@@ -619,7 +619,7 @@ void PetAI::UpdateAI(const uint32 diff)
 
             if (m_creature->HasSpellCooldown(spellInfo))
                 continue;
-
+            
             // ignore some combinations of combat state and combat/noncombat spells
             if (!inCombat)
             {
@@ -779,8 +779,20 @@ void PetAI::UpdateAI(const uint32 diff)
         if (!IsInCombat())
         {
             currentSpells.push_back(GetSpellType(PET_SPELL_NONCOMBAT));
-            if (m_creature->GetHealthPercent() < 95.0f)
-                currentSpells.push_back(GetSpellType(PET_SPELL_HEAL));
+
+            if (m_creature->GetHealthPercent() < 95.0f) {
+              const SpellEntry *spellInfo = NULL;
+              uint32            spellID   = GetSpellType(PET_SPELL_HEAL);
+              bool              stopped   = m_creature->IsStopped( );
+
+              stopped |= ( m_creature->GetMovementInfo( ).HasMovementFlag( movementFlagsMask ) == false );
+              
+              if ( ( spellInfo = sSpellStore.LookupEntry( spellID ) ) != NULL ) {
+                if ( ( IsChanneledSpell( spellInfo ) == false ) || ( stopped == true ) ) {
+                  currentSpells.push_back( spellID );
+                }
+              }
+            }
         }
         else
             currentSpells.push_back(GetSpellType(PET_SPELL_SPECIAL));
