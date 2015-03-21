@@ -39,7 +39,7 @@ class MANGOS_DLL_SPEC MotionMaster
 
         void Initialize();
         void Clear(bool reset = true, bool all = false);
-        void MovementExpired(bool reset = true) { Clear(); }
+        void MovementExpired( bool reset = true) { Clear( reset ); }
 
         void MoveIdle();
         void MoveRandom(float radius = 5.0f);
