@@ -35,7 +35,7 @@ void CreatureAI::AttackedBy(Unit* attacker)
     if (!m_creature->getVictim())
         AttackStart(attacker);
 
-    DEBUG_FILTER_LOG( LOG_FILTER_COMBAT, "%s: %s by %s", __PRETTY_FUNCTION__,
+    DEBUG_FILTER_LOG( LOG_FILTER_COMBAT, "Creature %s attacked by %s", 
                       m_creature->GetGuidStr( ).c_str( ),
                       attacker->GetGuidStr( ).c_str( ) );
     
