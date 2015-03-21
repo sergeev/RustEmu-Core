@@ -26,7 +26,8 @@
 
 #include <string>
 #include <vector>
-
+#include <errno.h>
+#include <limits.h>
 #include "Platform/Define.h"
 
 #ifndef WIN32

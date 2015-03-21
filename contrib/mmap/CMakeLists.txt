@@ -33,6 +33,7 @@ include_directories(
     ../../dep/recastnavigation/Detour/Include
     ../../dep/recastnavigation/Recast/Include
     ../../dep/src/zlib
+    ../../dep/src/
 )
 
 add_library(zlib
