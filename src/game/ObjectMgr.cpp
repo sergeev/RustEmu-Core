@@ -192,8 +192,10 @@ ObjectMgr::~ObjectMgr()
             delete[] playerInfo[race][class_].levelInfo;
 
     // free objects
-    for (TransportSet::iterator itr = m_Transports.begin(); itr != m_Transports.end(); ++itr)
-        delete *itr;
+    for (TransportSet::iterator itr = m_Transports.begin(); itr != m_Transports.end(); ++itr) {
+      ( *itr )->RemoveFromWorld( false );
+      delete *itr;
+    }
 
     for (GroupMap::iterator itr = mGroupMap.begin(); itr != mGroupMap.end(); ++itr)
         delete itr->second;
