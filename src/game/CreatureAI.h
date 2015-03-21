@@ -25,6 +25,7 @@
 #include "Dynamic/ObjectRegistry.h"
 #include "Dynamic/FactoryHolder.h"
 #include "ObjectGuid.h"
+#include "SharedDefines.h"
 
 class WorldObject;
 class GameObject;
@@ -320,10 +321,10 @@ class MANGOS_DLL_SPEC CreatureAI
         virtual void BeforeDespawn() {}
 
         /// method to pass actions between AI's
-        virtual void DoAction(int32 action) {}
+        virtual void DoAction(int32 /*action*/) {}
 
-        virtual void SetData(uint32 type, uint32 data) { }
-        virtual uint32 GetData(uint32 id) { return 0; }
+        virtual void SetData(uint32 /*type*/, uint32 /*data*/) { }
+        virtual uint32 GetData(uint32 /*id*/) { return 0; }
 
     protected:
         void HandleMovementOnAttackStart(Unit* victim);

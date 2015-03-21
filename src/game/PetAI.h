@@ -23,6 +23,7 @@
 #include "CreatureAI.h"
 #include "ObjectGuid.h"
 #include "Timer.h"
+#include "Unit.h"
 
 class Creature;
 class Spell;
