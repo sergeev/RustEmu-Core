@@ -90,7 +90,7 @@ set(BOOST_ROOT $ENV{BOOST_ROOT})
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS regex system filesystem thread program_options REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/dep/include/g3dlite/)
 link_directories(${Boost_LIBRARY_DIRS})
 
 # TODO: allow other compilers under windows in the future
