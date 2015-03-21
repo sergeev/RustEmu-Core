@@ -554,11 +554,12 @@ void LoadDBCStores(const std::string& dataPath)
         std::swap(*((uint32*)(&spell->SpellFamilyFlags)), *(((uint32*)(&spell->SpellFamilyFlags)) + 1));
 #endif
 
-        for (uint8 j = 0; j < MAX_EFFECT_INDEX; ++j)
-        {
-            if (spell)
-                sSpellEffectMap[spell->Id].effects[SpellEffectIndex(j)] = SpellEffectEntry(spell, SpellEffectIndex(j));
-        }
+        if (spell)
+          for (uint8 j = 0; j < MAX_EFFECT_INDEX; ++j)
+          {
+              SpellEffectIndex        index = SpellEffectIndex( j );
+              sSpellEffectMap[spell->Id].effects[index] = SpellEffectEntry( spell, index );
+          }
     }
 
     for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
