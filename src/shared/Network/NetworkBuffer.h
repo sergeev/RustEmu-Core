@@ -26,19 +26,19 @@ class NetworkBuffer
 {
 public:
     NetworkBuffer();
-    NetworkBuffer(const uint32 size);
-    NetworkBuffer(uint8* buffer, const uint32 size);
+    NetworkBuffer(uint32 size);
+    NetworkBuffer(uint8* buffer, uint32 size);
     ~NetworkBuffer();
 
-    void Allocate(const uint32 size);
-    void Reallocate(const uint32 new_size);
+    void Allocate(uint32 size);
+    void Reallocate(uint32 new_size);
     void Deallocate();
-    void AssignBuffer(uint8* buffer, const uint32 size);
+    void AssignBuffer(uint8* buffer, uint32 size);
     void UnassignBuffer();
 
-    bool Write(const uint8* data, const size_t n);
-    bool Read(uint8* data, const size_t n);
-    bool ReadNoConsume(uint8* data, const size_t n);
+    bool Write(const uint8* data, size_t n);
+    bool Read(uint8* data, size_t n);
+    bool ReadNoConsume(uint8* data, size_t n);
 
     void Commit(const size_t n);
     void Consume(const size_t n);
@@ -50,9 +50,9 @@ public:
     uint8* write_data() const;
     uint8* read_data() const;
 
-    const uint32 length() const;
-    const uint32 space() const;
-    const uint32 capacity() const;
+    uint32 length() const;
+    uint32 space() const;
+    uint32 capacity() const;
 
 private:
     bool data_allocated_;

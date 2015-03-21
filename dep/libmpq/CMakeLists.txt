@@ -1,0 +1,39 @@
+
+INCLUDE( FindZLIB  )
+INCLUDE( FindBZip2 )
+INCLUDE( CheckFunctionExists )
+
+CHECK_FUNCTION_EXISTS( fseeko HAVE_FSEEKO )
+
+IF ( DEFINED ZLIB_FOUND )
+  SET( HAVE_LIBZ 1 )
+ENDIF( )
+
+IF ( DEFINED BZIP2_FOUND )
+  SET( HAVE_LIBBZ2 1 )
+ENDIF( )
+
+IF ( DEFINED HAVE_FSEEKO )
+  SET( _LARGEFILE_SOURCE 1 )
+  SET( _LARGE_FILES 1 )
+ENDIF( )
+
+SET( VERSION "libmpq v0.4.2 (mbroemme@plusserver.de)" )
+
+FILE( WRITE ${CMAKE_CURRENT_BINARY_DIR}/config.h.in
+  "
+#cmakedefine HAVE_LIBZ
+#cmakedefine HAVE_LIBBZ2
+#cmakedefine _LARGEFILE_SOURCE
+#cmakedefine _LARGE_FILES
+#cmakedefine VERSION \"${VERSION}\"
+")
+
+CONFIGURE_FILE(
+  ${CMAKE_CURRENT_BINARY_DIR}/config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/config.h
+)
+
+INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} )
+ADD_SUBDIRECTORY( libmpq )
+

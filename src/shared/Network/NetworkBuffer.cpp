@@ -24,13 +24,13 @@ size_(0), data_allocated_(false)
 
 }
 
-NetworkBuffer::NetworkBuffer(const uint32 size) : write_position_(0), read_position_(0),
+NetworkBuffer::NetworkBuffer(uint32 size) : write_position_(0), read_position_(0),
 size_(size), data_allocated_(true)
 {
     data_ = new uint8[size];
 }
 
-NetworkBuffer::NetworkBuffer(uint8* buffer, const uint32 size) : write_position_(0), read_position_(0),
+NetworkBuffer::NetworkBuffer(uint8* buffer, uint32 size) : write_position_(0), read_position_(0),
 size_(size), data_allocated_(false)
 {
     data_ = buffer;
@@ -41,7 +41,7 @@ NetworkBuffer::~NetworkBuffer()
     Deallocate();
 }
 
-void NetworkBuffer::Allocate(const uint32 size)
+void NetworkBuffer::Allocate(uint32 size)
 {
     if (data_ == nullptr)
     {
@@ -51,7 +51,7 @@ void NetworkBuffer::Allocate(const uint32 size)
     }
 }
 
-void NetworkBuffer::Reallocate(const uint32 new_size)
+void NetworkBuffer::Reallocate(uint32 new_size)
 {
     if (data_allocated_)
     {
@@ -71,7 +71,7 @@ void NetworkBuffer::Deallocate()
     }
 }
 
-void NetworkBuffer::AssignBuffer(uint8* buffer, const uint32 size)
+void NetworkBuffer::AssignBuffer(uint8* buffer, uint32 size)
 {
     Deallocate();
     size_ = size;
@@ -88,7 +88,7 @@ void NetworkBuffer::UnassignBuffer()
     }
 }
 
-bool NetworkBuffer::Write(const uint8* data, const size_t n)
+bool NetworkBuffer::Write(const uint8* data, size_t n)
 {
     if (data_ == nullptr || data == nullptr || n > space())
         return false;
@@ -98,7 +98,7 @@ bool NetworkBuffer::Write(const uint8* data, const size_t n)
     return true;
 }
 
-bool NetworkBuffer::Read(uint8* data, const size_t n)
+bool NetworkBuffer::Read(uint8* data, size_t n)
 {
     if (data_ == nullptr || data == nullptr || n > length())
         return false;
@@ -108,7 +108,7 @@ bool NetworkBuffer::Read(uint8* data, const size_t n)
     return true;
 }
 
-bool NetworkBuffer::ReadNoConsume(uint8* data, const size_t n)
+bool NetworkBuffer::ReadNoConsume(uint8* data, size_t n)
 {
     if (data_ == nullptr || data == nullptr || n > length())
         return false;
@@ -117,14 +117,14 @@ bool NetworkBuffer::ReadNoConsume(uint8* data, const size_t n)
     return true;
 }
 
-void NetworkBuffer::Commit(const size_t n)
+void NetworkBuffer::Commit(size_t n)
 {
     uint32 pos = write_position_ + n;
     if (capacity() >= pos)
         write_position_ = pos;
 }
 
-void NetworkBuffer::Consume(const size_t n)
+void NetworkBuffer::Consume(size_t n)
 {
     uint32 pos = read_position_ + n;
     if (capacity() >= pos)
@@ -174,17 +174,17 @@ uint8* NetworkBuffer::write_data() const
     return &data_[write_position_];
 }
 
-const uint32 NetworkBuffer::length() const
+uint32 NetworkBuffer::length() const
 {
     return write_position_ - read_position_;
 }
 
-const uint32 NetworkBuffer::space() const
+uint32 NetworkBuffer::space() const
 {
     return size_ - write_position_;
 }
 
-const uint32 NetworkBuffer::capacity() const
+uint32 NetworkBuffer::capacity() const
 {
     return size_;
 }

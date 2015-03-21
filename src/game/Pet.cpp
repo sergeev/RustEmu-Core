@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "Common.h"
 #include "Pet.h"
 #include "Database/DatabaseEnv.h"
 #include "Log.h"
@@ -1334,7 +1335,7 @@ void Pet::_LoadAuras(uint32 timediff)
 
             if (casterGuid.IsEmpty() || !casterGuid.IsUnit())
             {
-                sLog.outError("Pet::LoadAuras Unknown caster %llu, ignore.",fields[0].GetUInt64());
+                sLog.outError("Pet::LoadAuras Unknown caster " UI64FMTD " ignore.",fields[0].GetUInt64());
                 continue;
             }
 

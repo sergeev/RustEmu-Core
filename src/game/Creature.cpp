@@ -1287,7 +1287,7 @@ void Creature::SelectLevel(const CreatureInfo* cinfo, float percentHealth, float
     SetModifierValue(UNIT_MOD_HEALTH, BASE_VALUE, float(health));
 
     // all power types
-    for (int i = POWER_MANA; i <= POWER_RUNIC_POWER; ++i)
+    for (int i = POWER_MANA; ( Powers ) i <= POWER_RUNIC_POWER; ++i)
     {
         uint32 maxValue;
 
@@ -2334,7 +2334,7 @@ void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs
     }
 }
 
-bool Creature::HasSpell(uint32 spellId)
+bool Creature::HasSpell(uint32 spellId) const
 {
     for (uint8 i = 0; i <= GetSpellMaxIndex(); ++i)
     {
@@ -2698,7 +2698,7 @@ bool Creature::HasStaticDBSpawnData() const
     return sObjectMgr.GetCreatureData(GetGUIDLow()) != NULL;
 }
 
-uint32 Creature::GetSpell(uint8 index, uint8 activeState)
+uint32 Creature::GetSpell(uint8 index, uint8 activeState) const
 {
     if (index > GetSpellMaxIndex(activeState))
         return 0;
@@ -2725,7 +2725,7 @@ uint32 Creature::GetSpell(uint8 index, uint8 activeState)
     return spellEntry->spell;
 }
 
-uint8 Creature::GetSpellMaxIndex(uint8 activeState)
+uint8 Creature::GetSpellMaxIndex(uint8 activeState) const
 {
     CreatureSpellsList const* spellList = sObjectMgr.GetCreatureSpells(GetEntry(), activeState);
     if (!spellList)

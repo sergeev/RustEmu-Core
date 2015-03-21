@@ -48,7 +48,7 @@
 #  define COMPILER COMPILER_BORLAND
 #elif defined( __INTEL_COMPILER )
 #  define COMPILER COMPILER_INTEL
-#elif defined( __GNUC__ )
+#elif defined( __GNUC__ ) || defined( __clang__ )
 #  define COMPILER COMPILER_GNU
 #else
 #  pragma error "FATAL ERROR: Unknown compiler."

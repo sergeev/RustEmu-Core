@@ -21,99 +21,99 @@ set(LIBRARY_NAME g3dlite)
 set(LIBRARY_SRCS
     AABox.cpp
     Any.cpp
-    #AnyVal.cpp
-    #AreaMemoryManager.cpp
+    AnyVal.cpp
+    AreaMemoryManager.cpp
     BinaryFormat.cpp
     BinaryInput.cpp
     BinaryOutput.cpp
     Box.cpp
-    #Box2D.cpp
-    #BumpMapPreprocess.cpp
+    Box2D.cpp
+    BumpMapPreprocess.cpp
     Capsule.cpp
     CollisionDetection.cpp
-    #Color1.cpp
-    #Color1uint8.cpp
-    #Color3.cpp
-    #Color3uint8.cpp
-    #Color4.cpp
-    #Color4uint8.cpp
-    #Cone.cpp
-    #ConvexPolyhedron.cpp
+    Color1.cpp
+    Color1uint8.cpp
+    Color3.cpp
+    Color3uint8.cpp
+    Color4.cpp
+    Color4uint8.cpp
+    Cone.cpp
+    ConvexPolyhedron.cpp
     CoordinateFrame.cpp
     Crypto.cpp
-    #Crypto_md5.cpp
+    Crypto_md5.cpp
     Cylinder.cpp
     FileSystem.cpp
-    #GCamera.cpp
-    #GImage.cpp
-    #GImage_bayer.cpp
-    #GImage_bmp.cpp
-    #GImage_jpeg.cpp
+    GCamera.cpp
+    GImage.cpp
+    GImage_bayer.cpp
+    GImage_bmp.cpp
+    GImage_jpeg.cpp
     #GImage_png.cpp
-    #GImage_ppm.cpp
-    #GImage_tga.cpp
-    #GLight.cpp
-    #GThread.cpp
-    #GUniqueID.cpp
-    #Image1.cpp
-    #Image1uint8.cpp
-    #Image3.cpp
-    #Image3uint8.cpp
-    #Image4.cpp
-    #Image4uint8.cpp
+    GImage_ppm.cpp
+    GImage_tga.cpp
+    GLight.cpp
+    GThread.cpp
+    GUniqueID.cpp
+    Image1.cpp
+    Image1uint8.cpp
+    Image3.cpp
+    Image3uint8.cpp
+    Image4.cpp
+    Image4uint8.cpp
     #ImageFormat.cpp
-    #ImageFormat_convert.cpp
-    #Intersect.cpp
+    ImageFormat_convert.cpp
+    Intersect.cpp
     Line.cpp
     LineSegment.cpp
     Log.cpp
-    #Matrix.cpp
+    Matrix.cpp
     Matrix3.cpp
     Matrix4.cpp
     MemoryManager.cpp
-    #MeshAlg.cpp
-    #MeshAlgAdjacency.cpp
-    #MeshAlgWeld.cpp
-    #MeshBuilder.cpp
-    #NetAddress.cpp
-    #NetworkDevice.cpp
+    MeshAlg.cpp
+    MeshAlgAdjacency.cpp
+    MeshAlgWeld.cpp
+    MeshBuilder.cpp
+    NetAddress.cpp
+    NetworkDevice.cpp
     PhysicsFrame.cpp
-    #PhysicsFrameSpline.cpp
+    PhysicsFrameSpline.cpp
     Plane.cpp
-    #PrecomputedRandom.cpp
+    PrecomputedRandom.cpp
     Quat.cpp
     Random.cpp
     Ray.cpp
-    #Rect2D.cpp
+    Rect2D.cpp
     ReferenceCount.cpp
     RegistryUtil.cpp
     Sphere.cpp
-    #SplineBase.cpp
+    SplineBase.cpp
     #Stopwatch.cpp
     System.cpp
     TextInput.cpp
     TextOutput.cpp
-    #ThreadSet.cpp
+    ThreadSet.cpp
     Triangle.cpp
     UprightFrame.cpp
     Vector2.cpp
-    #Vector2int16.cpp
+    Vector2int16.cpp
     Vector3.cpp
-    #Vector3int16.cpp
-    #Vector3int32.cpp
+    Vector3int16.cpp
+    Vector3int32.cpp
     Vector4.cpp
-    #Vector4int8.cpp
-    #Welder.cpp
-    #WinMain.cpp
-    #XML.cpp
-    #constants.cpp
+    Vector4int8.cpp
+    Welder.cpp
+    WinMain.cpp
+    XML.cpp
+    constants.cpp
     debugAssert.cpp
     fileutils.cpp
-    #filter.cpp
+    filter.cpp
     format.cpp
     g3dfnmatch.cpp
     g3dmath.cpp
-    #license.cpp
+    license.cpp
     prompt.cpp
     stringutils.cpp
     uint128.cpp

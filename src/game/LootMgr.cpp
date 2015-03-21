@@ -92,7 +92,7 @@ void LootStore::Verify() const
 // All checks of the loaded template are called from here, no error reports at loot generation required
 void LootStore::LoadLootTable()
 {
-    LootTemplateMap::const_iterator tab;
+    LootTemplateMap::const_iterator tab = m_LootTemplates.end( );
     uint32 count = 0;
 
     // Clearing store (for reloading case)
@@ -1343,9 +1343,8 @@ void LoadLootTemplates_Mail()
 
     // remove real entries and check existence loot
     for (uint32 i = 1; i < sMailTemplateStore.GetNumRows(); ++i)
-        if (sMailTemplateStore.LookupEntry(i))
-            if (ids_set.find(i) != ids_set.end())
-                ids_set.erase(i);
+      if (sMailTemplateStore.LookupEntry(i))
+        ids_set.erase(i);
 
     // output error for any still listed (not referenced from appropriate table) ids
     LootTemplates_Mail.ReportUnusedIds(ids_set);

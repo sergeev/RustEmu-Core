@@ -382,8 +382,8 @@ if(XCODE)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
-add_subdirectory(dep) # TODO: add vmap extractor build support
+include_directories(${CMAKE_BINARY_DIR})
+add_subdirectory(dep)
 
 # Add definitions for all build types
 # Don't place this above 'dep' subdirectory! Because of defines build will crash.
@@ -416,6 +416,8 @@ set_directory_properties(PROPERTIES COMPILE_DEFINITIONS_RELEASE "${DEFINITIONS_R
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS_DEBUG "${DEFINITIONS_DEBUG}")
 
 add_subdirectory(src)
+add_subdirectory(contrib)
+
 # if(SQL)
 #   add_subdirectory(sql)
 # endif()

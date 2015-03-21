@@ -1430,7 +1430,7 @@ SpellAuraProcResult Unit::HandleDummyAuraProc(Unit *pVictim, DamageInfo* damageI
             if (!roll_chance_i(triggeredByAura->GetModifier()->m_amount))
                 return SPELL_AURA_PROC_FAILED;
 
-            SpellAuraHolder* holder;
+            SpellAuraHolder* holder = NULL;
             // Missile Barrage
             if (SpellAuraHolder* _holder = GetSpellAuraHolder(44401, GetObjectGuid()))
                 holder = _holder;
