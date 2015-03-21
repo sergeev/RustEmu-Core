@@ -89,8 +89,15 @@
 #  include <sys/ioctl.h>
 #  include <sys/socket.h>
 #  include <netinet/in.h>
+#  include <inttypes.h>
 #  include <unistd.h>
 #  include <netdb.h>
+#else
+#  if defined( _WIN64 )
+#    define __WORDSIZE 64
+#  elif defined( _WIN32 )
+#    define __WORDSIZE 32
+#  endif
 #endif
 
 #if COMPILER == COMPILER_MICROSOFT
@@ -117,13 +124,21 @@
 
 #endif
 
-#define UI64FMTD "%llu"
-#define UI64LIT(N) UINT64_C(N)
+#if defined( PRIu64 ) && defined( PRId64 )
+#  define UI64FMTD "%" PRIu64
+#  define SI64FMTD "%" PRId64
+#elif __WORDSIZE == 64
+#  define UI64FMTD "%lu"
+#  define SI64FMTD "%ld"
+#else
+#  define UI64FMTD "%llu"
+#  define SI64FMTD "%lld"
+#endif
 
-#define SI64FMTD "%lld"
+#define UI64LIT(N) UINT64_C(N)
 #define SI64LIT(N) INT64_C(N)
 
-#if COMPILER == COMPILER_MICROSOFT || COMPILER == COMPILER_BORLAND
+#if COMPILER == COMPILER_MICROSOFT || COMPILER == COMPILER_BORLAND || COMPILER == COMPILER_GNU
 #  define SIZEFMTD "%zu"
 #else
 #  define SIZEFMTD "%Iu"
