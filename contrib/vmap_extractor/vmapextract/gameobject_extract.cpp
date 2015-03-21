@@ -22,6 +22,9 @@ bool ExtractSingleModel(std::string& origPath, std::string& fixedName, StringSet
 
     fixedName = GetPlainName(origPath.c_str());
 
+    fixnamen((char*)fixedName.c_str(),fixedName.length());
+    fixname2((char*)fixedName.c_str(),fixedName.length());
+    
     std::string output(szWorkDirWmo);                       // Stores output filename (possible changed)
     output += "/";
     output += fixedName;

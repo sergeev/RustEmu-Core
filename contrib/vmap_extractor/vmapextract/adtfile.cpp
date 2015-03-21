@@ -142,10 +142,12 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
                 ModelInstansName = new string[size];
                 while (p < buf + size)
                 {
-                    fixnamen(p, strlen(p));
+                    string path(p);
+
                     char* s = GetPlainName(p);
+
+                    fixnamen(s, strlen(s));
                     fixname2(s, strlen(s));
-                    string path(p);                         // Store copy after name fixed
 
                     std::string fixedName;
                     ExtractSingleModel(path, fixedName, failedPaths);
