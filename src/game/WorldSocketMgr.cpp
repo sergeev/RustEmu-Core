@@ -54,13 +54,8 @@ bool WorldSocketMgr::StartNetwork(boost::uint16_t port, std::string address)
     m_SockOutKBuff = sConfig.GetIntDefault("Network.OutKBuff", -1);
 
     m_SockOutUBuff = sConfig.GetIntDefault("Network.OutUBuff", protocol::SEND_BUFFER_SIZE);
-
-    if (m_SockOutUBuff <= 0)
-    {
-        sLog.outError("Network.OutUBuff is wrong in your config file");
-
-        return false;
-    }
+    /* Allow the user some lenience in the config, and default in the event of a mis-configuration */ 
+    m_SockOutUBuff = ( m_SockOutUBuff <= 0 ) ? protocol::SEND_BUFFER_SIZE : m_SockOutUBuff;
 
     network_threads_count_ = static_cast<size_t>(sConfig.GetIntDefault("Network.Threads", 1));
 

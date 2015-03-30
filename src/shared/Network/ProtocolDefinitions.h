@@ -32,8 +32,8 @@ namespace protocol
     typedef boost::asio::ip::tcp::socket Socket;
     typedef boost::asio::io_service Service;
 
-    const uint32 READ_BUFFER_SIZE = 4096;
-    const uint32 SEND_BUFFER_SIZE = 65536;
+    const uint32 READ_BUFFER_SIZE = 8192; //4096;
+    const uint32 SEND_BUFFER_SIZE = 131072;//65536;
 }
 
 class Socket;
