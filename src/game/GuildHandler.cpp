@@ -908,7 +908,7 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
     if (!pGuild)
         return;
 
-    if (!pGuild->IsGuildBankLoaded() || !pGuild->GetPurchasedTabs())
+    if (!pGuild->IsGuildBankLoaded())
         return;
 
     CharacterDatabase.BeginTransaction();
@@ -929,8 +929,11 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
     // log
     pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
 
+    if ( pGuild->GetPurchasedTabs() ) {
       pGuild->DisplayGuildBankTabsInfo(this);
       pGuild->DisplayGuildBankContent(this, 0);
+    }
+
     pGuild->DisplayGuildBankMoneyUpdate(this);
 }
 
@@ -956,7 +959,7 @@ void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recv_data)
     if (!pGuild)
         return;
 
-    if (!pGuild->IsGuildBankLoaded() || !pGuild->GetPurchasedTabs())
+    if (!pGuild->IsGuildBankLoaded())
         return;
 
     if (pGuild->GetGuildBankMoney() < money)                // not enough money in bank
@@ -982,8 +985,12 @@ void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recv_data)
     pGuild->LogBankEvent(GUILD_BANK_LOG_WITHDRAW_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
 
     pGuild->SendMoneyInfo(this, GetPlayer()->GetGUIDLow());
+
+    if ( pGuild->GetPurchasedTabs() ) {
       pGuild->DisplayGuildBankTabsInfo(this);
       pGuild->DisplayGuildBankContent(this, 0);
+    }
+    
     pGuild->DisplayGuildBankMoneyUpdate(this);
 }
 
