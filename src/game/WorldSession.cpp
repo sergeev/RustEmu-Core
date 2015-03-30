@@ -220,12 +220,12 @@ bool WorldSession::Update(PacketFilter& updater)
             switch (opHandle.status)
             {
             case STATUS_LOGGEDIN:
-                if (!_player)
+                if ((!_player)&&(packet->GetOpcode( )!=CMSG_LOGOUT_CANCEL))
                 {
                     // skip STATUS_LOGGEDIN opcode unexpected errors if player logout sometime ago - this can be network lag delayed packets
                     //! If player didn't log out a while ago, it means packets are being sent while the server does not recognize
                     //! the client to be in world yet. We will re-add the packets to the bottom of the queue and process them later.
-                    if (!m_playerRecentlyLogout)
+                  if (!m_playerRecentlyLogout)
                     {
                         //! Because checking a bool is faster than reallocating memory
                         deletePacket = false;
@@ -236,7 +236,7 @@ bool WorldSession::Update(PacketFilter& updater)
                             "Player is currently not in world yet.", opHandle.name, packet->GetOpcode());
                     }
                 }
-                else if (_player->IsInWorld())
+                else if ((packet->GetOpcode( )==CMSG_LOGOUT_CANCEL)||(_player->IsInWorld()))
                     ExecuteOpcode(opHandle, packet);
 
                 // lag can cause STATUS_LOGGEDIN opcodes to arrive after the player started a transfer
