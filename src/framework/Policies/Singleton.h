@@ -41,6 +41,7 @@ namespace MaNGOS
         public:
 
             static T&   Instance();
+            static bool IsUnloading( ) { return si_unloading; }
 
         protected:
 
@@ -61,6 +62,7 @@ namespace MaNGOS
             typedef typename ThreadingModel::Lock Guard;
             static T* si_instance;
             static bool si_destroyed;
+            static bool si_unloading;
     };
 
     template<typename T, class ThreadingModel, class CreatePolicy, class LifeTimePolicy>
@@ -68,6 +70,9 @@ namespace MaNGOS
 
     template<typename T, class ThreadingModel, class CreatePolicy, class LifeTimePolicy>
     bool Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::si_destroyed = false;
+
+    template<typename T, class ThreadingModel, class CreatePolicy, class LifeTimePolicy>
+    bool Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::si_unloading = false;
 
     template<typename T, class ThreadingModel, class CreatePolicy, class LifeTimePolicy>
     T& MaNGOS::Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::Instance()
@@ -96,6 +101,7 @@ namespace MaNGOS
     template<typename T, class ThreadingModel, class CreatePolicy, class LifeTimePolicy>
     void MaNGOS::Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::DestroySingleton()
     {
+        si_unloading = true;
         CreatePolicy::Destroy(si_instance);
         si_instance = NULL;
         si_destroyed = true;

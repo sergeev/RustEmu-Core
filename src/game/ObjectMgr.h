@@ -1318,7 +1318,8 @@ class ObjectMgr
         CacheTrainerSpellMap m_mCacheTrainerSpellMap;
 };
 
-#define sObjectMgr MaNGOS::Singleton<ObjectMgr>::Instance()
+#define sObjectMgr          MaNGOS::Singleton<ObjectMgr>::Instance()
+#define sObjectMgrUnloading MaNGOS::Singleton<ObjectMgr>::IsUnloading
 
 /// generic text function
 MANGOS_DLL_SPEC bool DoDisplayText(WorldObject* source, int32 entry, Unit const* target = NULL);

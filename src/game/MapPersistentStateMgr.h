@@ -464,4 +464,5 @@ inline void MapPersistentStateManager::DoForAllStatesWithMapId(uint32 mapId, Do&
 }
 
 #define sMapPersistentStateMgr MaNGOS::Singleton<MapPersistentStateManager>::Instance()
+#define sMapPersistentStateMgrUnloading MaNGOS::Singleton<MapPersistentStateManager>::IsUnloading
 #endif
