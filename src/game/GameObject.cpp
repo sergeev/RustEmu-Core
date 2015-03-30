@@ -1585,7 +1585,8 @@ void GameObject::Use(Unit* user)
         Unit* owner = GetOwner();
 
         GameObjectInfo const* info = GetGOInfo();
-
+        Spell const* spell = owner->GetCurrentSpell(CURRENT_CHANNELED_SPELL);
+        
         if (owner)
         {
             if (owner->GetTypeId() != TYPEID_PLAYER)
@@ -1596,7 +1597,7 @@ void GameObject::Use(Unit* user)
                 return;
 
             // expect owner to already be channeling, so if not...
-            if (!owner->GetCurrentSpell(CURRENT_CHANNELED_SPELL))
+            if (!spell)
                 return;
 
             // in case summoning ritual caster is GO creator
@@ -1622,10 +1623,22 @@ void GameObject::Use(Unit* user)
 
         if (info->summoningRitual.animSpell)
         {
-            player->CastSpell(player, info->summoningRitual.animSpell, true);
+          Spell *cast =player->CastSpell(player, info->summoningRitual.animSpell, true);
 
-            // for this case, summoningRitual.spellId is always triggered
-            triggered = true;
+          if ( cast != NULL ) {
+            player->SetCurrentCastedSpell( cast );
+          }
+
+          // for this case, summoningRitual.spellId is always triggered
+          triggered = true;
+        } else if ( spell != NULL ) {
+          Spell *cast = player->CastSpell(player, spell->m_spellInfo, true);
+
+          if ( cast != NULL ) {
+            player->SetCurrentCastedSpell( cast );
+          }
+          
+          triggered = true;
         }
 
         // full amount unique participants including original summoner, need more
@@ -1636,7 +1649,7 @@ void GameObject::Use(Unit* user)
         if (!GetOwnerGuid())
             if (Player* firstUser = GetMap()->GetPlayer(m_firstUser))
                 spellCaster = firstUser;
-
+        
         spellId = info->summoningRitual.spellId;
 
         if (spellId == 62330)                           // GO store nonexistent spell, replace by expected
@@ -1646,9 +1659,19 @@ void GameObject::Use(Unit* user)
         // it triggered spell in fact casted at currently channeled GO
         triggered = true;
 
-        // finish owners spell
-        if (owner)
-            owner->FinishSpell(CURRENT_CHANNELED_SPELL);
+        // finish casting spell
+        for ( GuidSet::iterator iterator = m_UniqueUsers.begin( ); iterator != m_UniqueUsers.end( ); ++iterator ) {
+          Player *player       = GetMap()->GetPlayer( *iterator );
+          Spell  *playerSpell  = 0x00;
+
+          if ( player == NULL ) continue;
+          if ( ( playerSpell = player->GetCurrentSpell( CURRENT_CHANNELED_SPELL ) ) == NULL ) continue;
+
+          if ( ( playerSpell->m_spellInfo->Id == spell->m_spellInfo->Id ) ||
+               ( playerSpell->m_spellInfo->Id == info->summoningRitual.animSpell ) ) {
+            player->FinishSpell( CURRENT_CHANNELED_SPELL );
+          }
+        }
 
         // can be deleted now, if
         if (!info->summoningRitual.ritualPersistent)

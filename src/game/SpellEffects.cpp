@@ -410,6 +410,7 @@ void Spell::EffectSchoolDMG(SpellEffectIndex effect_idx)
                         break;
                     }
                     // percent max target health
+                    case 20625:                             // Ritual of Doom Sacrifice
                     case 29142:                             // Eyesore Blaster
                     case 35139:                             // Throw Boom's Doom
                     case 49882:                             // Leviroth Self-Impale
@@ -1548,45 +1549,49 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                 }
                 case 18541:  // Ritual of Doom Effect (Summon Doomguard and kill one random member of party)
                 {
-                    Player* pcaster = (Player*)m_caster;
-                    if (!(pcaster->GetGroup()))
-                    return;
-
-                    Group* group = pcaster->GetGroup();
-
-                    if (group->GetMembersCount() < 5) //check count of members in party
-                        return;
-
-                    typedef std::vector<Player*> possibleTargets;
-                    possibleTargets group_list;
-
-                    for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
-                    {
-                        Player* member = itr->getSource();
-
-                        if (member->GetGUIDLow() == pcaster->GetGUIDLow()) // i think summoner can't die, right?
-                        {
-                            continue;
-                        }
-
-                        if (member)
-                        {
-                            group_list.push_back(member);
-                        }
+                    Player               *pCaster   = (Player*)m_caster;
+                    Player               *victim    = NULL;
+                    Group                *group     = pCaster->GetGroup( );
+                    Map                  *map       = pCaster->GetMap( );
+                    WorldObject          *wObject   = map->FindObject( this->m_originalCasterGuid );
+                    GameObject           *object    = dynamic_cast< GameObject * >( wObject );
+                    GameObjectInfo const *goInfo    = object->GetGOInfo( );
+                    uint32                index     = 0;
+                    float                 posX      = 0.0;
+                    float                 posY      = 0.0;
+                    float                 posZ      = 0.0;
+                    float                 posO      = object->GetOrientation( );
+                    SpellEntry const     *spell     = sSpellStore.LookupEntry( goInfo->summoningRitual.casterTargetSpell );
+                    
+                    /* GameMaster tried it... let them get away with it */
+                    if ( group == NULL ) {  
+                      return;
                     }
-                    // Ok if exist players in group, take a random player for death ?? TODO: to know, how player must to die? pet must kill him?
-                    if (!group_list.empty())
-                    {
-                        typedef std::list < std::pair<uint32, ObjectGuid> > SuccessList;
-                        SuccessList success_list;
-                        int32 list_size = group_list.size();
 
-                        pcaster->CastSpell(((Player*)m_caster), 60478, false); // summon doomguard
+                    // Doomguard spawns on the pedestal 
+                    object->GetPosition( posX, posY, posZ );
+                    // Temporarily summon a new Doomguard (unaffiliated)
+                    object->SummonCreature( 11859, posX, posY, posZ, posO, TEMPSUMMON_CORPSE_DESPAWN, -1, true );
 
-                        // Random select member of party
-                        Player* randommember = group_list[urand(0, list_size - 1)];
-
-                        pcaster->DealDamage(randommember, randommember->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    for ( uint32 num = 0; num < goInfo->summoningRitual.casterTargetSpellTargets; ++num ) {
+                      GroupReference *itr = group->GetFirstMember();
+                      index = urand( 0, group->GetMembersCount( ) - 1 );
+                      
+                      if ( itr == NULL ) {
+                        return;
+                      }
+                      
+                      for ( ; ( itr != NULL ) && ( index > 0 ); itr = itr->next() ) {
+                        --index;
+                      }
+                      
+                      /* Sanity check: should never happen */
+                      if ( ( victim = itr->getSource( ) ) == NULL ) {
+                        return;
+                      }
+                      
+                      // Target spell has DUEL flags, so we assume caster is the player
+                      pCaster->CastSpell( victim, spell, true, NULL, NULL, m_originalCasterGuid, m_spellInfo );
                     }
 
                     return;
@@ -13634,13 +13639,17 @@ void Spell::EffectTransmitted(SpellEffectIndex eff_idx)
     Map *cMap = m_caster->GetMap();
 
     if (goinfo->type == GAMEOBJECT_TYPE_SUMMONING_RITUAL)
-    {        
+    {
+        /*
+         * Triggered spells are the same casting as the original player, but are done
+         * for appearances sake, this allows for the animations to be consistent and
+         * NOT end up with multiple game objects for one act.
+         */
+        if ( m_IsTriggeredSpell ) return; 
+      
         loc = m_caster->GetPosition();
-        float dist;
-        if (m_spellInfo->EffectRadiusIndex[eff_idx])
-            dist = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[eff_idx]));
-        else
-            dist = 2.5f;
+        float dist = ( ( m_spellInfo->EffectRadiusIndex[eff_idx] ) ?
+                       GetSpellRadius( sSpellRadiusStore.LookupEntry( m_spellInfo->EffectRadiusIndex[eff_idx] ) ) : 2.5f );
 
         loc.x = loc.x + dist * cos(loc.o);
         loc.y = loc.y + dist * sin(loc.o);
@@ -13650,7 +13659,7 @@ void Spell::EffectTransmitted(SpellEffectIndex eff_idx)
     GameObject* pGameObj = new GameObject;
 
     if(!pGameObj->Create(cMap->GenerateLocalLowGuid(HIGHGUID_GAMEOBJECT), name_id, cMap,
-        m_caster->GetPhaseMask(), loc.x, loc.y, loc.z, loc.o))
+                         m_caster->GetPhaseMask(), loc.x, loc.y, loc.z, loc.o))
     {
         delete pGameObj;
         return;

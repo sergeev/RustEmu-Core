@@ -1349,7 +1349,7 @@ void Unit::CastStop(uint32 except_spellid)
             InterruptSpell(CurrentSpellTypes(i),false);
 }
 
-void Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId);
 
@@ -1359,13 +1359,13 @@ void Unit::CastSpell(Unit* Victim, uint32 spellId, bool triggered, Item *castIte
             sLog.outError("CastSpell: unknown spell id %i by caster: %s triggered by aura %u (eff %u)", spellId, GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastSpell: unknown spell id %i by caster: %s", spellId, GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
-    CastSpell(Victim, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
+    return CastSpell(Victim, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
 }
 
-void Unit::CastSpell(Unit* Victim, SpellEntry const *spellInfo, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastSpell(Unit* Victim, SpellEntry const *spellInfo, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     if(!spellInfo)
     {
@@ -1373,13 +1373,13 @@ void Unit::CastSpell(Unit* Victim, SpellEntry const *spellInfo, bool triggered, 
             sLog.outError("CastSpell: unknown spell by caster: %s triggered by aura %u (eff %u)", GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastSpell: unknown spell by caster: %s", GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
     if(!Victim)
     {
         sLog.outError("CastSpell: cast spell %u by caster %s failed - victim is NULL", spellInfo->Id, GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
     if (castItem)
@@ -1424,9 +1424,10 @@ void Unit::CastSpell(Unit* Victim, SpellEntry const *spellInfo, bool triggered, 
             Victim->RemoveAurasDueToSpell(*itr);
     }
 
+    return spell;
 }
 
-void Unit::CastCustomSpell(Unit* Victim,uint32 spellId, int32 const* bp0, int32 const* bp1, int32 const* bp2, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastCustomSpell(Unit* Victim,uint32 spellId, int32 const* bp0, int32 const* bp1, int32 const* bp2, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId);
 
@@ -1436,13 +1437,13 @@ void Unit::CastCustomSpell(Unit* Victim,uint32 spellId, int32 const* bp0, int32 
             sLog.outError("CastCustomSpell: unknown spell id %i by caster: %s triggered by aura %u (eff %u)", spellId, GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastCustomSpell: unknown spell id %i by caster: %s", spellId, GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
-    CastCustomSpell(Victim, spellInfo, bp0, bp1, bp2, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
+    return CastCustomSpell(Victim, spellInfo, bp0, bp1, bp2, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
 }
 
-void Unit::CastCustomSpell(Unit* Victim, SpellEntry const *spellInfo, int32 const* bp0, int32 const* bp1, int32 const* bp2, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastCustomSpell(Unit* Victim, SpellEntry const *spellInfo, int32 const* bp0, int32 const* bp1, int32 const* bp2, bool triggered, Item *castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     if(!spellInfo)
     {
@@ -1450,7 +1451,7 @@ void Unit::CastCustomSpell(Unit* Victim, SpellEntry const *spellInfo, int32 cons
             sLog.outError("CastCustomSpell: unknown spell by caster: %s triggered by aura %u (eff %u)", GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastCustomSpell: unknown spell by caster: %s", GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
     if (castItem)
@@ -1468,7 +1469,7 @@ void Unit::CastCustomSpell(Unit* Victim, SpellEntry const *spellInfo, int32 cons
             else
             {
                 sLog.outError("CastCustomSpell: spell %d by caster: %s triggered by aura without original caster and spellholder (CRUSH THERE!)", spellInfo->Id, GetObjectGuid().GetString().c_str());
-                return;
+                return NULL;
             }
         }
     }
@@ -1495,10 +1496,12 @@ void Unit::CastCustomSpell(Unit* Victim, SpellEntry const *spellInfo, int32 cons
             targets.setSource(caster->GetPosition());
 
     spell->prepare(&targets, triggeredByAura);
+    
+    return spell;
 }
 
 // used for scripting
-void Unit::CastSpell(float x, float y, float z, uint32 spellId, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastSpell(float x, float y, float z, uint32 spellId, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId);
 
@@ -1508,7 +1511,7 @@ void Unit::CastSpell(float x, float y, float z, uint32 spellId, bool triggered, 
             sLog.outError("CastSpell(x,y,z): unknown spell id %i by caster: %s triggered by aura %u (eff %u)", spellId, GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastSpell(x,y,z): unknown spell id %i by caster: %s", spellId, GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
     WorldLocation loc = GetPosition();
@@ -1516,11 +1519,11 @@ void Unit::CastSpell(float x, float y, float z, uint32 spellId, bool triggered, 
     loc.y = y;
     loc.z = z;
 
-    CastSpell(loc, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
+    return CastSpell(loc, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
 }
 
 // used for scripting
-void Unit::CastSpell(WorldLocation const& loc, uint32 spellId, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastSpell(WorldLocation const& loc, uint32 spellId, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId);
 
@@ -1530,14 +1533,14 @@ void Unit::CastSpell(WorldLocation const& loc, uint32 spellId, bool triggered, I
             sLog.outError("CastSpell(x,y,z): unknown spell id %i by caster: %s triggered by aura %u (eff %u)", spellId, GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastSpell(x,y,z): unknown spell id %i by caster: %s", spellId, GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
-    CastSpell(loc, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
+    return CastSpell(loc, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
 }
 
 // used for scripting
-void Unit::CastSpell(float x, float y, float z, SpellEntry const* spellInfo, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastSpell(float x, float y, float z, SpellEntry const* spellInfo, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     if(!spellInfo)
     {
@@ -1545,7 +1548,7 @@ void Unit::CastSpell(float x, float y, float z, SpellEntry const* spellInfo, boo
             sLog.outError("CastSpell(x,y,z): unknown spell by caster: %s triggered by aura %u (eff %u)", GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastSpell(x,y,z): unknown spell by caster: %s", GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
     if (triggeredByAura)
@@ -1561,11 +1564,11 @@ void Unit::CastSpell(float x, float y, float z, SpellEntry const* spellInfo, boo
     loc.y = y;
     loc.z = z;
 
-    CastSpell(loc, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
+    return CastSpell(loc, spellInfo, triggered, castItem, triggeredByAura, originalCaster, triggeredBy);
 }
 
 // used for scripting
-void Unit::CastSpell(WorldLocation const& loc, SpellEntry const* spellInfo, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
+Spell *Unit::CastSpell(WorldLocation const& loc, SpellEntry const* spellInfo, bool triggered, Item* castItem, Aura const* triggeredByAura, ObjectGuid originalCaster, SpellEntry const* triggeredBy)
 {
     if (!spellInfo)
     {
@@ -1573,7 +1576,7 @@ void Unit::CastSpell(WorldLocation const& loc, SpellEntry const* spellInfo, bool
             sLog.outError("CastSpell(x,y,z): unknown spell by caster: %s triggered by aura %u (eff %u)", GetGuidStr().c_str(), triggeredByAura->GetId(), triggeredByAura->GetEffIndex());
         else
             sLog.outError("CastSpell(x,y,z): unknown spell by caster: %s", GetGuidStr().c_str());
-        return;
+        return NULL;
     }
 
     if (castItem)
@@ -1602,6 +1605,8 @@ void Unit::CastSpell(WorldLocation const& loc, SpellEntry const* spellInfo, bool
 
     spell->m_CastItem = castItem;
     spell->prepare(&targets, triggeredByAura);
+
+    return spell;
 }
 
 // Obsolete func need remove, here only for comotability vs another patches
