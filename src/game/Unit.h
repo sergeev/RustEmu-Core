@@ -364,10 +364,9 @@ enum BaseModGroup
 enum BaseModType
 {
     FLAT_MOD,
-    PCT_MOD
+    PCT_MOD,
+    MOD_END
 };
-
-#define MOD_END (PCT_MOD+1)
 
 enum DeathState
 {
@@ -1078,12 +1077,11 @@ enum CurrentSpellTypes
 {
     CURRENT_MELEE_SPELL             = 0,
     CURRENT_GENERIC_SPELL           = 1,
+    CURRENT_FIRST_NON_MELEE_SPELL   = CURRENT_GENERIC_SPELL,
     CURRENT_CHANNELED_SPELL         = 2,
-    CURRENT_AUTOREPEAT_SPELL        = 3
+    CURRENT_AUTOREPEAT_SPELL        = 3,
+    CURRENT_MAX_SPELL               = 4,
 };
-
-#define CURRENT_FIRST_NON_MELEE_SPELL 1
-#define CURRENT_MAX_SPELL             4
 
 struct GlobalCooldown
 {

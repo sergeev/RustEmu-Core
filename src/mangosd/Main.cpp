@@ -347,9 +347,9 @@ void ShowHint()
     DETAIL_LOG("Using BOOST: %i.%i.%i", BOOST_VERSION / 100000, BOOST_VERSION / 100 % 1000, BOOST_VERSION % 100);
 }
 
+#ifdef WIN32
 void SetProcessPriority(uint32 affinity, bool high_priority)
 {
-#ifdef WIN32
     HANDLE hProcess = GetCurrentProcess();
     if (affinity > 0)
     {
@@ -374,8 +374,10 @@ void SetProcessPriority(uint32 affinity, bool high_priority)
         else
             sLog.outError("Can't set service process priority class.");
     }
-#endif
 }
+#else
+# define SetProcessPriority( x, y )
+#endif
 
 void WorldUpdateLoop()
 {
@@ -468,7 +470,8 @@ extern int main(int argc, char** argv)
     {
         std::string builds = AcceptableClientBuildsListStr();
         LoginDatabase.escape_string(builds);
-        LoginDatabase.DirectPExecute("UPDATE realmlist SET realmflags = realmflags & ~(%u), population = 0, realmbuilds = '%s'  WHERE id = '%u'", REALM_FLAG_OFFLINE, builds.c_str(), realmID);
+        LoginDatabase.DirectPExecute("UPDATE realmlist SET realmflags = realmflags & ~(%u), population = 0, realmbuilds = '%s'  WHERE id = '%u'",
+                                     REALM_FLAG_OFFLINE, builds.c_str(), realmID);
     }
 
     std::auto_ptr<RemoteAdminSocketMgr> RemoteAdminMgr(new RemoteAdminSocketMgr());
@@ -491,11 +494,9 @@ extern int main(int argc, char** argv)
 
     // Handle affinity for multiple processors and process priority on Windows
     SetProcessPriority(sConfig.GetIntDefault("UseProcessors", 0), sConfig.GetBoolDefault("ProcessPriority", false));
-
+    
     // Start soap serving thread
-    MaNGOS::Thread* soap_thread = NULL;
-
-    std::auto_ptr<SoapMgr> soapMgr(new SoapMgr());
+    std::unique_ptr<SoapMgr> soapMgr(new SoapMgr());
     if (sConfig.GetBoolDefault("SOAP.Enabled", false))
     {
         soapMgr->StartNetwork(sConfig.GetStringDefault("SOAP.IP", "127.0.0.1"), sConfig.GetIntDefault("SOAP.Port", 7878));

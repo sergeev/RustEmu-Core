@@ -57,9 +57,7 @@ void OutdoorPvPTF::FillInitialWorldStates(uint32 zoneId)
         UpdateTimerWorldState();
 }
 
-void OutdoorPvPTF::SendRemoveWorldStates(Player* player)
-{
-}
+void OutdoorPvPTF::SendRemoveWorldStates(Player* /*player*/){}
 
 void OutdoorPvPTF::HandlePlayerEnterZone(Player* player, bool isMainZone)
 {

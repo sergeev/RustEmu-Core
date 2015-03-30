@@ -70,7 +70,7 @@ void RandomMovementGenerator<Creature>::_setRandomLocation(Creature& creature)
 }
 
 template<>
-void RandomMovementGenerator<Creature>::Initialize(Creature& creature)
+void RandomMovementGenerator<Creature>::initialize(Creature& creature)
 {
     if (!creature.isAlive())
         return;
@@ -81,13 +81,13 @@ void RandomMovementGenerator<Creature>::Initialize(Creature& creature)
 }
 
 template<>
-void RandomMovementGenerator<Creature>::Reset(Creature& creature)
+void RandomMovementGenerator<Creature>::reset(Creature& creature)
 {
-    Initialize(creature);
+    initialize(creature);
 }
 
 template<>
-void RandomMovementGenerator<Creature>::Interrupt(Creature& creature)
+void RandomMovementGenerator<Creature>::interrupt(Creature& creature)
 {
     creature.InterruptMoving();
     creature.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
@@ -95,14 +95,14 @@ void RandomMovementGenerator<Creature>::Interrupt(Creature& creature)
 }
 
 template<>
-void RandomMovementGenerator<Creature>::Finalize(Creature& creature)
+void RandomMovementGenerator<Creature>::finalize(Creature& creature)
 {
     creature.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
     creature.SetWalk(!creature.hasUnitState(UNIT_STAT_RUNNING_STATE) && !creature.IsLevitating(), false);
 }
 
 template<>
-bool RandomMovementGenerator<Creature>::Update(Creature& creature, const uint32& diff)
+bool RandomMovementGenerator<Creature>::update(Creature& creature, const uint32& diff)
 {
     if (creature.hasUnitState(UNIT_STAT_NOT_MOVE))
     {

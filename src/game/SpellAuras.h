@@ -213,7 +213,7 @@ class MANGOS_DLL_SPEC SpellAuraHolder
         bool m_isPassive:1;
         bool m_isDeathPersist:1;
         bool m_isRemovedOnShapeLost:1;
-        bool m_isSingleTarget:1;                            // true if it's a single target spell and registered at caster - can change at spell steal for example
+        //bool m_isSingleTarget:1;                            // true if it's a single target spell and registered at caster - can change at spell steal for example
         bool m_deleted:1;
 
 };

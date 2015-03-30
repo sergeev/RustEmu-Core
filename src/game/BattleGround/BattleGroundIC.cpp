@@ -267,7 +267,7 @@ void BattleGroundIC::AddPlayer(Player* plr)
         MakeInteractive(IC_EVENT_ADD_TELEPORT, 0, true);
 }
 
-void BattleGroundIC::RemovePlayer(Player* plr)
+void BattleGroundIC::RemovePlayer(Player* plr, ObjectGuid )
 {
     if (plr)
     {
@@ -340,11 +340,11 @@ int32 BattleGroundIC::_GetNodeNameId(uint8 node)
     return 0;
 }
 
-void BattleGroundIC::UpdatePlayerScore(Player* source, uint32 type, uint32 value, bool doAddHonor)
+void BattleGroundIC::UpdatePlayerScore(Player* source, uint32 type, uint32 value )
 {
     BattleGroundScoreMap::iterator itr = m_PlayerScores.find(source->GetObjectGuid());
 
-    if (itr == m_PlayerScores.end())                         // player not found...
+    if (itr == m_PlayerScores.end())    // player not found...
         return;
 
     switch(type)

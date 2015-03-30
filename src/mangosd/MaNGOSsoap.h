@@ -47,7 +47,7 @@ private:
 class SOAPCommand
 {
 public:
-    SOAPCommand() : finished(false), m_success(false) {}
+    SOAPCommand() : m_success(false), finished(false) {}
     boost::mutex localMutex;
     boost::condition_variable conditionVariable;
 

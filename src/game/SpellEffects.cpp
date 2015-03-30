@@ -5965,7 +5965,8 @@ void Spell::EffectUnlearnSpecialization(SpellEffectIndex eff_idx)
 
 void Spell::EffectPowerDrain(SpellEffectIndex eff_idx)
 {
-    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 || m_spellInfo->EffectMiscValue[eff_idx] >= MAX_POWERS)
+    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 ||
+        m_spellInfo->EffectMiscValue[eff_idx] >= (int32) MAX_POWERS)
         return;
 
     Powers drain_power = Powers(m_spellInfo->EffectMiscValue[eff_idx]);
@@ -6028,7 +6029,8 @@ void Spell::EffectSendEvent(SpellEffectIndex effectIndex)
 
 void Spell::EffectPowerBurn(SpellEffectIndex eff_idx)
 {
-    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 || m_spellInfo->EffectMiscValue[eff_idx] >= MAX_POWERS)
+    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 ||
+        m_spellInfo->EffectMiscValue[eff_idx] >= (int32)MAX_POWERS)
         return;
 
     Powers powertype = Powers(m_spellInfo->EffectMiscValue[eff_idx]);
@@ -6451,7 +6453,8 @@ void Spell::EffectEnergize(SpellEffectIndex eff_idx)
     if (unitTarget->hasUnitState(UNIT_STAT_ISOLATED))
         return;
 
-    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 || m_spellInfo->EffectMiscValue[eff_idx] >= MAX_POWERS)
+    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 ||
+        m_spellInfo->EffectMiscValue[eff_idx] >= (int)MAX_POWERS)
         return;
 
     Powers power = Powers(m_spellInfo->EffectMiscValue[eff_idx]);
@@ -6574,7 +6577,8 @@ void Spell::EffectEnergisePct(SpellEffectIndex eff_idx)
     if (!unitTarget || !unitTarget->isAlive())
         return;
 
-    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 || m_spellInfo->EffectMiscValue[eff_idx] >= MAX_POWERS)
+    if (m_spellInfo->EffectMiscValue[eff_idx] < 0 ||
+        m_spellInfo->EffectMiscValue[eff_idx] >= (int)MAX_POWERS)
         return;
 
     Powers power = Powers(m_spellInfo->EffectMiscValue[eff_idx]);
@@ -7429,9 +7433,6 @@ void Spell::DoSummonWild(SpellEffectIndex eff_idx, uint32 forceFaction)
     center.SetOrientation(-m_caster->GetOrientation());
 
     float radius = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[eff_idx]));
-
-    uint32 uDuration = m_duration > 0 ? uint32(m_duration) : 0;
-
     int32 amount = m_spellInfo->EffectRealPointsPerLevel[eff_idx] ? m_spellInfo->EffectRealPointsPerLevel[eff_idx] : m_currentBasePoints[eff_idx];
     if (amount <= 0)
         amount = 1;
@@ -7558,9 +7559,8 @@ void Spell::DoSummonGuardian(SpellEffectIndex eff_idx, uint32 forceFaction)
         return;
     }
 
-    float radius = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[eff_idx]));
-
-    uint32 originalSpellID = (m_IsTriggeredSpell && m_triggeredBySpellInfo) ? m_triggeredBySpellInfo->Id : m_spellInfo->Id;
+    uint32 originalSpellID = ((m_IsTriggeredSpell && m_triggeredBySpellInfo) ?
+                              m_triggeredBySpellInfo->Id : m_spellInfo->Id);
 
     for (int32 count = 0; count < amount; ++count)
     {
@@ -14064,7 +14064,7 @@ void Spell::EffectRestoreItemCharges( SpellEffectIndex eff_idx )
     item->RestoreCharges();
 }
 
-void Spell::EffectRedirectThreat(SpellEffectIndex eff_idx)
+void Spell::EffectRedirectThreat(SpellEffectIndex /*eff_idx*/)
 {
     if (!unitTarget)
         return;
@@ -14113,7 +14113,7 @@ void Spell::EffectQuestOffer(SpellEffectIndex eff_idx)
     }
 }
 
-void Spell::EffectWMODamage(SpellEffectIndex eff_idx)
+void Spell::EffectWMODamage(SpellEffectIndex /*eff_idx*/)
 {
     Unit* caster = m_originalCaster;
     if (!caster)
@@ -14133,7 +14133,7 @@ void Spell::EffectWMODamage(SpellEffectIndex eff_idx)
     gameObjTarget->DamageTaken(caster, uint32(damage), m_spellInfo->Id);
 }
 
-void Spell::EffectWMORepair(SpellEffectIndex eff_idx)
+void Spell::EffectWMORepair(SpellEffectIndex /*eff_idx*/)
 {
     if (gameObjTarget && gameObjTarget->GetGoType() == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
     {
@@ -14211,7 +14211,7 @@ void Spell::EffectCancelAura(SpellEffectIndex eff_idx)
     unitTarget->RemoveAurasDueToSpell(spellId);
 }
 
-void Spell::EffectServerSide(SpellEffectIndex eff_idx)
+void Spell::EffectServerSide(SpellEffectIndex /*eff_idx*/)
 {
 
     if (!unitTarget)
@@ -14330,7 +14330,7 @@ void Spell::EffectSuspendGravity(SpellEffectIndex eff_idx)
     unitTarget->MonsterMoveToDestination(loc.x, loc.y, loc.z + 0.1f, unitTarget->GetOrientation(), speed, height, true, m_caster == unitTarget ? NULL : m_caster);
 }
 
-void Spell::EffectUntrainTalents(SpellEffectIndex eff_idx)
+void Spell::EffectUntrainTalents(SpellEffectIndex /*eff_idx*/)
 {
     if (!unitTarget)
         return;

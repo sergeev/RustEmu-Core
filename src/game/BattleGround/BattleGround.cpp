@@ -120,7 +120,7 @@ namespace MaNGOS
     class BattleGroundYellBuilder
     {
         public:
-            BattleGroundYellBuilder(Language language, int32 textId, Creature const* source, va_list* args = NULL)
+            BattleGroundYellBuilder(uint32 language, int32 textId, Creature const* source, va_list* args = NULL)
                 : i_language(language), i_textId(textId), i_source(source), i_args(args) {}
             void operator()(WorldPacket& data, int32 loc_idx)
             {
@@ -136,13 +136,15 @@ namespace MaNGOS
                     vsnprintf(str, 2048, text, ap);
                     va_end(ap);
 
-                    ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_YELL, &str[0], i_language, CHAT_TAG_NONE, i_source->GetObjectGuid(), i_source->GetName());
+                    ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_YELL, &str[0], (Language)i_language,
+                                                 CHAT_TAG_NONE, i_source->GetObjectGuid(), i_source->GetName());
                 }
                 else
-                    ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_YELL, text, i_language, CHAT_TAG_NONE, i_source->GetObjectGuid(), i_source->GetName());
+                  ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_YELL, text, (Language) i_language,
+                                               CHAT_TAG_NONE, i_source->GetObjectGuid(), i_source->GetName());
             }
         private:
-            Language i_language;
+            uint32 i_language;
             int32 i_textId;
             Creature const* i_source;
             va_list* i_args;
@@ -183,7 +185,7 @@ namespace MaNGOS
     class BattleGround2YellBuilder
     {
         public:
-            BattleGround2YellBuilder(uint32 language, int32 textId, Creature const* source, int32 arg1, int32 arg2)
+            BattleGround2YellBuilder( uint32 language, int32 textId, Creature const* source, int32 arg1, int32 arg2)
                 : i_language(language), i_textId(textId), i_source(source), i_arg1(arg1), i_arg2(arg2) {}
             void operator()(WorldPacket& data, int32 loc_idx)
             {
@@ -194,7 +196,9 @@ namespace MaNGOS
                 char str [2048];
                 snprintf(str, 2048, text, arg1str, arg2str);
 
-                ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_YELL, str, LANG_UNIVERSAL, CHAT_TAG_NONE, i_source ? i_source ->GetObjectGuid() : ObjectGuid(), i_source ? i_source ->GetName() : "");
+                ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_YELL, str, (Language) i_language /* LANG_UNIVERSAL */,
+                                             CHAT_TAG_NONE, i_source ? i_source->GetObjectGuid() : ObjectGuid(),
+                                             i_source ? i_source ->GetName() : "");
             }
         private:
 
@@ -1589,12 +1593,12 @@ bool BattleGround::HasFreeSlots() const
     return GetPlayersSize() < GetMaxPlayers();
 }
 
-void BattleGround::UpdatePlayerScore(Player* Source, uint32 type, uint32 value)
+void BattleGround::UpdatePlayerScore(Player* Source, uint32 type, uint32 value )
 {
     // this procedure is called from virtual function implemented in bg subclass
     BattleGroundScoreMap::const_iterator itr = m_PlayerScores.find(Source->GetObjectGuid());
 
-    if (itr == m_PlayerScores.end())                        // player not found...
+    if (itr == m_PlayerScores.end())  // player not found...
         return;
 
     switch (type)
@@ -1945,7 +1949,7 @@ void BattleGround::SendYellToAll(int32 entry, uint32 language, ObjectGuid guid)
     Creature* source = GetBgMap()->GetCreature(guid);
     if (!source)
         return;
-    MaNGOS::BattleGroundYellBuilder bg_builder(Language(language), entry, source);
+    MaNGOS::BattleGroundYellBuilder bg_builder(language, entry, source);
     MaNGOS::LocalizedPacketDo<MaNGOS::BattleGroundYellBuilder> bg_do(bg_builder);
     BroadcastWorker(bg_do);
 }

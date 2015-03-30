@@ -485,7 +485,9 @@ ObjectGuid const& Aura::GetCasterGuid() const { return GetHolder() ? GetHolder()
 
 ObjectGuid const& Aura::GetAffectiveCasterGuid() const { return GetHolder() ? GetHolder()->GetAffectiveCasterGuid() : ObjectGuid::Null; }
 
-void Aura::AreaAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target,Unit *caster, Item* castItem)
+void Aura::AreaAura(SpellEntry const* spellproto, SpellEffectIndex eff,
+                    int32 */*currentBasePoints*/, SpellAuraHolder* /*holder*/,
+                    Unit *target,Unit *caster, Item* /*castItem*/)
 {
     m_isAreaAura = true;
 
@@ -534,15 +536,21 @@ void Aura::AreaAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *c
         m_modifier.m_auraname = SPELL_AURA_NONE;
 }
 
-void Aura::PersistentAreaAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target,Unit *caster, Item* castItem)
+void Aura::PersistentAreaAura(SpellEntry const* /*spellproto*/, SpellEffectIndex /*eff*/,
+                              int32 */*currentBasePoints*/, SpellAuraHolder* /*holder*/,
+                              Unit */*target*/,Unit */*caster*/, Item* /*castItem*/)
 {
     m_isPersistent = true;
 }
 
-void Aura::SingleEnemyTargetAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster, Item* castItem)
+void Aura::SingleEnemyTargetAura(SpellEntry const* /*spellproto*/, SpellEffectIndex /*eff*/,
+                                 int32 */*currentBasePoints*/, SpellAuraHolder* /*holder*/,
+                                 Unit */*target*/, Unit *caster, Item* /*castItem*/)
 {
     if (caster)
-        m_castersTargetGuid = caster->GetTypeId()==TYPEID_PLAYER ? ((Player*)caster)->GetSelectionGuid() : caster->GetTargetGuid();
+      m_castersTargetGuid = ( caster->GetTypeId()==TYPEID_PLAYER ?
+                              ((Player*)caster)->GetSelectionGuid() :
+                              caster->GetTargetGuid() );
 }
 
 Unit* Aura::GetTriggerTarget() const
@@ -3543,6 +3551,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     case AURA_REMOVE_BY_DEATH:
                         target->CastSpell(target, 72679, true); // Harvested Soul buff
                         break;
+                    default: break;
                 }
                 return;
             }
@@ -7450,7 +7459,7 @@ void  Aura::HandleAuraModIncreaseMaxHealth(bool apply, bool /*Real*/)
     }
 }
 
-void Aura::HandleAuraModIncreaseEnergy(bool apply, bool Real)
+void Aura::HandleAuraModIncreaseEnergy(bool apply, bool /*Real*/)
 {
     Unit* target = GetTarget();
 
@@ -7638,7 +7647,7 @@ void Aura::HandleAuraModCritPercent(bool apply, bool Real)
     }
 }
 
-void Aura::HandleModHitChance(bool apply, bool /*Real*/)
+void Aura::HandleModHitChance(bool /*apply*/, bool /*Real*/)
 {
     Unit *target = GetTarget();
 
@@ -9229,7 +9238,7 @@ void Aura::PeriodicTick()
             if (target->hasUnitState(UNIT_STAT_ISOLATED))
                 return;
 
-            if (m_modifier.m_miscvalue < 0 || m_modifier.m_miscvalue >= MAX_POWERS)
+            if (m_modifier.m_miscvalue < 0 || m_modifier.m_miscvalue >= (int32)MAX_POWERS)
                 return;
 
             Powers power = Powers(m_modifier.m_miscvalue);
@@ -9375,7 +9384,7 @@ void Aura::PeriodicTick()
             DETAIL_FILTER_LOG(LOG_FILTER_PERIODIC_AFFECTS, "PeriodicTick: %s energize %s for %u dmg inflicted by %u",
                 GetAffectiveCasterGuid().GetString().c_str(), target->GetGuidStr().c_str(), pdamage, GetId());
 
-            if (m_modifier.m_miscvalue < 0 || m_modifier.m_miscvalue >= MAX_POWERS)
+            if (m_modifier.m_miscvalue < 0 || m_modifier.m_miscvalue >= (int32)MAX_POWERS)
                 break;
 
             Powers power = Powers(m_modifier.m_miscvalue);
@@ -9402,7 +9411,9 @@ void Aura::PeriodicTick()
             if (target->hasUnitState(UNIT_STAT_ISOLATED))
                 return;
 
-            Powers powerType = ( (m_modifier.m_miscvalue > POWER_RUNIC_POWER || m_modifier.m_miscvalue < 0) ? POWER_MANA : Powers(m_modifier.m_miscvalue));
+            Powers powerType = ( (m_modifier.m_miscvalue > (int32)POWER_RUNIC_POWER ||
+                                  m_modifier.m_miscvalue < 0) ? POWER_MANA :
+                                 Powers(m_modifier.m_miscvalue));
 
             // ignore non positive values (can be result apply spellmods to aura damage
             uint32 amount = m_modifier.m_amount > 0 ? m_modifier.m_amount : 0;
@@ -10626,7 +10637,7 @@ void Aura::HandleAuraLinked(bool apply, bool Real)
         pTarget->RemoveAurasByCasterSpell(linkedSpell, GetCasterGuid());
 }
 
-void Aura::HandleAuraAddMechanicAbilities(bool apply, bool Real)
+void Aura::HandleAuraAddMechanicAbilities(bool apply, bool /*Real*/)
 {
     Unit* target = GetTarget();
 
@@ -11558,9 +11569,10 @@ void SpellAuraHolder::HandleSpellSpecificBoosts(bool apply)
     {
         for (SpellLinkedSet::const_iterator itr = linkedSet.begin(); itr != linkedSet.end(); ++itr)
         {
-            apply ?
-                m_target->CastSpell(m_target, *itr, true, NULL, NULL, GetCasterGuid()) :
-                m_target->RemoveAurasByCasterSpell(*itr, GetCasterGuid());
+          if ( apply == true )
+            m_target->CastSpell(m_target, *itr, true, NULL, NULL, GetCasterGuid());
+          else
+            m_target->RemoveAurasByCasterSpell(*itr, GetCasterGuid());
         }
     }
 
@@ -12536,9 +12548,10 @@ void SpellAuraHolder::HandleSpellSpecificBoosts(bool apply)
         // prevent aura deletion, specially in multi-boost case
         for (SpellLinkedSet::const_iterator itr = linkedSet.begin(); itr != linkedSet.end(); ++itr)
         {
-            (apply || cast_at_remove) ?
-                m_target->CastSpell(m_target, *itr, true, NULL, NULL, GetCasterGuid()) :
-                m_target->RemoveAurasByCasterSpell(*itr, GetCasterGuid());
+          if (apply || cast_at_remove) 
+            m_target->CastSpell(m_target, *itr, true, NULL, NULL, GetCasterGuid());
+          else
+            m_target->RemoveAurasByCasterSpell(*itr, GetCasterGuid());
         }
     }
 }
@@ -12706,9 +12719,10 @@ void SpellAuraHolder::HandleSpellSpecificBoostsForward(bool apply)
         // prevent aura deletion, specially in multi-boost case
         for (SpellLinkedSet::const_iterator itr = linkedSet.begin(); itr != linkedSet.end(); ++itr)
         {
-            apply ?
-                m_target->CastSpell(m_target, *itr, true, NULL, NULL, GetCasterGuid()) :
-                m_target->RemoveAurasByCasterSpell(*itr, GetCasterGuid());
+          if ( apply )
+            m_target->CastSpell(m_target, *itr, true, NULL, NULL, GetCasterGuid());
+          else
+            m_target->RemoveAurasByCasterSpell(*itr, GetCasterGuid());
         }
     }
 }

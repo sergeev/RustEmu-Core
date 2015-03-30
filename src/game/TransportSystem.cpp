@@ -65,7 +65,7 @@ void TransportBase::Update(uint32 diff)
 }
 
 // Update the global positions of all passengers
-void TransportBase::UpdateGlobalPositions(bool isParent)
+void TransportBase::UpdateGlobalPositions(bool /*isParent*/)
 {
     WorldLocation pos = m_owner->GetPosition();
 

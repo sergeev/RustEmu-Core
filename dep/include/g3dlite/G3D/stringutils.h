@@ -14,10 +14,6 @@
 #include "G3D/Array.h"
 #include <cstring>
 
-#if COMPILER == COMPILER_MICROSOFT
-#  pragma warning( disable : 4267 )                         // conversion from 'size_t' to 'int', possible loss of data
-#endif
-
 namespace G3D {
 
 extern const char* NEWLINE;
@@ -35,28 +31,19 @@ void parseCommaSeparated(const std::string s, Array<std::string>& array, bool st
 /** Finds the index of the first '\\' or '/' character, starting at index \a start. 
   \sa G3D::findLastSlash, G3D::isSlash
 */
-inline int findSlash(const std::string& f, int start = 0) {
-    int i = f.find('/', start);
-    int j = f.find('\\', start);
-    if (((i != -1) && (i < j)) || (j == -1)) {
-        return i;
-    } else {
-        return j;
-    }
+inline size_t findSlash(const std::string& f, size_t start = 0) {
+    size_t i = f.find('/', start);
+    size_t j = f.find('\\', start);
+
+    return (((i != std::string::npos) && (i < j)) || (j == std::string::npos)) ? i : j;
 }
 
 
 /** Finds the index of the first '\\' or '/' character, starting at index \a start (if \a start is -1, starts at the end of the string).
   \sa G3D::findSlash, G3D::isSlash
   */
-inline int findLastSlash(const std::string& f, int start = -1) {
-    if (start == -1) {
-        start = f.length() - 1;
-    }
-
-    int i = f.rfind('/', start);
-    int j = f.rfind('\\', start);
-    return max(i, j);
+inline size_t findLastSlash(const std::string& f, size_t start = std::string::npos) {
+  return std::max(f.rfind('/', start), f.rfind('\\', start));
 }
 
 /**

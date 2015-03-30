@@ -291,8 +291,8 @@ uint32 LFGGroupState::GetDungeonId()
     return GetDungeon() ? GetDungeon()->ID : 0;
 };
 
-LFGQueueInfo::LFGQueueInfo(ObjectGuid _guid, LFGType type, uint32 _queueID)
-    : guid(_guid), m_type(type), queueID(_queueID)
+LFGQueueInfo::LFGQueueInfo(ObjectGuid _guid, LFGType type, uint32 _queueID) :
+  guid(_guid), queueID(_queueID), m_type(type)
 {
     MANGOS_ASSERT(!guid.IsEmpty());
     tanks = LFG_TANKS_NEEDED;

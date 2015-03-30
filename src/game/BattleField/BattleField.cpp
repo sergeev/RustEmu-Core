@@ -469,7 +469,7 @@ void BattleField::StartBattle(PvpTeamIndex defender)
     }
 }
 
-void BattleField::EndBattle(PvpTeamIndex winner, bool byTimer)
+void BattleField::EndBattle(PvpTeamIndex winner, bool /*byTimer*/)
 {
     m_defender = winner;
     m_state = BF_STATE_COOLDOWN;
@@ -494,14 +494,14 @@ void BattleField::Update(uint32 diff)
     else
         m_timer -= diff;
 
-    if (m_state == BF_STATE_IN_PROGRESS)
-        if (m_scoresUpdateTimer < diff)
-        {
-            m_scoresUpdateTimer = 5000;
-            UpdatePlayerScores();
-        }
-        else
-            m_scoresUpdateTimer -= diff;
+    if (m_state == BF_STATE_IN_PROGRESS) {
+      if (m_scoresUpdateTimer < diff) {
+        m_scoresUpdateTimer = 5000;
+        UpdatePlayerScores();
+      } else {
+        m_scoresUpdateTimer -= diff;
+      }
+    }
 
     if (m_state == BF_STATE_COOLDOWN && m_timer <= m_startInviteDelay && !bInvited)
     {
@@ -695,7 +695,9 @@ void BattleField::QuestCreditTeam(uint32 credit, Team team, WorldObject* source,
         if (!plr)
             continue;
 
-        if (plr->GetTeam() != team || source && radius > 0.0f && source->GetDistance2d(plr->GetPositionX(), plr->GetPositionY()) > radius)
+        if (plr->GetTeam() != team ||
+            ( source && radius > 0.0f &&
+              source->GetDistance2d(plr->GetPositionX(), plr->GetPositionY()) > radius) )
             continue;
 
         plr->KilledMonsterCredit(credit);

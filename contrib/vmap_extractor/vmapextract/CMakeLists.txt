@@ -10,4 +10,4 @@
 
 LINK_DIRECTORIES( ${LINK_DIRECTORIES} ${CMAKE_BINARY_DIR}/dep/libmpq/libmpq )
 add_executable(vmapextractor adtfile.cpp  dbcfile.cpp gameobject_extract.cpp model.cpp  mpq_libmpq.cpp  vmapexport.cpp  wdtfile.cpp  wmo.cpp)
-target_link_libraries(vmapextractor libmpq.a bz2 z)
+target_link_libraries(vmapextractor mpq bz2 z)

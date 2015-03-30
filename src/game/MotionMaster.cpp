@@ -20,6 +20,7 @@
 #include "CreatureAISelector.h"
 #include "Creature.h"
 #include "Pet.h"
+#include "Player.h"
 #include "ConfusedMovementGenerator.h"
 #include "FleeingMovementGenerator.h"
 #include "HomeMovementGenerator.h"

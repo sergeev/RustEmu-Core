@@ -37,9 +37,7 @@ AggressorAI::Permissible(const Creature* creature)
     return PERMIT_BASE_NO;
 }
 
-AggressorAI::AggressorAI(Creature* c) : CreatureAI(c), i_state(STATE_NORMAL), i_tracker(TIME_INTERVAL_LOOK)
-{
-}
+AggressorAI::AggressorAI(Creature* c) : CreatureAI(c), i_tracker(TIME_INTERVAL_LOOK){}
 
 void
 AggressorAI::MoveInLineOfSight(Unit* u)
@@ -72,7 +70,8 @@ void AggressorAI::EnterEvadeMode()
 {
     if (!m_creature->isAlive())
     {
-        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, he is dead [guid=%u]", m_creature->GetGUIDLow());
+        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, "
+                         "he is dead [guid=%u]", m_creature->GetGUIDLow());
         i_victimGuid.Clear();
         m_creature->CombatStop(true);
         m_creature->DeleteThreatList();
@@ -83,23 +82,28 @@ void AggressorAI::EnterEvadeMode()
 
     if (!victim)
     {
-        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, no victim [guid=%u]", m_creature->GetGUIDLow());
+        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, "
+                         "no victim [guid=%u]", m_creature->GetGUIDLow());
     }
     else if (!victim->isAlive())
     {
-        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, victim is dead [guid=%u]", m_creature->GetGUIDLow());
+        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, "
+                         "victim is dead [guid=%u]", m_creature->GetGUIDLow());
     }
     else if (victim->HasStealthAura())
     {
-        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, victim is in stealth [guid=%u]", m_creature->GetGUIDLow());
+        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, "
+                         "victim is in stealth [guid=%u]", m_creature->GetGUIDLow());
     }
     else if (victim->IsTaxiFlying())
     {
-        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, victim is in flight [guid=%u]", m_creature->GetGUIDLow());
+        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, "
+                         "victim is in flight [guid=%u]", m_creature->GetGUIDLow());
     }
     else
     {
-        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, victim out run him [guid=%u]", m_creature->GetGUIDLow());
+        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "Creature stopped attacking, "
+                         "victim out run him [guid=%u]", m_creature->GetGUIDLow());
         // i_state = STATE_LOOK_AT_VICTIM;
         // i_tracker.Reset(TIME_INTERVAL_LOOK);
     }
@@ -108,7 +112,10 @@ void AggressorAI::EnterEvadeMode()
     {
         m_creature->RemoveAllAurasOnEvade();
 
-        // Remove ChaseMovementGenerator from MotionMaster stack list, and add HomeMovementGenerator instead
+        /*
+         * Remove ChaseMovementGenerator from MotionMaster stack list, and add
+         * HomeMovementGenerator instead
+         */
         if (m_creature->IsInUnitState(UNIT_ACTION_CHASE))
             m_creature->GetUnitStateMgr().DropAction(UNIT_ACTION_CHASE);
 

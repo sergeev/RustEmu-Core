@@ -20,13 +20,16 @@
 #include "Timer.h"
 
 #include "utf8cpp/utf8.h"
-#include "mersennetwister/MersenneTwister.h"
 #include <chrono>
 
-#include <boost/thread/tss.hpp>
 #include <boost/asio/ip/address.hpp>
+#include <boost/random/random_device.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+#include <boost/random/uniform_real_distribution.hpp>
 
-static boost::thread_specific_ptr<MTRand> mtRand;
+static boost::thread_specific_ptr< boost::random::mt19937 > mtrand; // TLS: MersenneTwister generator
+boost::random::random_device   rd;               // Random device seed ( /dev/urandom, CryptGenRandom(), etc )
 
 uint32 WorldTimer::m_iTime = 0;
 uint32 WorldTimer::m_iPrevTime = 0;
@@ -58,61 +61,98 @@ uint32 WorldTimer::getMSTime_internal(bool /*savetime*/ /*= false*/)
 }
 
 //////////////////////////////////////////////////////////////////////////
-int32 irand(int32 min, int32 max)
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return int32(mtRand->randInt(max - min)) + min;
+
+/** 
+ * Initialize the random number generator for the thread
+ */
+static inline void init_random( ) {
+  if ( !mtrand.get( ) ) {
+    /*
+     * Create a new MT sequence generator seeded with the OS supplied
+     * cryptographically secure random device
+     */
+    mtrand.reset( new boost::random::mt19937( rd( ) ) );
+  }
 }
 
-uint32 urand(uint32 min, uint32 max)
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return mtRand->randInt(max - min) + min;
+/** 
+ * @brief Generate a random signed integer value between 'min' and 'max'
+ * @param min minimum random value (base)
+ * @param max maximum random value
+ * @return random number
+ */
+int32 irand( int32 min, int32 max ) {
+  init_random( );
+  return boost::random::uniform_int_distribution< int32 >( min, max )( *mtrand );
 }
 
-float frand(float min, float max)
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return mtRand->randExc(max - min) + min;
+/** 
+ * @brief Generate a random unsigned integer value between 'min' and 'max'
+ * @param min minimum random value (base)
+ * @param max maximum random value
+ * @return random number
+ */
+uint32 urand( uint32 min, uint32 max ) {
+  init_random( );
+  return boost::random::uniform_int_distribution< uint32 >( min, max )( *mtrand );
 }
 
-int32 rand32()
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return mtRand->randInt();
+/** 
+ * @brief Generate a random floating point value between 'min' and 'max'
+ * @param min minimum random value (base)
+ * @param max maximum random value
+ * @return random number
+ */
+float frand(float min, float max) {
+  init_random( );
+  return boost::random::uniform_real_distribution< float >( min, max )( *mtrand );
 }
 
-double rand_norm(void)
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return mtRand->randExc();
+/** 
+ * @brief Generate a random number
+ * @return random number
+ */
+int32 rand32( ) {
+  init_random( );
+  return mtrand->operator()();
 }
 
-float rand_norm_f(void)
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return (float)mtRand->randExc();
+/** 
+ * @brief Generate a random double precision floating point value between 0 and 1
+ * @return random number
+ */
+double rand_norm( ) {
+  init_random( );
+  return boost::random::uniform_real_distribution< double >( 0, 1.0 )( *mtrand );
 }
 
-double rand_chance(void)
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return mtRand->randExc(100.0);
+/** 
+ * @brief Generate a random floating point value between 0 and 1
+ * @return random number
+ */
+float rand_norm_f(void) {
+  init_random( );
+  return boost::random::uniform_real_distribution< float >( 0, 1.0 )( *mtrand );
 }
 
-float rand_chance_f(void)
-{
-    if (!mtRand.get())
-        mtRand.reset(new MTRand());
-    return (float)mtRand->randExc(100.0);
+/** 
+ * @brief Generate a random chance (0-100) as a double precision floating point
+ * @return random chance
+ */
+double rand_chance(void) {
+  init_random( );
+  return boost::random::uniform_real_distribution< double >( 0, 100.0 )( *mtrand );
 }
+
+/** 
+ * @brief Generate a random chance (0-100) as a floating point
+ * @return random chance
+ */
+float rand_chance_f(void) {
+  init_random( );
+  return boost::random::uniform_real_distribution< float >( 0, 100.0 )( *mtrand );
+}
+
 Tokens::Tokens(const std::string &src, const char sep, uint32 vectorReserve)
 {
     m_str = new char[src.length() + 1];

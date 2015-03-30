@@ -915,7 +915,7 @@ int libmpq_huff_do_decompress(struct huffman_tree* ht, struct huffman_input_stre
 
 int libmpq_huff_init_tree(struct huffman_tree* ht, struct huffman_tree_item* hi, unsigned int cmp)
 {
-    int count;
+    unsigned int count;
 
     /* Clear links for all the items in the tree */
     for (hi = ht->items0008, count = 0x203; count != 0; hi++, count--)
@@ -937,7 +937,7 @@ int libmpq_huff_init_tree(struct huffman_tree* ht, struct huffman_tree_item* hi,
     /* Clear all huffman_decompress items. Do this only if preparing for decompression */
     if (cmp == LIBMPQ_HUFF_DECOMPRESS)
     {
-        for (count = 0; count < sizeof(ht->qd3474) / sizeof(struct huffman_decompress); count++)
+        for (count = 0; count < (sizeof(ht->qd3474) / sizeof(ht->qd3474[0])); count++)
         {
             ht->qd3474[count].offs00 = 0;
         }

@@ -949,7 +949,6 @@ void ObjectMgr::LoadCreatureClassLvlStats()
     }
 
     BarGoLink bar(result->GetRowCount());
-    uint32 totalRow = result->GetRowCount();
     uint32 storedRow = 0;
 
     do
@@ -7272,7 +7271,7 @@ void ObjectMgr::LoadNPCSpellClickSpells()
     sLog.outString(">> Loaded %u spellclick definitions", count);
 }
 
-static char* SERVER_SIDE_SPELL      = "MaNGOS server-side spell";
+static char SERVER_SIDE_SPELL[ ] = "MaNGOS server-side spell";
 
 struct SQLSpellLoader : public SQLStorageLoaderBase<SQLSpellLoader, SQLHashStorage>
 {
@@ -7293,8 +7292,7 @@ struct SQLSpellLoader : public SQLStorageLoaderBase<SQLSpellLoader, SQLHashStora
         }
         else
         {
-            dst = new char[1];
-            *dst = 0;
+            dst = new char[1]( );
         }
     }
 };
@@ -10271,7 +10269,7 @@ void ObjectMgr::LoadTransports(Map* map)
     if (!map)
         return;
 
-    QueryResult* result = WorldDatabase.PQuery("SELECT entry, name, period FROM transports");
+    QueryResult* result = WorldDatabase.PQuery("SELECT entry, name FROM transports");
 
     if (!result)
         return;
@@ -10282,7 +10280,6 @@ void ObjectMgr::LoadTransports(Map* map)
         Field* fields = result->Fetch();
         uint32 entry        = fields[0].GetUInt32();
         std::string name    = fields[1].GetCppString();
-        uint32 period       = fields[2].GetUInt32();
 
         if (MOTransport::GetPossibleMapByEntry(entry, true) != map->GetId() || !MOTransport::IsSpawnedAtDifficulty(entry, map->GetDifficulty()))
             continue;

@@ -2231,12 +2231,12 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
                             continue;
 
                         uint32 critId = achievementCriteria->ID;
-                        if (critId == 1823 && bg->GetTypeID(true) == BATTLEGROUND_WS ||
-                            critId == 1820 && bg->GetTypeID(true) == BATTLEGROUND_AB ||
-                            critId == 1822 && bg->GetTypeID(true) == BATTLEGROUND_EY ||
-                            critId == 1821 && bg->GetTypeID(true) == BATTLEGROUND_AV ||
-                            // critId == && bg->GetTypeID(true) == BATLLEGROUND_SA ||
-                            critId == 12579 && bg->GetTypeID(true) == BATTLEGROUND_IC)
+                        if ( ( critId == 1823 && bg->GetTypeID(true) == BATTLEGROUND_WS ) ||
+                             ( critId == 1820 && bg->GetTypeID(true) == BATTLEGROUND_AB ) ||
+                             ( critId == 1822 && bg->GetTypeID(true) == BATTLEGROUND_EY ) ||
+                             ( critId == 1821 && bg->GetTypeID(true) == BATTLEGROUND_AV ) ||
+                             // ( critId == && bg->GetTypeID(true) == BATLLEGROUND_SA ) ||
+                             ( critId == 12579 && bg->GetTypeID(true) == BATTLEGROUND_IC ) )
                             break;
                         continue;
                     }

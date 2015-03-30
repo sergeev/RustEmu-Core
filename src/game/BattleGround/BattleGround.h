@@ -462,7 +462,7 @@ class BattleGround
         Group* GetBgRaid(Team team);
         void SetBgRaid(Team team, Group* bg_raid);
 
-        virtual void UpdatePlayerScore(Player* Source, uint32 type, uint32 value);
+        virtual void UpdatePlayerScore(Player* Source, uint32 type, uint32 value );
 
         uint32 GetPlayersCountByTeam(Team team) const { return m_PlayersCount[GetTeamIndex(team)]; }
         uint32 GetAlivePlayersCountByTeam(Team team) const; // used in arenas to correctly handle death in spirit of redemption / last stand etc. (killer = killed) cases

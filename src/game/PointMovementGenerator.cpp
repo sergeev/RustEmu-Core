@@ -28,7 +28,7 @@
 //----- Point Movement Generator
 
 template<class T>
-void PointMovementGenerator<T>::Initialize(T& unit)
+void PointMovementGenerator<T>::initialize(T& unit)
 {
     if (unit.hasUnitState(UNIT_STAT_CAN_NOT_REACT | UNIT_STAT_NOT_MOVE))
         return;
@@ -42,7 +42,7 @@ void PointMovementGenerator<T>::Initialize(T& unit)
 }
 
 template<class T>
-void PointMovementGenerator<T>::Finalize(T& unit)
+void PointMovementGenerator<T>::finalize(T& unit)
 {
     unit.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
 
@@ -51,25 +51,22 @@ void PointMovementGenerator<T>::Finalize(T& unit)
 }
 
 template<class T>
-void PointMovementGenerator<T>::Interrupt(T& unit)
+void PointMovementGenerator<T>::interrupt(T& unit)
 {
     unit.InterruptMoving();
     unit.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
 }
 
 template<class T>
-void PointMovementGenerator<T>::Reset(T& unit)
+void PointMovementGenerator<T>::reset(T& unit)
 {
     unit.StopMoving();
     unit.addUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
 }
 
 template<class T>
-bool PointMovementGenerator<T>::Update(T& unit, uint32 const&)
+bool PointMovementGenerator<T>::update(T& unit, uint32 const&)
 {
-    if (!&unit)
-        return false;
-
     if (unit.hasUnitState(UNIT_STAT_CAN_NOT_MOVE))
     {
         unit.clearUnitState(UNIT_STAT_ROAMING_MOVE);
@@ -77,15 +74,12 @@ bool PointMovementGenerator<T>::Update(T& unit, uint32 const&)
     }
 
     if (!unit.hasUnitState(UNIT_STAT_ROAMING_MOVE) && unit.movespline->Finalized())
-        Initialize(unit);
+        initialize(unit);
 
     return !unit.movespline->Finalized();
 }
 
-template<>
-void PointMovementGenerator<Player>::MovementInform(Player&)
-{
-}
+template<> void PointMovementGenerator<Player>::MovementInform(Player&){}
 
 template <>
 void PointMovementGenerator<Creature>::MovementInform(Creature& unit)
@@ -107,38 +101,38 @@ void PointMovementGenerator<Creature>::MovementInform(Creature& unit)
     }
 }
 
-template void PointMovementGenerator<Player>::Initialize(Player&);
-template void PointMovementGenerator<Creature>::Initialize(Creature&);
-template void PointMovementGenerator<Player>::Finalize(Player&);
-template void PointMovementGenerator<Creature>::Finalize(Creature&);
-template void PointMovementGenerator<Player>::Interrupt(Player&);
-template void PointMovementGenerator<Creature>::Interrupt(Creature&);
-template void PointMovementGenerator<Player>::Reset(Player&);
-template void PointMovementGenerator<Creature>::Reset(Creature&);
-template bool PointMovementGenerator<Player>::Update(Player&, const uint32&);
-template bool PointMovementGenerator<Creature>::Update(Creature&, const uint32&);
+template void PointMovementGenerator<Player>::initialize(Player&);
+template void PointMovementGenerator<Creature>::initialize(Creature&);
+template void PointMovementGenerator<Player>::finalize(Player&);
+template void PointMovementGenerator<Creature>::finalize(Creature&);
+template void PointMovementGenerator<Player>::interrupt(Player&);
+template void PointMovementGenerator<Creature>::interrupt(Creature&);
+template void PointMovementGenerator<Player>::reset(Player&);
+template void PointMovementGenerator<Creature>::reset(Creature&);
+template bool PointMovementGenerator<Player>::update(Player&, const uint32&);
+template bool PointMovementGenerator<Creature>::update(Creature&, const uint32&);
 
-void AssistanceMovementGenerator::Finalize(Unit& unit)
+void AssistanceMovementGenerator::finalize(Creature& creature)
 {
-    unit.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
+    creature.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
 
-    ((Creature*)&unit)->SetNoCallAssistance(false);
-    ((Creature*)&unit)->CallAssistance();
-    if (unit.isAlive())
-        unit.GetMotionMaster()->MoveSeekAssistanceDistract(sWorld.getConfig(CONFIG_UINT32_CREATURE_FAMILY_ASSISTANCE_DELAY));
+    creature.SetNoCallAssistance(false);
+    creature.CallAssistance();
+    if (creature.isAlive())
+        creature.GetMotionMaster()->MoveSeekAssistanceDistract(sWorld.getConfig(CONFIG_UINT32_CREATURE_FAMILY_ASSISTANCE_DELAY));
 }
 
-void FlyOrLandMovementGenerator::Initialize(Unit& unit)
+void FlyOrLandMovementGenerator::initialize(Creature& creature)
 {
-    if (unit.hasUnitState(UNIT_STAT_CAN_NOT_REACT | UNIT_STAT_NOT_MOVE))
+    if (creature.hasUnitState(UNIT_STAT_CAN_NOT_REACT | UNIT_STAT_NOT_MOVE))
         return;
 
-    unit.StopMoving();
+    creature.StopMoving();
 
     float x, y, z;
     GetDestination(x, y, z);
-    unit.addUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
-    Movement::MoveSplineInit<Unit*> init(unit);
+    creature.addUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
+    Movement::MoveSplineInit<Unit*> init(creature);
     init.SetFly();
     init.SetAnimation(m_liftOff ? Movement::FlyToGround : Movement::ToGround);
     init.MoveTo(x, y, z, false);

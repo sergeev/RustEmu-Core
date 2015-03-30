@@ -165,7 +165,7 @@ int libmpq_zlib_decompress(char* out_buf, int* out_length, char* in_buf, int in_
  *
  *  1500F5F0
  */
-int libmpq_huff_decompress(char* out_buf, int* out_length, char* in_buf, int in_length)
+int libmpq_huff_decompress(char* out_buf, int* out_length, char* in_buf, int /*in_length*/)
 {
     struct huffman_tree*     ht = (huffman_tree*)malloc(sizeof(struct huffman_tree));
     struct huffman_input_stream* is = (huffman_input_stream*)malloc(sizeof(struct huffman_input_stream));

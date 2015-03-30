@@ -28,6 +28,7 @@
 #include "MovementGenerator.h"
 #include "WaypointManager.h"
 #include "DBCStructure.h"
+#include "Player.h"
 
 #include <vector>
 #include <set>
@@ -67,25 +68,26 @@ class MANGOS_DLL_SPEC WaypointMovementGenerator<Creature> :
     public PathMovementBase<Creature, WaypointPath const*>
 {
     public:
-        WaypointMovementGenerator(Creature&) : m_nextMoveTime(0), m_lastReachedWaypoint(0), m_isArrivalDone(false) {}
+        WaypointMovementGenerator(Creature&) : m_nextMoveTime(0), m_isArrivalDone(false), m_lastReachedWaypoint(0) {}
         ~WaypointMovementGenerator() { m_path = NULL; }
 
-        void Initialize(Creature& u);
-        void Interrupt(Creature&);
-        void Finalize(Creature&);
-        void Reset(Creature& u);
-        bool Update(Creature& u, const uint32& diff);
         void InitializeWaypointPath(Creature& u, int32 id, WaypointPathOrigin wpSource, uint32 initialDelay, uint32 overwriteEntry);
 
         MovementGeneratorType GetMovementGeneratorType() const { return WAYPOINT_MOTION_TYPE; }
-
-        bool GetResetPosition(Creature&, float& /*x*/, float& /*y*/, float& /*z*/, float& /*o*/) const;
         uint32 getLastReachedWaypoint() const { return m_lastReachedWaypoint; }
         void GetPathInformation(int32& pathId, WaypointPathOrigin& wpOrigin) const { pathId = m_pathId; wpOrigin = m_PathOrigin; }
         void GetPathInformation(std::ostringstream& oss) const;
 
         void AddToWaypointPauseTime(int32 waitTimeDiff);
         bool SetNextWaypoint(uint32 pointId);
+
+        void initialize(Creature& u);
+        void interrupt(Creature&);
+        void finalize(Creature&);
+        void reset(Creature& u);
+        bool update(Creature& u, const uint32& diff);
+        bool getResetPosition(Creature&, float& /*x*/, float& /*y*/, 
+                              float& /*z*/, float& /*o*/) const;
 
 private:
     void LoadPath(Creature& c, int32 id, WaypointPathOrigin wpOrigin, uint32 overwriteEntry);
@@ -118,12 +120,7 @@ class MANGOS_DLL_SPEC FlightPathMovementGenerator :
             m_path = &pathnodes;
             m_currentNode = startNode;
         }
-        virtual void Initialize(Player &u) {_Initialize(u);};
-        virtual void Finalize(Player &u)   {_Finalize(u);};
-        virtual void Interrupt(Player &u)  {_Interrupt(u);};
-        virtual void Reset(Player &u)      {_Reset(u);};
 
-        bool Update(Player &, const uint32 &);
         MovementGeneratorType GetMovementGeneratorType() const { return FLIGHT_MOTION_TYPE; }
 
         TaxiPathNodeList const& GetPath() { return *m_path; }
@@ -133,13 +130,13 @@ class MANGOS_DLL_SPEC FlightPathMovementGenerator :
         void SetCurrentNodeAfterTeleport();
         void SkipCurrentNode() { ++m_currentNode; }
         void DoEventIfAny(Player& player, TaxiPathNodeEntry const& node, bool departure);
-        bool GetResetPosition(Player&, float& x, float& y, float& z, float& o) const;
 
-    protected:
-        void _Initialize(Player &);
-        void _Finalize(Player &);
-        void _Interrupt(Player &);
-        void _Reset(Player &);
+        void initialize(Player &);
+        void finalize(Player &);
+        void interrupt(Player &);
+        void reset(Player &);
+        bool update(Player &, const uint32 &);
+        bool getResetPosition(Player&, float& x, float& y, float& z, float& o) const;
 
 };
 

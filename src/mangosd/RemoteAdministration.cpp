@@ -52,10 +52,7 @@ SocketPtr RemoteAdminSocketMgr::CreateSocket(NetworkThread& owner)
 
 //////////////////////////////////////////////////////////////////////////
 RASocket::RASocket(NetworkManager& manager, NetworkThread& owner) :
-    Socket(manager, owner),
-    m_isLogged(0),
-    m_accountID(0),
-    m_loginTry(0)
+    Socket(manager, owner), m_loginTry(0), m_isLogged(0), m_accountID(0)
 {
     m_minAccountLevel = AccountTypes(sConfig.GetIntDefault("RA.MinLevel", SEC_ADMINISTRATOR));
 }
@@ -208,7 +205,7 @@ void RASocket::ProcessCommand(std::string command)
         return;
     }
 
-    sLog.outRALog("User '%s' command.", m_userName.c_str(), command.c_str());
+    sLog.outRALog("User '%s' command: [%s]", m_userName.c_str(), command.c_str());
     if ((command == "quit") || (command == "exit"))
     {
         SendString("Bye!");
@@ -259,7 +256,7 @@ void RASocket::zprint(void* callbackArg, const char* szText)
     ((RASocket*)callbackArg)->SendString(szText);
 }
 
-void RASocket::commandFinished(void* callbackArg, bool success)
+void RASocket::commandFinished(void* callbackArg, bool /* success */ )
 {
     RASocket* raSocket = (RASocket*)callbackArg;
     raSocket->SendString(CMANGOS_PROMPT);

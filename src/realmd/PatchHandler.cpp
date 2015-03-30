@@ -134,8 +134,10 @@ void PatchCache::LoadPatchesInfo()
     }
 }
 
-PatchHandler::PatchHandler(protocol::Socket& socket, boost::filesystem::fstream& fs_patch) : socket_(socket), fs_patch_(fs_patch),
-    timer_(socket.get_io_service(), boost::posix_time::seconds(1)), send_buffer_(sizeof(Chunk))
+PatchHandler::PatchHandler(protocol::Socket& socket,
+                           boost::filesystem::fstream& fs_patch) :
+  socket_(socket), timer_(socket.get_io_service(), boost::posix_time::seconds(1)),
+  fs_patch_(fs_patch), send_buffer_(sizeof(Chunk))
 {
     Chunk* data = (Chunk*)send_buffer_.read_data();
     data->cmd = CMD_XFER_DATA;

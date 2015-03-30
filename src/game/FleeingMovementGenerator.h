@@ -29,14 +29,14 @@ class MANGOS_DLL_SPEC FleeingMovementGenerator
     public:
         FleeingMovementGenerator(ObjectGuid fright) : i_frightGuid(fright), i_nextCheckTime(0) {}
 
-        void Initialize(T&);
-        void Finalize(T&);
-        void Interrupt(T&);
-        void Reset(T&);
-        bool Update(T&, const uint32&);
-
         MovementGeneratorType GetMovementGeneratorType() const { return FLEEING_MOTION_TYPE; }
         const char* Name() const { return "<Fleeing>"; }
+
+        virtual void initialize(T&);
+        virtual void finalize(T&);
+        virtual void interrupt(T&);
+        virtual void reset(T&);
+        virtual bool update(T&, const uint32&);
 
     private:
         void _setTargetLocation(T& owner);
@@ -55,9 +55,10 @@ class MANGOS_DLL_SPEC TimedFleeingMovementGenerator
             i_totalFleeTime(time) {}
 
         MovementGeneratorType GetMovementGeneratorType() const { return TIMED_FLEEING_MOTION_TYPE; }
-        bool Update(Unit&, const uint32&);
-        void Finalize(Unit&);
         const char* Name() const { return "<TimedFleeing>"; }
+
+        virtual bool update(Creature&, const uint32&);
+        virtual void finalize(Creature&);
 
     private:
         TimeTracker i_totalFleeTime;

@@ -47,7 +47,7 @@ bool ADT_file::prepareLoadedData()
     a_grid = (adt_MHDR*)(GetData() + 8 + version->size);
     if (!a_grid->prepareLoadedData())
         return false;
-
+        
     return true;
 }
 
@@ -56,6 +56,20 @@ bool adt_MHDR::prepareLoadedData()
     if (fcc != 'MHDR')
         return false;
 
+    (void)this->offsTex;
+    (void)this->offsModels;
+    (void)this->offsModelsIds;
+    (void)this->offsMapObjects;
+    (void)this->offsMapObjectsIds;
+    (void)this->offsDoodsDef;
+    (void)this->offsObjectsDef;
+    (void)this->offsMFBO;
+    (void)this->data1;
+    (void)this->data2;
+    (void)this->data3;
+    (void)this->data4;
+    (void)this->data5;
+    
     if (size != sizeof(adt_MHDR) - 8)
         return false;
 
@@ -80,6 +94,8 @@ bool adt_MCIN::prepareLoadedData()
         for (int j = 0; j < ADT_CELLS_PER_GRID; j++)
             if (cells[i][j].offsMCNK && !getMCNK(i, j)->prepareLoadedData())
                 return false;
+
+    (void)this->size;
 
     return true;
 }
@@ -108,6 +124,8 @@ bool adt_MCNK::prepareLoadedData()
     if (offsMCLQ && !getMCLQ()->prepareLoadedData())
         return false;
 
+    (void)this->size;
+
     return true;
 }
 
@@ -127,5 +145,7 @@ bool adt_MCLQ::prepareLoadedData()
     if (fcc != 'MCLQ')
         return false;
 
+    (void)this->size;
+    
     return true;
 }

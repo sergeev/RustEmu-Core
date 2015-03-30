@@ -7419,7 +7419,8 @@ bool ChatHandler::HandleMmapTestHeight(char* args)
     if (radius < 0.1f)
     {
         if (unit->GetTypeId() == TYPEID_UNIT)
-            PSendSysMessage("Provided spawn radius in table for %s is too small. using 5.0f instead.");
+            PSendSysMessage("Provided spawn radius in table for %s is too small. "
+                            "using 5.0f instead.", unit->GetGuidStr( ).c_str( ) );
         else
             PSendSysMessage("Provided spawn radius is too small. using 5.0f instead.");
         radius = 5.0f;
@@ -7459,7 +7460,7 @@ bool ChatHandler::HandleTransportListCommand(char* args)
     if (!map)
         return false;
 
-    QueryResult *result = WorldDatabase.PQuery("SELECT entry, name, period FROM transports");
+    QueryResult *result = WorldDatabase.PQuery("SELECT entry, name FROM transports");
     if (!result)
         return false;
 
@@ -7468,7 +7469,6 @@ bool ChatHandler::HandleTransportListCommand(char* args)
         Field *fields       = result->Fetch();
         uint32 entry        = fields[0].GetUInt32();
         std::string name    = fields[1].GetCppString();
-        uint32 period       = fields[2].GetUInt32();
 
         ObjectGuid guid = ObjectGuid(HIGHGUID_MO_TRANSPORT, entry);
         Transport* transport  = map->GetTransport(guid);
@@ -7481,23 +7481,22 @@ bool ChatHandler::HandleTransportListCommand(char* args)
         if (!gInfo)
             continue;
 
-        PSendSysMessage("Transport: %s on map %u (%s), %s, passengers " SIZEFMTD ", current coords %f %f %f",
-            transport->GetObjectGuid().GetString().c_str(),
-            mapID,
-            name.c_str(),
-            transport->isActiveObject() ? "active" : "passive",
-            transport->GetTransportKit()->GetPassengers().size(),
-            transport->GetPositionX(),
-            transport->GetPositionY(),
-            transport->GetPositionZ()
-            );
+        PSendSysMessage("Transport: %s on map %u (%s), %s, passengers " SIZEFMTD
+                        ", current coords %f %f %f",
+                        transport->GetObjectGuid().GetString().c_str(),
+                        mapID, name.c_str(),
+                        transport->isActiveObject() ? "active" : "passive",
+                        transport->GetTransportKit()->GetPassengers().size(),
+                        transport->GetPositionX(),
+                        transport->GetPositionY(),
+                        transport->GetPositionZ() );
     } while (result->NextRow());
 
     delete result;
     return true;
 }
 
-bool ChatHandler::HandleTransportCurrentCommand(char* args)
+bool ChatHandler::HandleTransportCurrentCommand(char* /*args*/)
 {
     Player* player = m_session->GetPlayer();
 

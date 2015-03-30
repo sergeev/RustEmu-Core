@@ -73,7 +73,7 @@ set(SOURCES
 add_executable( MoveMapGen ${SOURCES} )
 
 IF(WIN32)
-  target_link_libraries( MoveMapGen g3dlite vmap Detour Recast zlib )
+  target_link_libraries( MoveMapGen g3dlite vmap Detour Recast zlib ${Boost_LIBRARIES} )
 ELSE()
-  target_link_libraries( MoveMapGen g3dlite vmap Detour Recast z )
+  target_link_libraries( MoveMapGen g3dlite vmap Detour Recast z ${Boost_LIBRARIES} )
 ENDIF()

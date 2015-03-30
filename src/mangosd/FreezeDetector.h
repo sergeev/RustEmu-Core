@@ -29,7 +29,7 @@
 class FreezeDetectorRunnable : public MaNGOS::Runnable
 {
 public:
-    FreezeDetectorRunnable() : delaytime_(0), loops_(0), lastchange_(0) { }
+    FreezeDetectorRunnable() : loops_(0), lastchange_(0), delaytime_(0) { }
 
     void run(void) override
     {

@@ -132,8 +132,8 @@ bool find_path()
 
     // don't count the root
     int count_fwd = 0, count_back = 0;
-    for(ptr = cur_path-1; ptr = strchr(ptr+1, '/'); count_fwd++);
-    for(ptr = cur_path-1; ptr = strchr(ptr+1, '\\'); count_back++);
+    for(ptr = cur_path-1; (ptr = strchr(ptr+1, '/')); count_fwd++);
+    for(ptr = cur_path-1; (ptr = strchr(ptr+1, '\\')); count_back++);
     int count = std::max(count_fwd, count_back);
 
     char path[MAX_PATH];
@@ -189,7 +189,7 @@ bool fetch_origin()
     // use the public clone url if present because the private may require a password
     snprintf(cmd, MAX_CMD, "git fetch %s %s", (origins[1][0] ? origins[1] : origins[0]), remote_branch);
     int ret = system(cmd);
-    return true;
+    return ret == 0;
 }
 
 bool check_fwd()

@@ -61,8 +61,8 @@ class StunnedState : public IdleMovementGenerator
         const char* Name() const { return "<Stunned>"; }
         void Interrupt(Unit& u) { Finalize(u); }
         void Reset(Unit& u) { Initialize(u); }
-        void Initialize(Unit& u) {}
-        void Finalize(Unit& u) {}
+        void Initialize(Unit& /*u*/) {}
+        void Finalize(Unit& /*u*/) {}
 };
 
 class RootState : public IdleMovementGenerator
@@ -71,8 +71,8 @@ class RootState : public IdleMovementGenerator
         const char* Name() const { return "<Rooted>"; }
         void Interrupt(Unit& u) { Finalize(u); }
         void Reset(Unit& u) { Initialize(u); }
-        void Initialize(Unit& u) {}
-        void Finalize(Unit& u) {}
+        void Initialize(Unit& /*u*/) {}
+        void Finalize(Unit& /*u*/) {}
 };
 
 class FeignDeathState : public IdleMovementGenerator
@@ -124,9 +124,9 @@ public:
 
 public:
     const char* Name() const { return "<FlightPath>"; }
-    void Interrupt(Player& u)
+    void interrupt(Player& u)
     {
-        _Interrupt(u);
+        interrupt(u);
 
         u.clearUnitState(UNIT_STAT_TAXI_FLIGHT);
         if (m_displayId)
@@ -138,12 +138,12 @@ public:
             u.Mount(m_previewDisplayId);
     }
 
-    void Reset(Player &u)
+    void reset(Player &u)
     {
-        Initialize(u);
+        initialize(u);
     }
 
-    void Initialize(Player& u)
+    void initialize(Player& u)
     {
         if (m_displayId)
         {
@@ -156,10 +156,10 @@ public:
         u.addUnitState(UNIT_STAT_TAXI_FLIGHT);
         u.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_TAXI_FLIGHT);
 
-        _Initialize(u);
+        FlightPathMovementGenerator::initialize(u);
     }
 
-    void Finalize(Player &u)
+    void finalize(Player &u)
     {
         // remove flag to prevent send object build movement packets for flight state and crash (movement generator already not at top of stack)
         if (m_displayId)
@@ -167,7 +167,7 @@ public:
         u.clearUnitState(UNIT_STAT_TAXI_FLIGHT);
         u.RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_TAXI_FLIGHT);
 
-        _Finalize(u);
+        FlightPathMovementGenerator::finalize(u);
 
         if (m_previewDisplayId)
             u.Mount(m_previewDisplayId);
@@ -186,8 +186,10 @@ public:
     const char* Name() const { return "<OnVehicle>"; }
     void Interrupt(Unit& u) { Finalize(u); }
     void Reset(Unit& u) { Initialize(u); }
-    void Initialize(Unit& u) {}
-    void Finalize(Unit& u) {}
+    void Initialize(Unit& /*u*/) {}
+    void Finalize(Unit& /*u*/) {}
+
+    uint32 GetSeat( ) { return m_seatId; }
 
 private:
     int8 m_seatId;
@@ -201,9 +203,11 @@ public:
     const char* Name() const { return "<Controlled>"; }
     void Interrupt(Unit& u) { Finalize(u); }
     void Reset(Unit& u) { Initialize(u); }
-    void Initialize(Unit& u) {}
-    void Finalize(Unit& u) {}
+    void Initialize(Unit& /*u*/) {}
+    void Finalize(Unit& /*u*/) {}
 
+    uint32 GetState( ) { return m_state; }
+  
 private:
     uint8 m_state;
 };
@@ -506,7 +510,8 @@ void UnitStateMgr::DropAllStates()
     // Assume, that if only one action - that IDLE appears (rechecked later).
     if (m_actions.size() > 1)
     {
-        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "UnitStateMgr:DropAllStates %s drop all active states (count = %u)", GetOwnerStr().c_str(), m_actions.size());
+        DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "UnitStateMgr:DropAllStates %s drop all active"
+                         " states (count = %zu)", GetOwnerStr().c_str(), m_actions.size());
         DropActionHigherThen(UNIT_ACTION_PRIORITY_IDLE);
     }
     // Unique action after dropping may be not UNIT_ACTION_IDLE

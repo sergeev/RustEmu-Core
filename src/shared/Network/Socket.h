@@ -85,10 +85,10 @@ protected:
     LockType out_buffer_lock_;
 
     /// Buffer used for writing output.
-    std::auto_ptr<NetworkBuffer> out_buffer_;
+    std::unique_ptr<NetworkBuffer> out_buffer_;
 
     /// Buffer used for receiving input
-    std::auto_ptr<NetworkBuffer> read_buffer_;
+    std::unique_ptr<NetworkBuffer> read_buffer_;
 
     NetworkManager& manager_;
     NetworkThread& owner_;

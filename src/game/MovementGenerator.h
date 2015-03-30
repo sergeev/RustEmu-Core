@@ -70,44 +70,46 @@ class MANGOS_DLL_SPEC MovementGeneratorMedium : public MovementGenerator
     public:
         void Initialize(Unit &u)
         {
-            //u->AssertIsType<T>();
-            (static_cast<D*>(this))->Initialize(*((T*)&u));
+          T *unit = dynamic_cast< T * >( &u );
+          if ( unit != NULL ) ((D *)this)->initialize(*unit);
         }
         void Finalize(Unit &u)
         {
-            //u->AssertIsType<T>();
-            (static_cast<D*>(this))->Finalize(*((T*)&u));
+          T *unit = dynamic_cast< T * >( &u );
+          if ( unit != NULL ) ((D *)this)->finalize(*unit);
         }
         void Interrupt(Unit &u)
         {
-            //u->AssertIsType<T>();
-            (static_cast<D*>(this))->Interrupt(*((T*)&u));
+          T *unit = dynamic_cast< T * >( &u );
+          if ( unit != NULL ) ((D *)this)->interrupt(*unit);
         }
         void Reset(Unit &u)
         {
-            //u->AssertIsType<T>();
-            (static_cast<D*>(this))->Reset(*((T*)&u));
+          T *unit = dynamic_cast< T * >( &u );
+          if ( unit != NULL ) ((D *)this)->reset(*unit);
         }
         bool Update(Unit &u, const uint32 &time_diff)
         {
-            //u->AssertIsType<T>();
-            return (static_cast<D*>(this))->Update(*((T*)&u), time_diff);
+          T *unit = dynamic_cast< T * >( &u );
+          return ( unit != NULL ) ? ((D *)this)->update(*unit, time_diff) : true;
         }
+
         bool GetResetPosition(Unit& u, float& x, float& y, float& z, float& o) const override
         {
-            // u->AssertIsType<T>();
-            return (static_cast<D const*>(this))->GetResetPosition(*((T*)&u), x, y, z, o);
+          T *unit = dynamic_cast< T * >( &u );
+          return ( unit != NULL ) ? ((D *)this)->getResetPosition(*unit, x, y, z, o) : false;
         }
-    public:
+
         // will not link if not overridden in the generators
-        void Initialize(T &u);
-        void Finalize(T &u);
-        void Interrupt(T &u);
-        void Reset(T &u);
-        bool Update(T &u, const uint32 &time_diff);
+        void initialize(T &u);
+        void finalize(T &u);
+        void interrupt(T &u);
+        void reset(T &u);
+        bool update(T &u, const uint32 &time_diff);
 
         // not need always overwrites
-        bool GetResetPosition(T& /*u*/, float& /*x*/, float& /*y*/, float& /*z*/, float& /*o*/) const { return false; }
+        bool getResetPosition(T& /*u*/, float& /*x*/, float& /*y*/, float& /*z*/, 
+                              float& /*o*/) const { return false; }
 };
 
 struct SelectableMovement : public FactoryHolder<MovementGenerator,MovementGeneratorType>

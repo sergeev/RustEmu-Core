@@ -511,7 +511,7 @@ template<typename T> WorldObject* Spell::FindCorpseUsing(uint32 corpseTypeMask)
 }
 
 template<class T>
-bool Spell::CheckTargetBeforeLimitation(T* target, SpellEffectIndex eff)
+bool Spell::CheckTargetBeforeLimitation(T* target, SpellEffectIndex /* eff */)
 {
     DETAIL_FILTER_LOG(LOG_FILTER_SPELL_CAST, "Spell::CheckTargetBeforeLimitation unhandled target check call, spell %u caster %s, target %s",
         m_spellInfo->Id,
@@ -545,7 +545,7 @@ bool Spell::CheckTargetBeforeLimitation(Unit* target, SpellEffectIndex eff)
 }
 
 template<class T>
-bool Spell::CheckTarget(T* target, SpellEffectIndex eff)
+bool Spell::CheckTarget(T* target, SpellEffectIndex /* eff */)
 {
 
     DETAIL_FILTER_LOG(LOG_FILTER_SPELL_CAST, "Spell::CheckTarget unhandled target check call, spell %u, caster %s, target %s",
@@ -2099,10 +2099,12 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             Map* pMap = target->GetMap();
             if (pMap)
             {
-                if (!pMap->GetHitPosition(loc.x, loc.y, loc.z + 2.0f, dest.x, dest.y, dest.z, target->GetPhaseMask(), -0.5f))
-                    DEBUG_LOG("Spell::EffectLeap/Teleport unit %u forwarded on %f", target->GetObjectGuid().GetCounter(), target->GetDistance(dest));
+                if (!pMap->GetHitPosition(loc.x, loc.y, fz + 2.0f, dest.x, dest.y, dest.z, target->GetPhaseMask(), -0.5f))
+                    DEBUG_LOG("Spell::EffectLeap/Teleport unit %u forwarded on %f", target->GetObjectGuid().GetCounter(),
+                              target->GetDistance(dest));
                 else
-                    DEBUG_LOG("Spell::EffectLeap/Teleport unit %u NOT forwarded on %f, real distance is %f", target->GetObjectGuid().GetCounter(), distance, target->GetDistance(dest));
+                    DEBUG_LOG("Spell::EffectLeap/Teleport unit %u NOT forwarded on %f, real distance is %f",
+                              target->GetObjectGuid().GetCounter(), distance, target->GetDistance(dest));
             }
 
             m_targets.setDestination(dest);
@@ -2116,7 +2118,8 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
             {
                 m_targets.setSource(m_targets.getDestination());
                 WorldLocation loc = m_targets.getDestination();
-                m_caster->GetRandomPoint(m_targets.getDestination().getX(), m_targets.getDestination().getY(), m_targets.getDestination().getZ(), radius, loc.x, loc.y, loc.z);
+                m_caster->GetRandomPoint(m_targets.getDestination().getX(), m_targets.getDestination().getY(),
+                                         m_targets.getDestination().getZ(), radius, loc.x, loc.y, loc.z);
                 m_targets.setDestination(loc);
                 targetUnitMap.push_back(m_caster);
             }
@@ -7735,7 +7738,7 @@ SpellCastResult Spell::CheckItems()
                 // Mana Potion, Rage Potion, Thistle Tea(Rogue), ...
                 if (m_spellInfo->Effect[i] == SPELL_EFFECT_ENERGIZE)
                 {
-                    if (m_spellInfo->EffectMiscValue[i] < 0 || m_spellInfo->EffectMiscValue[i] >= MAX_POWERS)
+                    if (m_spellInfo->EffectMiscValue[i] < 0 || ( Powers ) m_spellInfo->EffectMiscValue[i] >= MAX_POWERS)
                     {
                         failReason = SPELL_FAILED_ALREADY_AT_FULL_POWER;
                         continue;

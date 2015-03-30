@@ -286,7 +286,7 @@ bool AuthSocket::HandleLogonChallenge()
 
     Read((char *)&buf[0], 4);
 
-    EndianConvert(*((uint16*)(buf[0])));
+    EndianConvert(*((uint16*)&buf[0]));
     uint16 remaining = ((sAuthLogonChallenge_C *)&buf[0])->size;
     DEBUG_LOG("[AuthChallenge] got header, body is %#04x bytes", remaining);
 
@@ -377,11 +377,10 @@ bool AuthSocket::HandleLogonChallenge()
                     // build whitelist
                     std::list<uint32> accountsInWhitelist;
                     accountsInWhitelist.clear();
-                    QueryResult* IDsinwhite = LoginDatabase.PQuery("SELECT whitelist FROM multi_IP_whitelist WHERE whitelist LIKE '%|%u|%'", accountId);
+                    QueryResult* IDsinwhite = LoginDatabase.PQuery("SELECT whitelist FROM multi_IP_whitelist WHERE whitelist LIKE '%%|%u|%%'", accountId);
                     if (IDsinwhite)
                     {
                         Tokens whitelistaccounts((*IDsinwhite)[0].GetCppString(), '|');
-                        bool isInWhite = false;
                         for (Tokens::const_iterator itr = whitelistaccounts.begin(); itr != whitelistaccounts.end(); ++itr)
                             accountsInWhitelist.push_back(atoi(*itr));
                         delete IDsinwhite;
@@ -665,7 +664,7 @@ bool AuthSocket::HandleLogonProof()
             patch_.open(file_path);
             boost::uintmax_t file_size = boost::filesystem::file_size(file_path);
 
-            if (file_size == -1)
+            if (file_size == 0)
             {
                 CloseSocket();
                 return false;
@@ -858,7 +857,7 @@ bool AuthSocket::HandleReconnectChallenge()
 
     Read((char *)&buf[0], 4);
 
-    EndianConvert(*((uint16*)(buf[0])));
+    EndianConvert(*((uint16*)&buf[0]));
     uint16 remaining = ((sAuthLogonChallenge_C *)&buf[0])->size;
     DEBUG_LOG("[ReconnectChallenge] got header, body is %#04x bytes", remaining);
 
@@ -1222,7 +1221,7 @@ bool AuthSocket::HandleXferResume()
     uint64 file_size = patch_.tellg();
     patch_.seekg(0, patch_.beg);
 
-    if (file_size == -1 || start_pos >= file_size)
+    if (file_size == ( uint64 ) -1 || start_pos >= file_size)
     {
         CloseSocket();
         return false;

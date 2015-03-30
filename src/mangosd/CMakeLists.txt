@@ -45,7 +45,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/game
   ${CMAKE_BINARY_DIR}
   ${CMAKE_BINARY_DIR}/src/shared
-  ${ACE_INCLUDE_DIR}
   ${OPENSSL_INCLUDE_DIR}
 )
 
@@ -60,10 +59,6 @@ add_executable(${EXECUTABLE_NAME}
 )
 
 add_dependencies(${EXECUTABLE_NAME} revision.h)
-if(NOT ACE_USE_EXTERNAL)
-  add_dependencies(${EXECUTABLE_NAME} ACE_Project)
-# add_dependencies(${EXECUTABLE_NAME} ace)
-endif()
 
 target_link_libraries(${EXECUTABLE_NAME}
   game
@@ -72,7 +67,6 @@ target_link_libraries(${EXECUTABLE_NAME}
   g3dlite
   gsoap
   ${Boost_LIBRARIES}
-  ${ACE_LIBRARIES}
 )
 
 if(WIN32)

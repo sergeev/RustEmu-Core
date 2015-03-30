@@ -1698,7 +1698,7 @@ void LFGMgr::UpdateBoot(Player* pPlayer, LFGAnswer answer)
     if (!GetLFGGroupState(pGroup->GetObjectGuid())->IsBootActive())
         return;
 
-    DEBUG_LOG("LFGMgr::UpdateBoot: group %u kicker %u answer %u", pGroup->GetObjectGuid().GetCounter(), pPlayer->GetObjectGuid().GetCounter(), accept);
+    DEBUG_LOG("LFGMgr::UpdateBoot: group %u kicker %u answer %u", pGroup->GetObjectGuid().GetCounter(), pPlayer->GetObjectGuid().GetCounter(), answer);
 
     GetLFGGroupState(pGroup->GetObjectGuid())->UpdateBoot(pPlayer->GetObjectGuid(),answer);
 
@@ -1777,7 +1777,7 @@ void LFGMgr::Teleport(Group* pGroup, bool out)
     pGroup->SendUpdate();
 }
 
-void LFGMgr::Teleport(Player* pPlayer, bool out, bool fromOpcode /*= false*/)
+void LFGMgr::Teleport(Player* pPlayer, bool out, bool /*fromOpcode*/ )
 {
     if (!pPlayer || pPlayer->IsInCombat())
         return;
@@ -2584,11 +2584,11 @@ LFGQueueStatus* LFGMgr::GetDungeonQueueStatus(LFGType type)
     return &m_queueStatus[type];
 }
 
-void LFGMgr::UpdateQueueStatus(Player* pPlayer)
+void LFGMgr::UpdateQueueStatus(Player* /*pPlayer*/)
 {
 }
 
-void LFGMgr::UpdateQueueStatus(Group* pGroup)
+void LFGMgr::UpdateQueueStatus(Group* /*pGroup*/)
 {
 }
 

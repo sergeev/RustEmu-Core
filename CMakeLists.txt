@@ -89,7 +89,7 @@ endif()
 set(BOOST_ROOT $ENV{BOOST_ROOT})
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS regex system filesystem thread program_options REQUIRED)
+find_package(Boost COMPONENTS regex system filesystem thread program_options random REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/dep/include/g3dlite/)
 link_directories(${Boost_LIBRARY_DIRS})
 

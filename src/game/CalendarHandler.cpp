@@ -45,7 +45,7 @@ void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)
     invites = sCalendarMgr.GetPlayerInvitesList(guid);
 
     data << uint32(invites->size());
-    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "WorldSession::HandleCalendarGetCalendar Sending %u invites", invites->size());
+    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "WorldSession::HandleCalendarGetCalendar Sending %zu invites", invites->size());
 
     for (CalendarInvitesList::const_iterator itr = invites->begin(); itr != invites->end(); ++itr)
     {
@@ -67,7 +67,7 @@ void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)
 
     CalendarEventsList* events = sCalendarMgr.GetPlayerEventsList(guid);
     data << uint32(events->size());
-    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "WorldSession::HandleCalendarGetCalendar Sending %u events", events->size());
+    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "WorldSession::HandleCalendarGetCalendar Sending %zu events", events->size());
 
     for (CalendarEventsList::const_iterator itr = events->begin(); itr != events->end(); ++itr)
     {
@@ -124,7 +124,7 @@ void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)
     {
         uint32 map_diff_pair = itr->first;
         uint32 mapId = PAIR32_LOPART(map_diff_pair);
-        Difficulty difficulty = Difficulty(PAIR32_HIPART(map_diff_pair));
+        //Difficulty difficulty = Difficulty(PAIR32_HIPART(map_diff_pair));
         MapDifficultyEntry const* mapDiff = itr->second;
 
         // skip mapDiff without global reset time
@@ -589,7 +589,7 @@ void WorldSession::HandleCalendarEventRemoveInvite(WorldPacket& recv_data)
     DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "WorldSession::HandleCalendarEventRemoveInvite %u EventId %u, ownerInviteId %u, Invitee %u id: %u",
         guid.GetCounter(), eventId.GetCounter(), ownerInviteId.GetCounter(), invitee.GetCounter(), inviteId.GetCounter());
 
-    if (CalendarEvent* calendarEvent = sCalendarMgr.GetEventById(eventId))
+    if (sCalendarMgr.GetEventById(eventId))
         sCalendarMgr.RemoveInvite(eventId, inviteId, guid);
     else
         sCalendarMgr.SendCalendarCommandResult(guid, CALENDAR_ERROR_EVENT_INVALID);

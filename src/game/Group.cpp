@@ -129,14 +129,14 @@ Group::~Group()
         // it is undefined whether objectmgr (which stores the groups) or instancesavemgr
         // will be unloaded first so we must be prepared for both cases
         // this may unload some dungeon persistent state
-        sMapPersistentStateMgr.AddToUnbindQueue(GetObjectGuid());
-
+          sMapPersistentStateMgr.AddToUnbindQueue(GetObjectGuid());
+        
         if (isLFDGroup())
             sLFGMgr.RemoveLFGState(GetObjectGuid());
 
         // recheck deletion in ObjectMgr (must be deleted while disband, but additional check not be bad)
-        sObjectMgr.RemoveGroup(this);
-    }
+          sObjectMgr.RemoveGroup(this);
+        }
     else sLog.outError("Group::~Group: not fully created group type %u has ben deleted.", m_groupType);
 
     // Sub group counters clean up

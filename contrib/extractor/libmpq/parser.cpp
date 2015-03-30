@@ -33,7 +33,7 @@
  *  escape sequences unaffected. This means that " would be
  *  deleted but \" would not.
  */
-char* libmpq_conf_delete_char(char* buf, char* chars)
+char* libmpq_conf_delete_char(char* buf, const char* chars)
 {
     static char* temp;
     char ch;
@@ -41,7 +41,7 @@ char* libmpq_conf_delete_char(char* buf, char* chars)
     temp = buf;
 
     /* strip out special chars like " */
-    while (temp = strpbrk(temp, chars))
+    while ((temp = strpbrk(temp, chars)))
     {
         ch = temp[0];
         memmove(&temp[0], &temp[1], strlen(temp));
@@ -58,7 +58,8 @@ char* libmpq_conf_delete_char(char* buf, char* chars)
  *  This function parses a line for the value to the given option. It
  *  return 1 on success and the byte array or 0 and null.
  */
-int libmpq_conf_parse_line(char* line, char* search_value, char* return_value, int size)
+int libmpq_conf_parse_line(char* line, const char* /*search_value*/,
+                           char* return_value, int size)
 {
     int level = 0;
     int found = 0;
@@ -137,7 +138,7 @@ int libmpq_conf_parse_line(char* line, char* search_value, char* return_value, i
  *  This function returns the value for a given option in the
  *  listdb or config file. On success it returns 1, otherwise 0.
  */
-int libmpq_conf_get_value(FILE* fp, char* search_value, void* return_value, int type, int size)
+int libmpq_conf_get_value(FILE* fp, const char* search_value, void* return_value, int type, int size)
 {
     char buf[LIBMPQ_CONF_BUFSIZE];
     int found = 0;
@@ -219,7 +220,7 @@ int libmpq_conf_get_value(FILE* fp, char* search_value, void* return_value, int 
  *  found in the config file. As second value it returns th number of
  *  entries in the byte array. On success it returns 1, otherwise 0.
  */
-int libmpq_conf_get_array(FILE* fp, char* search_value, char** *filelist, int* entries)
+int libmpq_conf_get_array(FILE* fp, const char* search_value, char** *filelist, int* entries)
 {
     char buf[LIBMPQ_CONF_BUFSIZE];
     char temp[LIBMPQ_CONF_BUFSIZE];
@@ -229,7 +230,6 @@ int libmpq_conf_get_array(FILE* fp, char* search_value, char** *filelist, int* e
     int fl_count;
     int fl_size;
     int found = 0;
-    int i = 0;
 
     *entries = 0;
 

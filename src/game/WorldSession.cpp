@@ -466,11 +466,8 @@ void WorldSession::LogoutPlayer(bool Save)
 
         ///- Remove pet
         GetPlayer()->RemovePet(PET_SAVE_AS_CURRENT);
-
         GetPlayer()->InterruptNonMeleeSpells(true);
-
-        if (VehicleKit* vehicle = GetPlayer()->GetVehicle())
-            GetPlayer()->ExitVehicle();
+        GetPlayer()->ExitVehicle();
 
         ///- empty buyback items and save the player in the database
         // some save parts only correctly work in case player present in map/player_lists (pets, etc)
@@ -501,9 +498,6 @@ void WorldSession::LogoutPlayer(bool Save)
         ///- Broadcast a logout message to the player's friends
         sSocialMgr.SendFriendStatus(GetPlayer(), FRIEND_OFFLINE, GetPlayer()->GetObjectGuid(), true);
         sSocialMgr.RemovePlayerSocial(GetPlayer()->GetObjectGuid());
-
-        // Playerbot - remember player GUID for update SQL below
-        uint32 guid = GetPlayer()->GetGUIDLow();
 
         ///- Remove the player from the world
         // the player may not be in the world when logging out
@@ -1062,7 +1056,7 @@ void WorldSession::SendBfInvitePlayerToQueue(ObjectGuid battlefieldGuid)
 // Param3: zone id of battlefield (4197 for wg)
 // Param4: if players are able to queue
 // Param5: if battlefield is full
-void WorldSession::SendBfQueueInviteResponse(ObjectGuid battlefieldGuid, ObjectGuid queueGuid, uint32 uiZoneId, bool bCanQueue, bool bFull)
+void WorldSession::SendBfQueueInviteResponse(ObjectGuid battlefieldGuid, ObjectGuid /*queueGuid*/, uint32 uiZoneId, bool bCanQueue, bool bFull)
 {
     WorldPacket data(SMSG_BATTLEFIELD_MANAGER_QUEUE_REQUEST_RESPONSE, 11);
     data << uint32(battlefieldGuid);

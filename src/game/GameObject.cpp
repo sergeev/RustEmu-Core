@@ -2678,7 +2678,7 @@ void GameObject::TickCapturePoint()
         }
 
 
-        DEBUG_LOG("GameObject::TickCapturePoint gameobject %s send event %u to faction %u, players group size %u, new state %u",
+        DEBUG_LOG("GameObject::TickCapturePoint gameobject %s send event %u to faction %u, players group size %zu, new state %u",
             GetGuidStr().c_str(),
             eventId, progressFaction, players.size(), m_captureState);
 
@@ -2807,7 +2807,7 @@ Team GameObject::GetTeam() const
     return TEAM_NONE;
 }
 
-bool GameObject::SetTeam(Team team)
+bool GameObject::SetTeam(Team /*team*/)
 {
     //currently only for GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING, if need for other - make in this method
 

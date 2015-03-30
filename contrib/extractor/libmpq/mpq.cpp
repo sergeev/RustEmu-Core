@@ -214,15 +214,13 @@ int libmpq_archive_info(mpq_archive* mpq_a, unsigned int infotype)
 /*
  * This function returns some useful file information.
  */
-int libmpq_file_info(mpq_archive* mpq_a, unsigned int infotype, const unsigned int number)
+int libmpq_file_info(mpq_archive* mpq_a, unsigned int infotype, unsigned int number)
 {
     int blockindex = number;
-    int i = 0;
     mpq_block* mpq_b = NULL;
-    mpq_hash* mpq_h = NULL;
 
     /* check if given number is not out of range */
-    if (number < 0 || number >= mpq_a->header->blocktablesize)
+    if (number >= mpq_a->header->blocktablesize)
     {
         return LIBMPQ_EINV_RANGE;
     }
@@ -361,11 +359,10 @@ int libmpq_file_check(mpq_archive* mpq_a, void* file, int type)
  *  This function extracts a file from a MPQ archive
  *  by the given number.
  */
-int libmpq_file_extract(mpq_archive* mpq_a, const int number, const char* filename)
+int libmpq_file_extract(mpq_archive* mpq_a, int number, const char* filename)
 {
-    int blockindex = number; //-1;
+    unsigned int blockindex = number; //-1;
     int fd = 0;
-    int i = 0;
     char buffer[0x1000];
     //char tempfile[PATH_MAX];
     unsigned int transferred = 1;
@@ -396,7 +393,8 @@ int libmpq_file_extract(mpq_archive* mpq_a, const int number, const char* filena
     }*/
 
     /* check if file was found */
-    if (blockindex == -1 || blockindex > mpq_a->header->blocktablesize)
+    if ((blockindex == (unsigned int)-1) ||
+        (blockindex > mpq_a->header->blocktablesize))
     {
         return LIBMPQ_EFILE_NOT_FOUND;
     }
@@ -415,21 +413,21 @@ int libmpq_file_extract(mpq_archive* mpq_a, const int number, const char* filena
     }
 
     /* allocate memory for file structure */
-    mpq_f = (mpq_file*)malloc(sizeof(mpq_file));
+    mpq_f = (mpq_file*)calloc(1,sizeof(mpq_file));
     if (!mpq_f)
     {
         return LIBMPQ_EALLOCMEM;
     }
 
     /* initialize file structure */
-    memset(mpq_f, 0, sizeof(mpq_file));
     mpq_f->fd             = fd;
     mpq_f->mpq_b          = mpq_b;
     mpq_f->nblocks        = (mpq_f->mpq_b->fsize + mpq_a->blocksize - 1) / mpq_a->blocksize;
     mpq_f->mpq_h          = mpq_h;
     mpq_f->accessed       = FALSE;
     mpq_f->blockposloaded = FALSE;
-    sprintf((char*)mpq_f->filename, filename);
+    snprintf((char*)mpq_f->filename, sizeof( mpq_f->filename ) /
+             sizeof( mpq_f->filename[ 0 ] ), "%s", filename);
 
     /* allocate buffers for decompression. */
     if (mpq_f->mpq_b->flags & LIBMPQ_FILE_COMPRESSED)
@@ -599,8 +597,7 @@ int libmpq_listfile_close(mpq_archive* mpq_a)
 
 int libmpq_file_getdata(mpq_archive* mpq_a, mpq_hash mpq_h, const int number, unsigned char* dest)
 {
-    int blockindex = number; //-1;
-    int i = 0;
+    unsigned int blockindex = number; //-1;
     mpq_file* mpq_f = NULL;
     mpq_block* mpq_b = NULL;
     int success = 0;
@@ -619,7 +616,8 @@ int libmpq_file_getdata(mpq_archive* mpq_a, mpq_hash mpq_h, const int number, un
     }*/
 
     /* check if file was found */
-    if (blockindex == -1 || blockindex > mpq_a->header->blocktablesize)
+    if ((blockindex == (unsigned int)-1) ||
+        (blockindex > mpq_a->header->blocktablesize))
     {
         return LIBMPQ_EFILE_NOT_FOUND;
     }
@@ -638,14 +636,12 @@ int libmpq_file_getdata(mpq_archive* mpq_a, mpq_hash mpq_h, const int number, un
     }
 
     /* allocate memory for file structure */
-    mpq_f = (mpq_file*)malloc(sizeof(mpq_file));
+    mpq_f = (mpq_file*)calloc(1,sizeof(mpq_file));
     if (!mpq_f)
     {
         return LIBMPQ_EALLOCMEM;
     }
 
-    /* initialize file structure */
-    memset(mpq_f, 0, sizeof(mpq_file));
     mpq_f->mpq_b          = mpq_b;
     mpq_f->nblocks        = (mpq_f->mpq_b->fsize + mpq_a->blocksize - 1) / mpq_a->blocksize;
     mpq_f->mpq_h          = &mpq_h;
@@ -667,7 +663,7 @@ int libmpq_file_getdata(mpq_archive* mpq_a, mpq_hash mpq_h, const int number, un
         }
     }
 
-    if (libmpq_file_read_file(mpq_a, mpq_f, 0, (char*)dest, mpq_b->fsize) == mpq_b->fsize)
+    if (libmpq_file_read_file(mpq_a, mpq_f, 0, (char*)dest, mpq_b->fsize) == (int)mpq_b->fsize)
         success = 1;
 
     if (mpq_f->mpq_b->flags & LIBMPQ_FILE_COMPRESSED)

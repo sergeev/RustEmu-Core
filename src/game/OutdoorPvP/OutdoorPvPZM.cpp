@@ -47,9 +47,7 @@ OutdoorPvPZM::OutdoorPvPZM(uint32 id) : OutdoorPvP(id),
     sObjectMgr.SetGraveYardLinkTeam(GRAVEYARD_ID_TWIN_SPIRE, GRAVEYARD_ZONE_TWIN_SPIRE, TEAM_INVALID);
 }
 
-void OutdoorPvPZM::SendRemoveWorldStates(Player* player)
-{
-}
+void OutdoorPvPZM::SendRemoveWorldStates(Player* /*player*/){}
 
 void OutdoorPvPZM::HandlePlayerEnterZone(Player* player, bool isMainZone)
 {

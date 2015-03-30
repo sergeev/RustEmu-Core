@@ -29,15 +29,16 @@ class MANGOS_DLL_SPEC ConfusedMovementGenerator
     public:
         explicit ConfusedMovementGenerator() : i_nextMoveTime(0) {}
 
-        void Initialize(T&);
-        void Finalize(T&);
-        void Interrupt(T&);
-        void Reset(T&);
-        bool Update(T&, const uint32&);
-
         MovementGeneratorType GetMovementGeneratorType() const { return CONFUSED_MOTION_TYPE; }
 
         const char* Name() const { return "<Confused>"; }
+
+        void initialize(T&);
+        void finalize(T&);
+        void interrupt(T&);
+        void reset(T&);
+        bool update(T&, const uint32&);
+
     private:
         TimeTracker i_nextMoveTime;
         float i_x, i_y, i_z;

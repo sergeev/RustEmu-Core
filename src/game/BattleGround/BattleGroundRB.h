@@ -46,9 +46,6 @@ class BattleGroundRB : public BattleGround
         void HandleAreaTrigger(Player* source, uint32 trigger);
         // bool SetupBattleGround();
 
-        /* Scorekeeping */
-        void UpdatePlayerScore(Player* source, uint32 type, uint32 value);
-
     private:
 };
 #endif

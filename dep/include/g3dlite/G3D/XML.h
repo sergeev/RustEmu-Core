@@ -142,7 +142,7 @@ public:
         return m_attribute[k];
     }
 
-    const bool containsAttribute(const std::string& k) const {
+    bool containsAttribute(const std::string& k) const {
         return m_attribute.containsKey(k);
     }
 

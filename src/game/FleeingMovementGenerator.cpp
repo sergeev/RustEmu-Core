@@ -32,9 +32,6 @@
 template<class T>
 void FleeingMovementGenerator<T>::_setTargetLocation(T& owner)
 {
-    if (!&owner)
-        return;
-
     // ignore in case other no reaction state
     if (owner.hasUnitState((UNIT_STAT_CAN_NOT_REACT | UNIT_STAT_NOT_MOVE) & ~UNIT_STAT_FLEEING))
         return;
@@ -73,9 +70,6 @@ void FleeingMovementGenerator<T>::_setTargetLocation(T& owner)
 template<class T>
 bool FleeingMovementGenerator<T>::_getPoint(T& owner, float& x, float& y, float& z)
 {
-    if (!&owner)
-        return false;
-
     float dist_from_caster, angle_to_caster;
     if (Unit* fright = owner.GetMap()->GetUnit(i_frightGuid))
     {
@@ -128,7 +122,7 @@ bool FleeingMovementGenerator<T>::_getPoint(T& owner, float& x, float& y, float&
 }
 
 template<class T>
-void FleeingMovementGenerator<T>::Initialize(T& owner)
+void FleeingMovementGenerator<T>::initialize(T& owner)
 {
     owner.StopMoving();
     owner.addUnitState(UNIT_STAT_FLEEING | UNIT_STAT_FLEEING_MOVE);
@@ -140,20 +134,20 @@ void FleeingMovementGenerator<T>::Initialize(T& owner)
 }
 
 template<>
-void FleeingMovementGenerator<Player>::Finalize(Player& owner)
+void FleeingMovementGenerator<Player>::finalize(Player& owner)
 {
     owner.StopMoving();
     owner.clearUnitState(UNIT_STAT_FLEEING | UNIT_STAT_FLEEING_MOVE);
 }
 
 template<>
-void FleeingMovementGenerator<Creature>::Finalize(Creature& owner)
+void FleeingMovementGenerator<Creature>::finalize(Creature& owner)
 {
     owner.clearUnitState(UNIT_STAT_FLEEING | UNIT_STAT_FLEEING_MOVE);
 }
 
 template<class T>
-void FleeingMovementGenerator<T>::Interrupt(T& owner)
+void FleeingMovementGenerator<T>::interrupt(T& owner)
 {
     owner.InterruptMoving();
     // flee state still applied while movegen disabled
@@ -161,15 +155,15 @@ void FleeingMovementGenerator<T>::Interrupt(T& owner)
 }
 
 template<class T>
-void FleeingMovementGenerator<T>::Reset(T& owner)
+void FleeingMovementGenerator<T>::reset(T& owner)
 {
-    Initialize(owner);
+    initialize(owner);
 }
 
 template<class T>
-bool FleeingMovementGenerator<T>::Update(T& owner, uint32 const& time_diff)
+bool FleeingMovementGenerator<T>::update(T& owner, uint32 const& time_diff)
 {
-    if (!&owner || !owner.isAlive())
+    if (!owner.isAlive())
         return false;
 
     // ignore in case other no reaction state
@@ -186,33 +180,33 @@ bool FleeingMovementGenerator<T>::Update(T& owner, uint32 const& time_diff)
     return true;
 }
 
-template void FleeingMovementGenerator<Player>::Initialize(Player&);
-template void FleeingMovementGenerator<Creature>::Initialize(Creature&);
+template void FleeingMovementGenerator<Player>::initialize(Player&);
+template void FleeingMovementGenerator<Creature>::initialize(Creature&);
 template bool FleeingMovementGenerator<Player>::_getPoint(Player&, float&, float&, float&);
 template bool FleeingMovementGenerator<Creature>::_getPoint(Creature&, float&, float&, float&);
 template void FleeingMovementGenerator<Player>::_setTargetLocation(Player&);
 template void FleeingMovementGenerator<Creature>::_setTargetLocation(Creature&);
-template void FleeingMovementGenerator<Player>::Interrupt(Player&);
-template void FleeingMovementGenerator<Creature>::Interrupt(Creature&);
-template void FleeingMovementGenerator<Player>::Reset(Player&);
-template void FleeingMovementGenerator<Creature>::Reset(Creature&);
-template bool FleeingMovementGenerator<Player>::Update(Player&, const uint32&);
-template bool FleeingMovementGenerator<Creature>::Update(Creature&, const uint32&);
+template void FleeingMovementGenerator<Player>::interrupt(Player&);
+template void FleeingMovementGenerator<Creature>::interrupt(Creature&);
+template void FleeingMovementGenerator<Player>::reset(Player&);
+template void FleeingMovementGenerator<Creature>::reset(Creature&);
+template bool FleeingMovementGenerator<Player>::update(Player&, const uint32&);
+template bool FleeingMovementGenerator<Creature>::update(Creature&, const uint32&);
 
-void TimedFleeingMovementGenerator::Finalize(Unit& owner)
+void TimedFleeingMovementGenerator::finalize(Creature& creature)
 {
-    owner.clearUnitState(UNIT_STAT_FLEEING | UNIT_STAT_FLEEING_MOVE);
+    creature.clearUnitState(UNIT_STAT_FLEEING | UNIT_STAT_FLEEING_MOVE);
 }
 
-bool TimedFleeingMovementGenerator::Update(Unit& owner, const uint32& time_diff)
+bool TimedFleeingMovementGenerator::update(Creature& creature, const uint32& time_diff)
 {
-    if (!owner.isAlive())
+    if (!creature.isAlive())
         return false;
 
     // ignore in case other no reaction state
-    if (owner.hasUnitState((UNIT_STAT_CAN_NOT_REACT | UNIT_STAT_NOT_MOVE) & ~UNIT_STAT_FLEEING))
+    if (creature.hasUnitState((UNIT_STAT_CAN_NOT_REACT | UNIT_STAT_NOT_MOVE) & ~UNIT_STAT_FLEEING))
     {
-        owner.clearUnitState(UNIT_STAT_FLEEING_MOVE);
+        creature.clearUnitState(UNIT_STAT_FLEEING_MOVE);
         return true;
     }
 
@@ -222,5 +216,5 @@ bool TimedFleeingMovementGenerator::Update(Unit& owner, const uint32& time_diff)
 
     // This calls grant-parent Update method hiden by FleeingMovementGenerator::Update(Creature &, const uint32 &) version
     // This is done instead of casting Unit& to Creature& and call parent method, then we can use Unit directly
-    return MovementGeneratorMedium<Creature, FleeingMovementGenerator<Creature> >::Update(owner, time_diff);
+    return MovementGeneratorMedium<Creature, FleeingMovementGenerator<Creature> >::Update(creature, time_diff);
 }

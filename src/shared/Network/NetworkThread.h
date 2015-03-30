@@ -51,9 +51,9 @@ private:
     boost::atomic_long                        connections_;
 
     protocol::Service                             service_;
-    std::auto_ptr<protocol::Service::work>   service_work_;
+    std::unique_ptr<protocol::Service::work> service_work_;
 
-    std::auto_ptr<boost::thread>                   thread_;
+    std::unique_ptr<boost::thread>                 thread_;
     boost::mutex                                    mutex_;
     std::string                               m_threadName;
 };

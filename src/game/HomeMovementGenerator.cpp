@@ -24,14 +24,12 @@
 #include "movement/MoveSplineInit.h"
 #include "movement/MoveSpline.h"
 
-void HomeMovementGenerator<Creature>::Initialize(Creature& owner)
+void HomeMovementGenerator<Creature>::initialize(Creature& owner)
 {
     _setTargetLocation(owner);
 }
 
-void HomeMovementGenerator<Creature>::Reset(Creature&)
-{
-}
+void HomeMovementGenerator<Creature>::reset(Creature&){}
 
 void HomeMovementGenerator<Creature>::_setTargetLocation(Creature& owner)
 {
@@ -58,13 +56,13 @@ void HomeMovementGenerator<Creature>::_setTargetLocation(Creature& owner)
     owner.clearUnitState(UNIT_STAT_ALL_DYN_STATES);
 }
 
-bool HomeMovementGenerator<Creature>::Update(Creature& owner, const uint32& time_diff)
+bool HomeMovementGenerator<Creature>::update(Creature& owner, const uint32& /*time_diff*/)
 {
     m_arrived = owner.movespline->Finalized();
     return !m_arrived;
 }
 
-void HomeMovementGenerator<Creature>::Finalize(Creature& owner)
+void HomeMovementGenerator<Creature>::finalize(Creature& owner)
 {
     if (m_arrived)
     {

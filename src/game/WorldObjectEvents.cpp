@@ -440,9 +440,9 @@ bool EvadeDelayEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
 
 AiDelayEventAround::AiDelayEventAround(AIEventType eventType, ObjectGuid invokerGuid, Creature& owner, std::list<Creature*> const& receivers, uint32 miscValue) :
     BasicEvent(WORLDOBJECT_EVENT_TYPE_COMMON),
-    m_eventType(eventType),
     m_invokerGuid(invokerGuid),
     m_owner(owner),
+    m_eventType(eventType),
     m_miscValue(miscValue)
 {
     // Pushing guids because in delay can happen some creature gets despawned => invalid pointer

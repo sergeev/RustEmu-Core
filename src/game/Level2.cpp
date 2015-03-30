@@ -1485,7 +1485,7 @@ bool ChatHandler::HandleModifyPowerTypeCommand(char* args)
 
     int32 type = atoi((char*)args);
 
-    if (type < 0 || type >= MAX_POWERS)
+    if (type < 0 || type >= (int32)MAX_POWERS)
     {
         SendSysMessage(LANG_BAD_VALUE);
         SetSentErrorMessage(true);
@@ -5380,7 +5380,7 @@ bool ChatHandler::HandleWorldStateCommand(char* args)
     return true;
 }
 
-bool ChatHandler::HandleWorldStateListCommand(char* args)
+bool ChatHandler::HandleWorldStateListCommand(char* /*args*/)
 {
     WorldStateSet* wsSet = sWorldStateMgr.GetWorldStatesFor(m_session->GetPlayer());
     if (!wsSet)
@@ -5395,7 +5395,7 @@ bool ChatHandler::HandleWorldStateListCommand(char* args)
     return true;
 }
 
-bool ChatHandler::HandleWorldStateListAllCommand(char* args)
+bool ChatHandler::HandleWorldStateListAllCommand(char* /*args*/)
 {
     WorldStateSet* wsSet = sWorldStateMgr.GetWorldStates(UINT32_MAX);
     if (!wsSet)
@@ -5426,7 +5426,7 @@ bool ChatHandler::HandleWorldStateAddCommand(char* args)
     return true;
 }
 
-bool ChatHandler::HandleWorldStateReloadCommand(char* args)
+bool ChatHandler::HandleWorldStateReloadCommand(char* /*args*/)
 {
     sWorldStateMgr.Initialize();
     PSendSysMessage(LANG_WORLDSTATE_RELOAD,sWorldStateMgr.GetWorldStatesCount(),sWorldStateMgr.GetWorldStateTemplatesCount());

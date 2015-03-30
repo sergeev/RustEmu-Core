@@ -80,10 +80,7 @@ void WaypointManager::Load()
             bar.step();
             Field* fields   = result->Fetch();
 
-            uint32 id       = fields[0].GetUInt32();
-            uint32 count    = fields[1].GetUInt32();
-
-            total_nodes += count;
+            total_nodes += fields[1].GetUInt32();
         }
         while (result->NextRow());
 
@@ -253,10 +250,7 @@ void WaypointManager::Load()
             barRow.step();
             Field* fields = result->Fetch();
 
-            uint32 entry    = fields[0].GetUInt32();
-            uint32 count    = fields[1].GetUInt32();
-
-            total_nodes += count;
+            total_nodes += fields[1].GetUInt32();
         }
         while (result->NextRow());
 

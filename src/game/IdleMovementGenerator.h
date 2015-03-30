@@ -24,7 +24,6 @@
 class MANGOS_DLL_SPEC IdleMovementGenerator : public MovementGenerator
 {
     public:
-
         void Initialize(Unit&) {}
         void Finalize(Unit&) {}
         void Interrupt(Unit&) {}

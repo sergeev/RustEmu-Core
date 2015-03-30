@@ -90,12 +90,12 @@ void RealmList::UpdateRealm(uint32 ID, const std::string& name, const std::strin
     ///- Create new if not exist or update existed
     Realm& realm = realms_[name];
 
-    realm.m_ID       = ID;
-    realm.icon       = icon;
-    realm.realmflags = realm_flags;
-    realm.timezone   = timezone;
+    realm.m_ID                 = ID;
+    realm.icon                 = icon;
+    realm.realmflags           = realm_flags;
+    realm.timezone             = timezone;
     realm.allowedSecurityLevel = allowed_security_level;
-    realm.populationLevel = population;
+    realm.populationLevel      = population;
 
     Tokens tokens(builds, ' ');
     Tokens::iterator iter;

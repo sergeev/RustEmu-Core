@@ -107,14 +107,14 @@ bool UpdateFieldData::IsUpdateFieldVisible(uint16 fieldIndex) const
 }
 
 Object::Object() :
-    m_objectTypeId(TYPEID_OBJECT),
     m_objectType(TYPEMASK_OBJECT),
+    m_objectTypeId(TYPEID_OBJECT),
     m_uint32Values(NULL),
     m_valuesCount(0),
     m_fieldNotifyFlags(UF_FLAG_DYNAMIC),
-    m_inWorld(false),
     m_objectUpdated(false),
-    m_skipUpdate(false)
+    m_skipUpdate(false),
+    m_inWorld(false)
 {
 }
 
@@ -1038,11 +1038,10 @@ void Object::MarkForClientUpdate()
     }
 }
 
-WorldObject::WorldObject()
-    : m_transportInfo(NULL), movespline(new Movement::MoveSpline()),
-    m_currMap(NULL), m_position(WorldLocation()), m_viewPoint(*this), m_isActiveObject(false), m_LastUpdateTime(WorldTimer::getMSTime())
-{
-}
+WorldObject::WorldObject() :
+  movespline(new Movement::MoveSpline()), m_transportInfo(NULL), 
+  m_currMap(NULL), m_position(WorldLocation()), m_viewPoint(*this),
+  m_isActiveObject(false), m_LastUpdateTime(WorldTimer::getMSTime()){}
 
 WorldObject::~WorldObject()
 {
@@ -1534,7 +1533,7 @@ bool WorldObject::IsPositionValid() const
     return MaNGOS::IsValidMapCoord(m_position.x,m_position.y,m_position.z,m_position.o);
 }
 
-void WorldObject::MonsterSay(const char* text, uint32 language, Unit const* target) const
+void WorldObject::MonsterSay(const char* text, uint32 /*language*/, Unit const* target) const
 {
     WorldPacket data;
     ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_SAY, text, LANG_UNIVERSAL, CHAT_TAG_NONE, GetObjectGuid(), GetName(),
@@ -1542,7 +1541,7 @@ void WorldObject::MonsterSay(const char* text, uint32 language, Unit const* targ
     SendMessageToSetInRange(&data, sWorld.getConfig(CONFIG_FLOAT_LISTEN_RANGE_SAY), true);
 }
 
-void WorldObject::MonsterYell(const char* text, uint32 language, Unit const* target) const
+void WorldObject::MonsterYell(const char* text, uint32 /*language*/, Unit const* target) const
 {
     WorldPacket data;
     ChatHandler::BuildChatPacket(data, CHAT_MSG_MONSTER_YELL, text, LANG_UNIVERSAL, CHAT_TAG_NONE, GetObjectGuid(), GetName(),
@@ -2214,7 +2213,7 @@ void WorldObject::AddEvent(BasicEvent* Event, uint64 e_time, bool set_addtime)
         GetEvents()->AddEvent(Event, e_time, set_addtime);
 }
 
-void WorldObject::UpdateEvents(uint32 update_diff, uint32 time)
+void WorldObject::UpdateEvents(uint32 update_diff, uint32 /*time*/)
 {
     GetEvents()->RenewEvents();
     GetEvents()->Update(update_diff);

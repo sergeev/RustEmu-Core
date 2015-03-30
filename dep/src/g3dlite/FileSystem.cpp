@@ -80,6 +80,8 @@ bool FileSystem::Dir::contains(const std::string& f) const {
 }
     
 void FileSystem::Dir::computeZipListing(const std::string& zipfile, const std::string& pathInsideZipfile) {
+  ( void ) zipfile;
+  ( void ) pathInsideZipfile;
 #if _HAVE_ZIP /* G3DFIX: Use ZIP-library only if defined */
     struct zip* z = zip_open( FilePath::removeTrailingSlash(zipfile).c_str(), ZIP_CHECKCONS, NULL );
     debugAssert(z);

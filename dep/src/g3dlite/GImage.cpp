@@ -317,7 +317,7 @@ void GImage::decodePCX(
         throw GImage::Error("Only 8-bit paletted and 24-bit PCX files supported.", input.getFilename());
     }
 
-	// Prepare the pointer object for the pixel data
+        // Prepare the pointer object for the pixel data
     m_byte = (uint8*)m_memMan->alloc(m_width * m_height * 3);
 
     if ((paletteType == 1) && (planes == 3)) {
@@ -634,7 +634,7 @@ void GImage::rotate90CW(int numTimes) {
     uint8* old = NULL;
     numTimes = iWrap(numTimes, 4);
     if (numTimes > 0) {
-        (uint8*)m_memMan->alloc(m_width * m_height * m_channels);
+      old = (uint8*)m_memMan->alloc(m_width * m_height * m_channels);
     }
     for (int j = 0; j < numTimes; ++j) {
         {
@@ -1091,10 +1091,10 @@ void GImage::convertToRGB() {
         break;
 
     case 3:
-		return;
+                return;
 
     case 4:
-		// Strip alpha
+                // Strip alpha
         {            
             Color4uint8* old = (Color4uint8*)m_byte;
             m_byte = NULL;

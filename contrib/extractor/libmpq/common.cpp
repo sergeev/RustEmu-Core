@@ -134,9 +134,9 @@ int libmpq_decrypt_blocktable(mpq_archive* mpq_a, unsigned char* pbKey)
 int libmpq_read_listfile(mpq_archive* mpq_a, FILE* fp)
 {
     int mpq_size;
-    int mpq_ht_size;
-    int mpq_bt_size;
-    int mpq_blocksize;
+    unsigned int mpq_ht_size;
+    unsigned int mpq_bt_size;
+    unsigned int mpq_blocksize;
     int mpq_files;
     int mpq_csize;
     int mpq_fsize;
@@ -155,7 +155,8 @@ int libmpq_read_listfile(mpq_archive* mpq_a, FILE* fp)
     {
 
         /* copy to temp buffer for removing . characters */
-        sprintf(listdb_version, (char*)mpq_a->mpq_l->mpq_version);
+        snprintf(listdb_version, sizeof(listdb_version)/sizeof(listdb_version[0]),
+                 "%s", (char*)mpq_a->mpq_l->mpq_version);
 
         /* remove . characters from listfile version */
         libmpq_conf_delete_char(listdb_version, ".");
@@ -217,7 +218,13 @@ int libmpq_read_listfile(mpq_archive* mpq_a, FILE* fp)
     libmpq_conf_get_value(fp, "MPQ_GAME_VERSION", mpq_a->mpq_l->mpq_game_version, LIBMPQ_CONF_TYPE_CHAR, sizeof(mpq_a->mpq_l->mpq_game_version));
 
     /* check if we found a valid listfile for the given archive */
-    if (mpq_a->header->hashtablesize == mpq_ht_size && mpq_a->header->blocktablesize == mpq_bt_size && mpq_a->blocksize == mpq_blocksize && libmpq_archive_info(mpq_a, LIBMPQ_MPQ_ARCHIVE_SIZE) == mpq_size && libmpq_archive_info(mpq_a, LIBMPQ_MPQ_NUMFILES) == mpq_files && libmpq_archive_info(mpq_a, LIBMPQ_MPQ_COMPRESSED_SIZE) == mpq_csize && libmpq_archive_info(mpq_a, LIBMPQ_MPQ_UNCOMPRESSED_SIZE) == mpq_fsize)
+    if ((mpq_a->header->hashtablesize == mpq_ht_size) &&
+        (mpq_a->header->blocktablesize == mpq_bt_size) &&
+        (mpq_a->blocksize == mpq_blocksize) &&
+        (libmpq_archive_info(mpq_a, LIBMPQ_MPQ_ARCHIVE_SIZE) == mpq_size) &&
+        (libmpq_archive_info(mpq_a, LIBMPQ_MPQ_NUMFILES) == mpq_files) &&
+        (libmpq_archive_info(mpq_a, LIBMPQ_MPQ_COMPRESSED_SIZE) == mpq_csize) &&
+        (libmpq_archive_info(mpq_a, LIBMPQ_MPQ_UNCOMPRESSED_SIZE) == mpq_fsize))
     {
 
         /* check if the filelist is correct */
@@ -452,7 +459,7 @@ int libmpq_read_hashtable(mpq_archive* mpq_a)
     libmpq_lseek(mpq_a, mpq_a->header->hashtablepos);
 
     rb = _read(mpq_a->fd, mpq_a->hashtable, bytes);
-    if (rb != bytes)
+    if (rb != (int)bytes)
     {
         return LIBMPQ_EFILE_CORRUPT;
     }
@@ -492,7 +499,7 @@ int libmpq_read_hashtable(mpq_archive* mpq_a)
 int libmpq_read_blocktable(mpq_archive* mpq_a)
 {
     unsigned int bytes = 0;
-    int rb = 0;
+    unsigned int rb = 0;
 
     /*
      *  Allocate memory. Note that the block table should be as large as the

@@ -3080,11 +3080,10 @@ enum TotemSlot
     TOTEM_SLOT_EARTH  = 1,
     TOTEM_SLOT_WATER  = 2,
     TOTEM_SLOT_AIR    = 3,
+    MAX_TOTEM_SLOT    = 4,
 };
 
 #define TOTEM_SLOT_NONE 255                                 // custom value for no slot case
-
-#define MAX_TOTEM_SLOT  4
 
 enum TradeStatus
 {

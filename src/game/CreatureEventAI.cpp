@@ -1055,6 +1055,7 @@ void CreatureEventAI::ProcessAction(CreatureEventAI_Action const& action, uint32
             }
             break;
         }
+        default: break;
     }
 }
 
@@ -1096,7 +1097,8 @@ void CreatureEventAI::Reset()
                     i->Enabled = true;
                 break;
             }
-            // default:
+            
+          default: break;
             // TODO: enable below code line / verify this is correct to enable events previously disabled (ex. aggro yell), instead of enable this in void Aggro()
             //i->Enabled = true;
             //i->Time = 0;

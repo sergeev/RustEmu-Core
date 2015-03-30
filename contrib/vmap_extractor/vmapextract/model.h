@@ -33,6 +33,16 @@ Vec3D fixCoordSystem(Vec3D v);
 
 class Model
 {
+    private:
+        void _unload()
+        {
+            delete[] vertices;
+            delete[] indices;
+            vertices = NULL;
+            indices = NULL;
+        }
+        std::string filename;
+
     public:
         ModelHeader header;
         uint32 offsBB_vertices, offsBB_indices;
@@ -48,16 +58,6 @@ class Model
         Model(std::string& filename);
         ~Model() {_unload();}
 
-    private:
-        void _unload()
-        {
-            delete[] vertices;
-            delete[] indices;
-            vertices = NULL;
-            indices = NULL;
-        }
-        std::string filename;
-        char outfilename;
 };
 
 class ModelInstance

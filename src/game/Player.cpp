@@ -1696,7 +1696,7 @@ bool Player::BuildEnumData(QueryResult* result, WorldPacket* p_data)
             if (!enchantId)
                 continue;
 
-            if (enchant = sSpellItemEnchantmentStore.LookupEntry(enchantId))
+            if ((enchant = sSpellItemEnchantmentStore.LookupEntry(enchantId)))
                 break;
         }
 
@@ -2461,20 +2461,25 @@ bool Player::IsUnderWater() const
 
 void Player::SetInWater(bool apply)
 {
-    if (m_isInWater == apply)
-        return;
+  static uint32 flags[ ] = {
+    AURA_INTERRUPT_FLAG_NOT_UNDERWATER,
+    AURA_INTERRUPT_FLAG_NOT_ABOVEWATER,
+  };
+  
+  if (m_isInWater == apply)
+    return;
 
-    // define player in water by opcodes
-    // move player's guid into HateOfflineList of those mobs
-    // which can't swim and move guid back into ThreatList when
-    // on surface.
-    // TODO: exist also swimming mobs, and function must be symmetric to enter/leave water
-    m_isInWater = apply;
+  // define player in water by opcodes
+  // move player's guid into HateOfflineList of those mobs
+  // which can't swim and move guid back into ThreatList when
+  // on surface.
+  // TODO: exist also swimming mobs, and function must be symmetric to enter/leave water
+  m_isInWater = apply;
+  
+  // remove auras that need water/land
+  RemoveAurasWithInterruptFlags( flags[ apply ] );
 
-    // remove auras that need water/land
-    RemoveAurasWithInterruptFlags(apply ? AURA_INTERRUPT_FLAG_NOT_ABOVEWATER : AURA_INTERRUPT_FLAG_NOT_UNDERWATER);
-
-    getHostileRefManager().updateThreatTables();
+  getHostileRefManager().updateThreatTables();
 }
 
 struct SetGameMasterOnHelper
@@ -2757,7 +2762,7 @@ void Player::GiveLevel(uint32 level)
     data << uint32(int32(classInfo.basehealth) - int32(GetCreateHealth()));
     // Powers loop (0-6)
     data << uint32(int32(classInfo.basemana) - int32(GetCreateMana()));
-    for (uint32 i = 1; i < MAX_POWERS; ++i)
+    for (uint32 i = 1; i < (uint32)MAX_POWERS; ++i)
         data << uint32(0);
     // Stats loop (0-4)
     for (int i = STAT_STRENGTH; i < MAX_STATS; ++i)
@@ -2983,7 +2988,7 @@ void Player::InitStatsForLevel(bool reapplyMods)
     InitDataForForm(reapplyMods);
 
     // save new stats
-    for (int i = POWER_MANA; i < MAX_POWERS; ++i)
+    for (int i = POWER_MANA; i < (int)MAX_POWERS; ++i)
         SetMaxPower(Powers(i),  GetCreatePowers(Powers(i)));
 
     SetMaxHealth(classInfo.basehealth);                     // stamina bonus will applied later
@@ -5157,6 +5162,7 @@ void Player::HandleBaseModValue(BaseModGroup modGroup, BaseModType modType, floa
                 m_auraBaseMod[modGroup][modType] *= apply ? val : (1.0f/val);
             }
             break;
+        default: break;
     }
 
     if (!CanModifyStats())
@@ -6308,7 +6314,8 @@ ActionButton const* Player::GetActionButton(uint8 button)
 
 bool Player::SetPosition(Position const& pos, bool teleport)
 {
-    bool groupUpdate = (GetGroup() && (teleport || abs(GetPositionX() - pos.x) > 1.0f || abs(GetPositionY() - pos.y) > 1.0f));
+  bool groupUpdate = (GetGroup() && (teleport || std::abs(GetPositionX() - pos.x) > 1.0f ||
+                                       std::abs(GetPositionY() - pos.y) > 1.0f));
 
     if (!Unit::SetPosition(pos, teleport))
         return false;
@@ -6674,7 +6681,7 @@ void Player::RewardReputation(Quest const* pQuest)
         else
         {
             uint32 row = ((pQuest->RewRepValueId[i] < 0) ? 1 : 0) + 1;
-            uint32 field = abs(pQuest->RewRepValueId[i]);
+            uint32 field = std::abs(pQuest->RewRepValueId[i]);
 
             if (const QuestFactionRewardEntry* pRow = sQuestFactionRewardStore.LookupEntry(row))
             {
@@ -9181,7 +9188,7 @@ InventoryResult Player::CanUnequipItems(uint32 item, uint32 count) const
     Bag* pBag;
     for (int i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
     {
-        if (pBag = (Bag*)GetItemByPos(INVENTORY_SLOT_BAG_0, i))
+        if ((pBag = (Bag*)GetItemByPos(INVENTORY_SLOT_BAG_0, i)))
         {
             for (uint32 j = 0; j < pBag->GetBagSize(); ++j)
             {
@@ -14509,7 +14516,7 @@ bool Player::SatisfyQuestPreviousQuest(Quest const* qInfo, bool msg) const
 
     for (Quest::PrevQuests::const_iterator iter = qInfo->prevQuests.begin(); iter != qInfo->prevQuests.end(); ++iter)
     {
-        uint32 prevId = abs(*iter);
+      uint32 prevId = std::abs(*iter);
 
         QuestStatusMap::const_iterator i_prevstatus = mQuestStatus.find(prevId);
         Quest const* qPrevInfo = sObjectMgr.GetQuestTemplate(prevId);
@@ -14802,7 +14809,7 @@ bool Player::SatisfyQuestDay(Quest const* qInfo, bool msg) const
     return true;
 }
 
-bool Player::SatisfyQuestWeek(Quest const* qInfo, bool msg) const
+bool Player::SatisfyQuestWeek(Quest const* qInfo, bool /*msg*/) const
 {
     if (!qInfo->IsWeekly() || m_weeklyquests.empty())
         return true;
@@ -14811,7 +14818,7 @@ bool Player::SatisfyQuestWeek(Quest const* qInfo, bool msg) const
     return m_weeklyquests.find(qInfo->GetQuestId()) == m_weeklyquests.end();
 }
 
-bool Player::SatisfyQuestMonth(Quest const* qInfo, bool msg) const
+bool Player::SatisfyQuestMonth(Quest const* qInfo, bool /*msg*/) const
 {
     if (!qInfo->IsMonthly() || m_monthlyquests.empty())
         return true;
@@ -15441,7 +15448,7 @@ void Player::SendQuestCompleteEvent(uint32 quest_id)
     }
 }
 
-void Player::SendQuestReward(Quest const* pQuest, uint32 XP, Object * questGiver)
+void Player::SendQuestReward(Quest const* pQuest, uint32 XP, Object * /*questGiver*/)
 {
     uint32 questid = pQuest->GetQuestId();
     DEBUG_LOG("WORLD: Sent SMSG_QUESTGIVER_QUEST_COMPLETE quest = %u", questid);
@@ -18482,7 +18489,7 @@ void Player::_SaveSpells()
     SqlStatement stmtDel = CharacterDatabase.CreateStatement(delSpells, "DELETE FROM character_spell WHERE guid = ? and spell = ?");
     SqlStatement stmtIns = CharacterDatabase.CreateStatement(insSpells, "INSERT INTO character_spell (guid,spell,active,disabled) VALUES (?, ?, ?, ?)");
 
-    for (PlayerSpellMap::iterator itr = m_spells.begin(), next = m_spells.begin(); itr != m_spells.end();)
+    for (PlayerSpellMap::iterator itr = m_spells.begin(); itr != m_spells.end();)
     {
         uint32 talentCosts = GetTalentSpellCost(itr->first);
 
@@ -18514,7 +18521,7 @@ void Player::_SaveTalents()
     SqlStatement stmtDel = CharacterDatabase.CreateStatement(delTalents, "DELETE FROM character_talent WHERE guid = ? and talent_id = ? and spec = ?");
     SqlStatement stmtIns = CharacterDatabase.CreateStatement(insTalents, "INSERT INTO character_talent (guid, talent_id, current_rank , spec) VALUES (?, ?, ?, ?)");
 
-    for (uint32 i = 0; i < MAX_TALENT_SPEC_COUNT; ++i)
+    for (uint32 i = 0; i < (uint32)MAX_TALENT_SPEC_COUNT; ++i)
     {
         for (PlayerTalentMap::iterator itr = m_talents[i].begin(); itr != m_talents[i].end();)
         {
@@ -18561,7 +18568,7 @@ void Player::_SaveStats()
 
     stmt.addUInt32(GetGUIDLow());
     stmt.addUInt32(GetMaxHealth());
-    for (int i = 0; i < MAX_POWERS; ++i)
+    for (int i = 0; i < (int)MAX_POWERS; ++i)
         stmt.addUInt32(GetMaxPower(Powers(i)));
     for (int i = 0; i < MAX_STATS; ++i)
         stmt.addFloat(GetStat(Stats(i)));
@@ -22233,8 +22240,7 @@ uint32 Player::GetBarberShopCost(uint8 newhairstyle, uint8 newhaircolor, uint8 n
     uint8 facialhair = GetByteValue(PLAYER_BYTES_2, 0);
     uint8 skintone = GetByteValue(PLAYER_BYTES, 0);
 
-    if ((hairstyle == newhairstyle) && (haircolor == newhaircolor) && (facialhair == newfacialhair) &&
-        ((skintone == newskintone) || (newskintone == -1)))
+    if ((hairstyle == newhairstyle) && (haircolor == newhaircolor) && (facialhair == newfacialhair) && ((skintone == newskintone) || (newskintone == (uint8)-1)))
         return 0;
 
     GtBarberShopCostBaseEntry const *bsc = sGtBarberShopCostBaseStore.LookupEntry(level - 1);
@@ -22253,7 +22259,7 @@ uint32 Player::GetBarberShopCost(uint8 newhairstyle, uint8 newhaircolor, uint8 n
     if (facialhair != newfacialhair)
         cost += bsc->cost * 0.75f;                          // +3/4 of price
 
-    if (skintone != newskintone && newskintone != -1)       // +1/2 of price
+    if (skintone != newskintone && newskintone != (uint8)-1) // +1/2 of price
         cost += bsc->cost * 0.5f;
 
     return uint32(cost);
@@ -24468,7 +24474,7 @@ bool Player::CheckTransferPossibility(AreaTrigger const*& at, bool b_onlyMainReq
         case AREA_LOCKSTATUS_QUEST_NOT_COMPLETED:
             if (at->loc.GetMapId() == 269)
             {
-                GetSession()->SendAreaTriggerMessage(GetSession()->GetMangosString(LANG_TELEREQ_QUEST_BLACK_MORASS));
+                GetSession()->SendAreaTriggerMessage("%s",GetSession()->GetMangosString(LANG_TELEREQ_QUEST_BLACK_MORASS));
                 return false;
             }
             // No break here!

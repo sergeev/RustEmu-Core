@@ -47,7 +47,6 @@ class MANGOS_DLL_SPEC TargetedMovementGeneratorMedium : public MovementGenerator
         virtual ~TargetedMovementGeneratorMedium() { delete m_path; }
 
     public:
-        bool Update(T&, const uint32&);
 
         bool IsReachable() const
         {
@@ -58,6 +57,8 @@ class MANGOS_DLL_SPEC TargetedMovementGeneratorMedium : public MovementGenerator
 
         void UnitSpeedChanged() { m_speedChanged = true; }
         char const* Name() const { return "<TargetedMedium>"; }
+
+        bool update(T&, const uint32&);
 
     protected:
         void _setTargetLocation(T&, bool updateDestination);
@@ -85,10 +86,6 @@ class MANGOS_DLL_SPEC ChaseMovementGenerator : public TargetedMovementGeneratorM
 
         MovementGeneratorType GetMovementGeneratorType() const override { return CHASE_MOTION_TYPE; }
 
-        void Initialize(T&);
-        void Finalize(T&);
-        void Interrupt(T&);
-        void Reset(T&);
         char const* Name() const { return "<Chase>"; }
 
         static void _clearUnitStateMove(T& u) { u.clearUnitState(UNIT_STAT_CHASE_MOVE); }
@@ -97,6 +94,11 @@ class MANGOS_DLL_SPEC ChaseMovementGenerator : public TargetedMovementGeneratorM
         bool _lostTarget(T& u) const { return u.getVictim() != this->GetTarget(); }
         void _reachTarget(T&);
         float GetDynamicTargetDistance(T& owner, bool forRangeCheck) const;
+
+        void initialize(T&);
+        void finalize(T&);
+        void interrupt(T&);
+        void reset(T&);
 };
 
 template<class T>
@@ -111,10 +113,6 @@ class MANGOS_DLL_SPEC FollowMovementGenerator : public TargetedMovementGenerator
 
         MovementGeneratorType GetMovementGeneratorType() const override { return FOLLOW_MOTION_TYPE; }
 
-        void Initialize(T&);
-        void Finalize(T&);
-        void Interrupt(T&);
-        void Reset(T&);
         char const* Name() const { return "<Follow>"; }
 
         static void _clearUnitStateMove(T& u) { u.clearUnitState(UNIT_STAT_FOLLOW_MOVE); }
@@ -123,6 +121,11 @@ class MANGOS_DLL_SPEC FollowMovementGenerator : public TargetedMovementGenerator
         bool _lostTarget(T&) const { return false; }
         void _reachTarget(T&);
         float GetDynamicTargetDistance(T& owner, bool forRangeCheck) const;
+
+        void initialize(T&);
+        void finalize(T&);
+        void interrupt(T&);
+        void reset(T&);
 
     private:
         void _updateSpeed(T& u);

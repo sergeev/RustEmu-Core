@@ -77,7 +77,7 @@ namespace VMAP
 
 #ifdef MMAP_GENERATOR
         public:
-            WorldModel* const getWorldModel();
+            WorldModel* getWorldModel();
 #endif
     };
 } // namespace VMAP

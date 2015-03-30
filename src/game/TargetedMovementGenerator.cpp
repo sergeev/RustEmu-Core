@@ -150,7 +150,7 @@ enum
 };
 
 template<class T, typename D>
-bool TargetedMovementGeneratorMedium<T, D>::Update(T& owner, const uint32& time_diff)
+bool TargetedMovementGeneratorMedium<T, D>::update(T& owner, const uint32& time_diff)
 {
     if (!m_target.isValid() || !m_target->IsInWorld())
         return false;
@@ -257,14 +257,14 @@ void ChaseMovementGenerator<T>::_reachTarget(T& owner)
 }
 
 template<>
-void ChaseMovementGenerator<Player>::Initialize(Player& owner)
+void ChaseMovementGenerator<Player>::initialize(Player& owner)
 {
     owner.addUnitState(UNIT_STAT_CHASE | UNIT_STAT_CHASE_MOVE);
     _setTargetLocation(owner, true);
 }
 
 template<>
-void ChaseMovementGenerator<Creature>::Initialize(Creature& owner)
+void ChaseMovementGenerator<Creature>::initialize(Creature& owner)
 {
     owner.SetWalk(false, false);                            // Chase movement is running
     owner.addUnitState(UNIT_STAT_CHASE | UNIT_STAT_CHASE_MOVE);
@@ -275,22 +275,22 @@ void ChaseMovementGenerator<Creature>::Initialize(Creature& owner)
 }
 
 template<class T>
-void ChaseMovementGenerator<T>::Finalize(T& owner)
+void ChaseMovementGenerator<T>::finalize(T& owner)
 {
     owner.clearUnitState(UNIT_STAT_CHASE | UNIT_STAT_CHASE_MOVE);
 }
 
 template<class T>
-void ChaseMovementGenerator<T>::Interrupt(T& owner)
+void ChaseMovementGenerator<T>::interrupt(T& owner)
 {
     owner.InterruptMoving();
     owner.clearUnitState(UNIT_STAT_CHASE | UNIT_STAT_CHASE_MOVE);
 }
 
 template<class T>
-void ChaseMovementGenerator<T>::Reset(T& owner)
+void ChaseMovementGenerator<T>::reset(T& owner)
 {
-    Initialize(owner);
+    initialize(owner);
 }
 
 // Chase-Movement: These factors depend on combat-reach distance
@@ -352,7 +352,7 @@ void FollowMovementGenerator<Creature>::_updateSpeed(Creature& u)
 }
 
 template<>
-void FollowMovementGenerator<Player>::Initialize(Player& owner)
+void FollowMovementGenerator<Player>::initialize(Player& owner)
 {
     owner.addUnitState(UNIT_STAT_FOLLOW | UNIT_STAT_FOLLOW_MOVE);
     _updateSpeed(owner);
@@ -360,7 +360,7 @@ void FollowMovementGenerator<Player>::Initialize(Player& owner)
 }
 
 template<>
-void FollowMovementGenerator<Creature>::Initialize(Creature& owner)
+void FollowMovementGenerator<Creature>::initialize(Creature& owner)
 {
     owner.addUnitState(UNIT_STAT_FOLLOW | UNIT_STAT_FOLLOW_MOVE);
     _updateSpeed(owner);
@@ -368,14 +368,14 @@ void FollowMovementGenerator<Creature>::Initialize(Creature& owner)
 }
 
 template<class T>
-void FollowMovementGenerator<T>::Finalize(T& owner)
+void FollowMovementGenerator<T>::finalize(T& owner)
 {
     owner.clearUnitState(UNIT_STAT_FOLLOW | UNIT_STAT_FOLLOW_MOVE);
     _updateSpeed(owner);
 }
 
 template<class T>
-void FollowMovementGenerator<T>::Interrupt(T& owner)
+void FollowMovementGenerator<T>::interrupt(T& owner)
 {
     owner.InterruptMoving();
     owner.clearUnitState(UNIT_STAT_FOLLOW | UNIT_STAT_FOLLOW_MOVE);
@@ -383,9 +383,9 @@ void FollowMovementGenerator<T>::Interrupt(T& owner)
 }
 
 template<class T>
-void FollowMovementGenerator<T>::Reset(T& owner)
+void FollowMovementGenerator<T>::reset(T& owner)
 {
-    Initialize(owner);
+    initialize(owner);
 }
 
 template<class T>
@@ -404,29 +404,29 @@ template void TargetedMovementGeneratorMedium<Player, ChaseMovementGenerator<Pla
 template void TargetedMovementGeneratorMedium<Player, FollowMovementGenerator<Player> >::_setTargetLocation(Player&, bool);
 template void TargetedMovementGeneratorMedium<Creature, ChaseMovementGenerator<Creature> >::_setTargetLocation(Creature&, bool);
 template void TargetedMovementGeneratorMedium<Creature, FollowMovementGenerator<Creature> >::_setTargetLocation(Creature&, bool);
-template bool TargetedMovementGeneratorMedium<Player, ChaseMovementGenerator<Player> >::Update(Player&, const uint32&);
-template bool TargetedMovementGeneratorMedium<Player, FollowMovementGenerator<Player> >::Update(Player&, const uint32&);
-template bool TargetedMovementGeneratorMedium<Creature, ChaseMovementGenerator<Creature> >::Update(Creature&, const uint32&);
-template bool TargetedMovementGeneratorMedium<Creature, FollowMovementGenerator<Creature> >::Update(Creature&, const uint32&);
+template bool TargetedMovementGeneratorMedium<Player, ChaseMovementGenerator<Player> >::update(Player&, const uint32&);
+template bool TargetedMovementGeneratorMedium<Player, FollowMovementGenerator<Player> >::update(Player&, const uint32&);
+template bool TargetedMovementGeneratorMedium<Creature, ChaseMovementGenerator<Creature> >::update(Creature&, const uint32&);
+template bool TargetedMovementGeneratorMedium<Creature, FollowMovementGenerator<Creature> >::update(Creature&, const uint32&);
 
 template void ChaseMovementGenerator<Player>::_reachTarget(Player&);
 template void ChaseMovementGenerator<Creature>::_reachTarget(Creature&);
-template void ChaseMovementGenerator<Player>::Finalize(Player&);
-template void ChaseMovementGenerator<Creature>::Finalize(Creature&);
-template void ChaseMovementGenerator<Player>::Interrupt(Player&);
-template void ChaseMovementGenerator<Creature>::Interrupt(Creature&);
-template void ChaseMovementGenerator<Player>::Reset(Player&);
-template void ChaseMovementGenerator<Creature>::Reset(Creature&);
+template void ChaseMovementGenerator<Player>::finalize(Player&);
+template void ChaseMovementGenerator<Creature>::finalize(Creature&);
+template void ChaseMovementGenerator<Player>::interrupt(Player&);
+template void ChaseMovementGenerator<Creature>::interrupt(Creature&);
+template void ChaseMovementGenerator<Player>::reset(Player&);
+template void ChaseMovementGenerator<Creature>::reset(Creature&);
 template float ChaseMovementGenerator<Creature>::GetDynamicTargetDistance(Creature&, bool) const;
 template float ChaseMovementGenerator<Player>::GetDynamicTargetDistance(Player&, bool) const;
 
 template void FollowMovementGenerator<Player>::_reachTarget(Player&);
 template void FollowMovementGenerator<Creature>::_reachTarget(Creature&);
-template void FollowMovementGenerator<Player>::Finalize(Player&);
-template void FollowMovementGenerator<Creature>::Finalize(Creature&);
-template void FollowMovementGenerator<Player>::Interrupt(Player&);
-template void FollowMovementGenerator<Creature>::Interrupt(Creature&);
-template void FollowMovementGenerator<Player>::Reset(Player&);
-template void FollowMovementGenerator<Creature>::Reset(Creature&);
+template void FollowMovementGenerator<Player>::finalize(Player&);
+template void FollowMovementGenerator<Creature>::finalize(Creature&);
+template void FollowMovementGenerator<Player>::interrupt(Player&);
+template void FollowMovementGenerator<Creature>::interrupt(Creature&);
+template void FollowMovementGenerator<Player>::reset(Player&);
+template void FollowMovementGenerator<Creature>::reset(Creature&);
 template float FollowMovementGenerator<Creature>::GetDynamicTargetDistance(Creature&, bool) const;
 template float FollowMovementGenerator<Player>::GetDynamicTargetDistance(Player&, bool) const;

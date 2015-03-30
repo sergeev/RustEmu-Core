@@ -23,7 +23,8 @@
 #include "Socket.h"
 #include "Log.h"
 
-NetworkManager::NetworkManager(std::string const& mname) : m_managerName(mname), network_threads_count_(1), running_(false)
+NetworkManager::NetworkManager(std::string const& mname) : network_threads_count_(1),
+                                                           running_(false), m_managerName(mname)
 {
 }
 
@@ -45,7 +46,8 @@ bool NetworkManager::StartNetwork(boost::uint16_t port, std::string address)
     
     if (network_threads_count_ <= 0)
     {
-        sLog.outError("Number of network threads is incorrect = %i", network_threads_count_);
+        sLog.outError("Number of network threads is incorrect = %zu",
+                      network_threads_count_);
         return false;
     }
 

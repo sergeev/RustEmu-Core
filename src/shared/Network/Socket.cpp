@@ -30,7 +30,7 @@
 const std::string Socket::UNKNOWN_NETWORK_ADDRESS = "<unknown>";
 
 Socket::Socket(NetworkManager& manager, NetworkThread& owner) : manager_(manager), owner_(owner), socket_(owner.service()),
-    outgoing_buffer_size_(protocol::SEND_BUFFER_SIZE), write_operation_(false), closed_(true), address_(UNKNOWN_NETWORK_ADDRESS)
+    outgoing_buffer_size_(protocol::SEND_BUFFER_SIZE), address_(UNKNOWN_NETWORK_ADDRESS), write_operation_(false), closed_(true)
 {
 
 }
@@ -160,8 +160,9 @@ void Socket::StartAsyncSend()
     write_operation_ = true;
 
     socket_.async_write_some(boost::asio::buffer(out_buffer_->read_data(), out_buffer_->length()),
-        boost::bind(&Socket::OnWriteComplete, shared_from_this(), boost::asio::placeholders::error,
-        boost::asio::placeholders::bytes_transferred));
+                             boost::bind(&Socket::OnWriteComplete, shared_from_this(),
+                                         boost::asio::placeholders::error,
+                                         boost::asio::placeholders::bytes_transferred));
 }
 
 void Socket::OnWriteComplete(const boost::system::error_code& error, size_t bytes_transferred)

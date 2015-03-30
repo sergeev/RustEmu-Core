@@ -48,8 +48,5 @@ class BattleGroundBE : public BattleGround
         virtual void FillInitialWorldStates();
         void HandleKillPlayer(Player* player, Player* killer);
         bool HandlePlayerUnderMap(Player* plr);
-
-        /* Scorekeeping */
-        void UpdatePlayerScore(Player* source, uint32 type, uint32 value);
 };
 #endif

@@ -74,7 +74,7 @@ void* AreaMemoryManager::alloc(size_t s) {
 }
 
 
-void AreaMemoryManager::free(void* x) {
+void AreaMemoryManager::free(void* /*x*/) {
     // Intentionally empty; we block deallocate
 }
 

@@ -488,7 +488,7 @@ void CalendarMgr::RemovePlayerCalendar(ObjectGuid const& playerGuid)
     }
 }
 
-void CalendarMgr::RemoveGuildCalendar(ObjectGuid const& playerGuid, uint32 GuildId)
+void CalendarMgr::RemoveGuildCalendar(ObjectGuid const& playerGuid, uint32 /*GuildId*/)
 {
     for (CalendarEventStore::iterator iter = m_EventStore.begin(); iter != m_EventStore.end(); ++iter)
     {
@@ -580,7 +580,7 @@ void CalendarMgr::DBRemoveExpiredEventsAndRemapData()
         DBRemap(RA_REMAP_EVENTS, remapData, dbTransactionUsed);
 
     // remap inviteId
-    if (result = CharacterDatabase.Query("SELECT inviteId FROM calendar_invites ORDER BY inviteId"))
+    if ((result = CharacterDatabase.Query("SELECT inviteId FROM calendar_invites ORDER BY inviteId")))
     {
         remapId = 1;
         remapData.clear();
@@ -917,8 +917,11 @@ void CalendarMgr::SendCalendarEventInviteAlert(CalendarInvite const* invite)
     data << invite->SenderGuid.WriteAsPacked();
     //data.hexlike();
 
-    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "CalendarMgr::SendCalendarEventInviteAlert senderGuid[%u], inviteeGuid[%u], EventId[%lu], Status[%u], InviteId[%u]",
-        invite->SenderGuid.GetCounter(), invite->InviteeGuid.GetCounter(), uint32(event->EventId), uint32(invite->Status), uint32(invite->InviteId));
+    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "CalendarMgr::SendCalendarEventInviteAlert "
+                     "senderGuid[%u], inviteeGuid[%u], EventId[%u], Status[%u], "
+                     "InviteId[%u]", invite->SenderGuid.GetCounter(),
+                     invite->InviteeGuid.GetCounter(), uint32(event->EventId),
+                     uint32(invite->Status), uint32(invite->InviteId));
 
     if (event->IsGuildEvent() || event->IsGuildAnnouncement())
     {
@@ -958,8 +961,11 @@ void CalendarMgr::SendCalendarEventInvite(CalendarInvite const* invite)
 
     data << uint8(invite->SenderGuid != invite->InviteeGuid); // false only if the invite is sign-up
 
-    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "CalendarMgr::SendCalendarEventInvite %s senderGuid[%u], inviteeGuid[%u], EventId[%lu], Status[%u], InviteId[%u]",
-        preInvite ? "is PreInvite," : "", invite->SenderGuid.GetCounter(), invite->InviteeGuid.GetCounter(), uint32(eventId), uint32(invite->Status), uint32(invite->InviteId));
+    DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "CalendarMgr::SendCalendarEventInvite %s "
+                     "senderGuid[%u], inviteeGuid[%u], EventId[%u], Status[%u], "
+                     "InviteId[%u]", preInvite ? "is PreInvite," : "",
+                     invite->SenderGuid.GetCounter(), invite->InviteeGuid.GetCounter(),
+                     uint32(eventId), uint32(invite->Status), uint32(invite->InviteId));
 
     //data.hexlike();
     if (preInvite)

@@ -581,7 +581,10 @@ namespace MaNGOS
     class RaiseAllyObjectCheck
     {
         public:
-            RaiseAllyObjectCheck(WorldObject const* fobj, float range, uint32 corpseTypeMask = 0) : i_fobj(fobj), i_range(range) {}
+            RaiseAllyObjectCheck(WorldObject const* fobj, float range, 
+                                 uint32 corpseTypeMask = 0) :  i_fobj(fobj), i_range(range) {
+              (void)corpseTypeMask;
+            }
             WorldObject const& GetFocusObject() const { return *i_fobj; }
             bool operator()(Player* u)
             {

@@ -107,21 +107,17 @@ namespace MMAP
             bool isTransportMap(uint32 mapID);
             bool shouldSkipTile(uint32 mapID, uint32 tileX, uint32 tileY);
 
-            TerrainBuilder* m_terrainBuilder;
             TileList m_tiles;
 
+            TerrainBuilder* m_terrainBuilder;
             bool m_debugOutput;
-
-            const char* m_offMeshFilePath;
             bool m_skipContinents;
             bool m_skipJunkMaps;
             bool m_skipBattlegrounds;
-
             float m_maxWalkableAngle;
             bool m_bigBaseUnit;
-
-            // build performance - not really used for now
-            rcContext* m_rcContext;
+            rcContext* m_rcContext;             // build performance - not really used for now
+            const char* m_offMeshFilePath;
     };
 }
 

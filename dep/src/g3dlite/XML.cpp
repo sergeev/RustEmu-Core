@@ -95,7 +95,7 @@ void XML::parse(const std::string& s) {
 
 
 /** True if the next token begins the close tag */
-static bool atClose(TextInput& t, const std::string name) {
+static bool atClose(TextInput& t, const std::string /*name*/) {
     if ((t.peek().type() == Token::SYMBOL) && (t.peek().string() == "<")) {
         // Need to keep looking ahead
         Token p0 = t.read();

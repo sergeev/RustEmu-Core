@@ -127,7 +127,8 @@ bool ExtractWmo()
 
     //const char* ParsArchiveNames[] = {"patch-2.MPQ", "patch.MPQ", "common.MPQ", "expansion.MPQ"};
 
-    for (ArchiveSet::const_iterator ar_itr = gOpenArchives.begin(); ar_itr != gOpenArchives.end() && success; ++ar_itr)
+    for (ArchiveSet::const_iterator ar_itr = gOpenArchives.begin();
+         ar_itr != gOpenArchives.end() && success; ++ar_itr)
     {
         vector<string> filelist;
 
@@ -473,7 +474,7 @@ int main(int argc, char** argv)
             return 1;
         }
     }
-
+    
     printf("Extract for %s. Beginning work ....\n", szRawVMAPMagic);
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     // Create the working directory
@@ -526,12 +527,13 @@ int main(int argc, char** argv)
         }
 
 
-        delete dbc;
         ParsMapFiles();
-        delete [] map_ids;
         //nError = ERROR_SUCCESS;
         // Extract models, listed in DameObjectDisplayInfo.dbc
         ExtractGameobjectModels();
+
+        delete dbc;
+        delete [] map_ids;
     }
 
     printf("\n");

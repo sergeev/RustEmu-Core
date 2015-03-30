@@ -470,7 +470,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                         WorldState const* _state = NULL;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->capturePoint.worldState1, WORLD_STATE_TYPE_CAPTURE_POINT, goInfo->id);
                         MANGOS_ASSERT(tmpl);
-                        if (_state = GetWorldState(tmpl, instanceId))
+                        if ((_state = GetWorldState(tmpl, instanceId)))
                         {
                             if (_state->GetValue() != WORLD_STATE_ADD)
                                 DEBUG_LOG("WorldStateMgr::CreateLinkedWorldStatesIfNeed Warning - at load WorldState %u for %s current value %u not equal default %u!",
@@ -491,7 +491,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                         WorldState const* _state = NULL;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->capturePoint.worldState2, WORLD_STATE_TYPE_CAPTURE_POINT, goInfo->id);
                         MANGOS_ASSERT(tmpl);
-                        if (_state = GetWorldState(tmpl, instanceId))
+                        if ((_state = GetWorldState(tmpl, instanceId)))
                         {
                             if (_state->GetValue() != CAPTURE_SLIDER_NEUTRAL)
                                 DEBUG_LOG("WorldStateMgr::CreateLinkedWorldStatesIfNeed Warning - at load WorldState %u for %s current value %u not equal default %u!",
@@ -512,7 +512,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                         WorldState const* _state = NULL;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->capturePoint.worldState3, WORLD_STATE_TYPE_CAPTURE_POINT, goInfo->id);
                         MANGOS_ASSERT(tmpl);
-                        if (_state  = GetWorldState(tmpl, instanceId))
+                        if ((_state  = GetWorldState(tmpl, instanceId)))
                         {
                             if (_state->GetValue() != goInfo->capturePoint.neutralPercent)
                                 DEBUG_LOG("WorldStateMgr::CreateLinkedWorldStatesIfNeed Warning - at load WorldState %u for %s current value %u not equal default %u!",
@@ -535,7 +535,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                         WorldState const* _state = NULL;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->destructibleBuilding.linkedWorldState, WORLD_STATE_TYPE_DESTRUCTIBLE_OBJECT, object->GetZoneId());
                         MANGOS_ASSERT(tmpl);
-                        if (_state = GetWorldState(tmpl, instanceId))
+                        if ((_state = GetWorldState(tmpl, instanceId)))
                         {
                             if (_state->GetValue() != OBJECT_STATE_NONE)
                                 DEBUG_LOG("WorldStateMgr::CreateLinkedWorldStatesIfNeed Warning - at load WorldState %u for %s current value %u not equal default %u!",

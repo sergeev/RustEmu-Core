@@ -66,7 +66,7 @@ void WaypointMovementGenerator<Creature>::LoadPath(Creature& creature, int32 pat
     m_lastReachedWaypoint = 0;
 }
 
-void WaypointMovementGenerator<Creature>::Initialize(Creature& creature)
+void WaypointMovementGenerator<Creature>::initialize(Creature& creature)
 {
     creature.addUnitState(UNIT_STAT_ROAMING);
     creature.clearUnitState(UNIT_STAT_WAYPOINT_PAUSED);
@@ -80,20 +80,20 @@ void WaypointMovementGenerator<Creature>::InitializeWaypointPath(Creature& u, in
     StartMove(u);
 }
 
-void WaypointMovementGenerator<Creature>::Finalize(Creature& creature)
+void WaypointMovementGenerator<Creature>::finalize(Creature& creature)
 {
     creature.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
     creature.SetWalk(!creature.hasUnitState(UNIT_STAT_RUNNING_STATE), false);
 }
 
-void WaypointMovementGenerator<Creature>::Interrupt(Creature& creature)
+void WaypointMovementGenerator<Creature>::interrupt(Creature& creature)
 {
     creature.InterruptMoving();
     creature.clearUnitState(UNIT_STAT_ROAMING | UNIT_STAT_ROAMING_MOVE);
     creature.SetWalk(!creature.hasUnitState(UNIT_STAT_RUNNING_STATE), false);
 }
 
-void WaypointMovementGenerator<Creature>::Reset(Creature& creature)
+void WaypointMovementGenerator<Creature>::reset(Creature& creature)
 {
     creature.addUnitState(UNIT_STAT_ROAMING);
     StartMove(creature);
@@ -232,7 +232,7 @@ void WaypointMovementGenerator<Creature>::StartMove(Creature& creature)
     init.Launch();
 }
 
-bool WaypointMovementGenerator<Creature>::Update(Creature& creature, const uint32& diff)
+bool WaypointMovementGenerator<Creature>::update(Creature& creature, const uint32& diff)
 {
     // Waypoint movement can be switched on/off
     // This is quite handy for escort quests and other stuff
@@ -281,7 +281,7 @@ bool WaypointMovementGenerator<Creature>::CanMove(int32 diff, Creature& u)
     return m_nextMoveTime.Passed() && !u.hasUnitState(UNIT_STAT_WAYPOINT_PAUSED);
 }
 
-bool WaypointMovementGenerator<Creature>::GetResetPosition(Creature&, float& x, float& y, float& z, float& o) const
+bool WaypointMovementGenerator<Creature>::getResetPosition(Creature&, float& x, float& y, float& z, float& o) const
 {
     // prevent a crash at empty waypoint path.
     if (!m_path || m_path->empty())
@@ -377,12 +377,12 @@ uint32 FlightPathMovementGenerator::GetPathAtMapEnd() const
     return m_path->size();
 }
 
-void FlightPathMovementGenerator::_Initialize(Player& player)
+void FlightPathMovementGenerator::initialize(Player& player)
 {
-    _Reset(player);
+    reset(player);
 }
 
-void FlightPathMovementGenerator::_Finalize(Player& player)
+void FlightPathMovementGenerator::finalize(Player& player)
 {
     if (player.m_taxi.empty())
     {
@@ -399,13 +399,11 @@ void FlightPathMovementGenerator::_Finalize(Player& player)
     player.RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_TAXI_BENCHMARK);
 }
 
-void FlightPathMovementGenerator::_Interrupt(Player& player)
-{
-}
+void FlightPathMovementGenerator::interrupt(Player&){}
 
 #define PLAYER_FLIGHT_SPEED        32.0f
 
-void FlightPathMovementGenerator::_Reset(Player& player)
+void FlightPathMovementGenerator::reset(Player& player)
 {
     Movement::MoveSplineInit<Unit*> init(player);
     uint32 end = GetPathAtMapEnd();
@@ -420,7 +418,7 @@ void FlightPathMovementGenerator::_Reset(Player& player)
     init.Launch();
 }
 
-bool FlightPathMovementGenerator::Update(Player& player, const uint32& diff)
+bool FlightPathMovementGenerator::update(Player& player, const uint32& /*diff*/)
 {
     uint32 pointId = (uint32)player.movespline->currentPathIdx();
     if (pointId > m_currentNode)
@@ -467,7 +465,8 @@ void FlightPathMovementGenerator::DoEventIfAny(Player& player, TaxiPathNodeEntry
     }
 }
 
-bool FlightPathMovementGenerator::GetResetPosition(Player&, float& x, float& y, float& z, float& o) const
+bool FlightPathMovementGenerator::getResetPosition(Player&, float& x, float& y,
+                                                   float& z, float& /*o*/) const
 {
     TaxiPathNodeEntry const& node = (*m_path)[m_currentNode];
     x = node.x;
@@ -493,18 +492,14 @@ uint32 TransportPathMovementGenerator::GetPathAtMapEnd() const
     return m_path->size();
 }
 
-void TransportPathMovementGenerator::Initialize(GameObject& go)
-{
-}
+void TransportPathMovementGenerator::Initialize(GameObject& ){}
 
-void TransportPathMovementGenerator::Finalize(GameObject& go)
+void TransportPathMovementGenerator::Finalize(GameObject& /*go*/)
 {
     //go.StopMoving();
 }
 
-void TransportPathMovementGenerator::Interrupt(GameObject& go)
-{
-}
+void TransportPathMovementGenerator::Interrupt(GameObject& ){}
 
 void TransportPathMovementGenerator::Reset(GameObject& go)
 {
@@ -521,7 +516,7 @@ void TransportPathMovementGenerator::Reset(GameObject& go)
     init.Launch();
 }
 
-bool TransportPathMovementGenerator::Update(GameObject& go, uint32 const& diff)
+bool TransportPathMovementGenerator::Update(GameObject& go, uint32 const& /*diff*/)
 {
     uint32 pointId = (uint32)go.movespline->currentPathIdx();
     if (pointId > m_currentNode)
@@ -567,7 +562,7 @@ void TransportPathMovementGenerator::DoEventIfAny(GameObject& go, TaxiPathNodeEn
     }
 }
 
-bool TransportPathMovementGenerator::GetResetPosition(GameObject& go, float& x, float& y, float& z) const
+bool TransportPathMovementGenerator::GetResetPosition(GameObject& /*go*/, float& x, float& y, float& z) const
 {
     TaxiPathNodeEntry const& node = (*m_path)[m_currentNode];
     x = node.x; y = node.y; z = node.z;

@@ -224,7 +224,7 @@ bool BattleGroundEY::HandleEvent(uint32 eventId, GameObject* go)
     return false;
 }
 
-void BattleGroundEY::ProcessCaptureEvent(GameObject* go, uint32 towerId, Team team, uint32 newWorldState, uint32 message)
+void BattleGroundEY::ProcessCaptureEvent(GameObject* /*go*/, uint32 towerId, Team team, uint32 newWorldState, uint32 message)
 {
     if (team == ALLIANCE)
     {
@@ -292,19 +292,19 @@ void BattleGroundEY::HandleAreaTrigger(Player* source, uint32 trigger)
     {
         case AREATRIGGER_BLOOD_ELF_TOWER_POINT:
             if (m_towerOwner[NODE_BLOOD_ELF_TOWER] == source->GetTeam())
-                EventPlayerCapturedFlag(source, NODE_BLOOD_ELF_TOWER);
+                EventNodeCaptured(source, NODE_BLOOD_ELF_TOWER);
             break;
         case AREATRIGGER_FEL_REAVER_RUINS_POINT:
             if (m_towerOwner[NODE_FEL_REAVER_RUINS] == source->GetTeam())
-                EventPlayerCapturedFlag(source, NODE_FEL_REAVER_RUINS);
+                EventNodeCaptured(source, NODE_FEL_REAVER_RUINS);
             break;
         case AREATRIGGER_MAGE_TOWER_POINT:
             if (m_towerOwner[NODE_MAGE_TOWER] == source->GetTeam())
-                EventPlayerCapturedFlag(source, NODE_MAGE_TOWER);
+                EventNodeCaptured(source, NODE_MAGE_TOWER);
             break;
         case AREATRIGGER_DRAENEI_RUINS_POINT:
             if (m_towerOwner[NODE_DRAENEI_RUINS] == source->GetTeam())
-                EventPlayerCapturedFlag(source, NODE_DRAENEI_RUINS);
+                EventNodeCaptured(source, NODE_DRAENEI_RUINS);
             break;
     }
 }
@@ -461,7 +461,7 @@ void BattleGroundEY::EventPlayerClickedOnFlag(Player* source, GameObject* target
         PSendMessageToAll(LANG_BG_EY_HAS_TAKEN_FLAG, CHAT_MSG_BG_SYSTEM_HORDE, NULL, source->GetName());
 }
 
-void BattleGroundEY::EventPlayerCapturedFlag(Player* source, EYNodes node)
+void BattleGroundEY::EventNodeCaptured(Player* source, EYNodes node)
 {
     if (GetStatus() != STATUS_IN_PROGRESS || GetFlagCarrierGuid() != source->GetObjectGuid())
         return;

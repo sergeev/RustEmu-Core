@@ -152,18 +152,6 @@ bool BattleGroundBE::SetupBattleGround()
     return true;
 }
 
-void BattleGroundBE::UpdatePlayerScore(Player* source, uint32 type, uint32 value)
-{
-
-    BattleGroundScoreMap::iterator itr = m_PlayerScores.find(source->GetObjectGuid());
-    if (itr == m_PlayerScores.end())                        // player not found...
-        return;
-
-    // there is nothing special in this score
-    BattleGround::UpdatePlayerScore(source, type, value);
-
-}
-
 /*
 21:45:46 id:231310 [S2C] SMSG_INIT_WORLD_STATES (706 = 0x02C2) len: 86
 0000: 32 02 00 00 76 0e 00 00 00 00 00 00 09 00 f3 09  |  2...v...........

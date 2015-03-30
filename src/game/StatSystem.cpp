@@ -1038,6 +1038,7 @@ void Creature::UpdateDamagePhysical(WeaponAttackType attType)
         SetStatFloatValue(UNIT_FIELD_MINRANGEDDAMAGE, mindamage);
         SetStatFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE, maxdamage);
         break;
+      default: break;
     }
 }
 

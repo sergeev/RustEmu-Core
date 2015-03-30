@@ -147,8 +147,7 @@ Creature::Creature(CreatureSubtype subtype) : Unit(),
     m_AlreadyCallAssistance(false), m_AlreadySearchedAssistance(false),
     m_AI_locked(false), m_isDeadByDefault(false), m_temporaryFactionFlags(TEMPFACTION_NONE),
     m_meleeDamageSchoolMask(SPELL_SCHOOL_MASK_NORMAL), m_originalEntry(0),
-    m_creatureInfo(NULL), m_focusSpell(NULL),
-    m_modelInhabitType(-1)
+    m_creatureInfo(NULL), m_modelInhabitType(-1), m_focusSpell(NULL)
 {
     m_regenTimer = 200;
     m_valuesCount = UNIT_END;
@@ -2934,43 +2933,49 @@ uint32 Creature::GetModelInhabitType()
 
 bool Creature::CanWalk()
 {
-    if (!(m_creatureInfo->InhabitType & INHABIT_GROUND))
-        return false;
-
-    /*int32 modelInhabitType = GetModelInhabitType();
-    if ((modelInhabitType == MODEL_INHABIT_ONLY_SWIM) ||
-    (modelInhabitType == MODEL_INHABIT_ONLY_FLY))
-    return false;*/
-
+  if ((m_creatureInfo->InhabitType & INHABIT_GROUND))
     return true;
+
+  switch ( GetModelInhabitType( ) ) {
+    case MODEL_INHABIT_ONLY_GROUND:
+    case MODEL_INHABIT_ONLY_GROUND_AND_FLY:
+      return true;
+    default: break;
+  }
+  
+  return false;
 }
 
 bool Creature::CanSwim()
 {
-    if (!(m_creatureInfo->InhabitType & INHABIT_WATER))
-        return false;
-
-    int32 modelInhabitType = GetModelInhabitType();
-    if ((modelInhabitType == MODEL_INHABIT_ONLY_GROUND) ||
-        (modelInhabitType == MODEL_INHABIT_ONLY_FLY) ||
-        (modelInhabitType == MODEL_INHABIT_ONLY_UNDERWATER))
-        return false;
-
+  if ((m_creatureInfo->InhabitType & INHABIT_WATER))
     return true;
+
+  switch ( GetModelInhabitType( ) ) {
+    case MODEL_INHABIT_ONLY_SWIM:
+    case MODEL_INHABIT_ONLY_UNDERWATER:
+      return true;
+    default: break;
+  }
+  
+  return false;
 }
 
 bool Creature::CanFly()
 {
-    if (!(m_creatureInfo->InhabitType & INHABIT_AIR) && !(GetByteValue(UNIT_FIELD_BYTES_1, 3) & UNIT_BYTE1_FLAG_HOVER) && !HasAuraType(SPELL_AURA_FLY))
-        return false;
-
-    int32 modelInhabitType = GetModelInhabitType();
-    if ((modelInhabitType == MODEL_INHABIT_ONLY_GROUND) ||
-        (modelInhabitType == MODEL_INHABIT_ONLY_SWIM) ||
-        (modelInhabitType == MODEL_INHABIT_ONLY_UNDERWATER))
-        return false;
-
+  if ((m_creatureInfo->InhabitType & INHABIT_AIR) ||
+      (GetByteValue(UNIT_FIELD_BYTES_1, 3) & UNIT_BYTE1_FLAG_HOVER) ||
+      HasAuraType(SPELL_AURA_FLY))
     return true;
+
+  switch ( GetModelInhabitType( ) ) {
+    case MODEL_INHABIT_ONLY_FLY:
+    case MODEL_INHABIT_ONLY_GROUND_AND_FLY:
+      return true;
+    default: break;
+  }
+
+  return false;
 }
 
 void Creature::SetTargetGuid(ObjectGuid targetGuid)

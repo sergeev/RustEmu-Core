@@ -143,7 +143,7 @@ Map* MapManager::FindFirstMap(uint32 mapid) const
     checks that do not require a map to be created
     will send transfer error messages on fail
 */
-bool MapManager::CanPlayerEnter(uint32 mapid, Player* player)
+bool MapManager::CanPlayerEnter(uint32 mapid, Player* /*player*/)
 {
     MapEntry const* entry = sMapStore.LookupEntry(mapid);
     if(!entry)

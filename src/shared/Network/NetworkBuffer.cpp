@@ -18,20 +18,22 @@
 
 #include "NetworkBuffer.h"
 
-NetworkBuffer::NetworkBuffer() : write_position_(0), read_position_(0),
-size_(0), data_allocated_(false)
+NetworkBuffer::NetworkBuffer() : data_allocated_(false), write_position_(0),
+                                 read_position_(0),      size_(0)
 {
 
 }
 
-NetworkBuffer::NetworkBuffer(uint32 size) : write_position_(0), read_position_(0),
-size_(size), data_allocated_(true)
+NetworkBuffer::NetworkBuffer(uint32 size) : data_allocated_(true), write_position_(0),
+                                            read_position_(0),      size_(size)
 {
-    data_ = new uint8[size];
+    data_ = new uint8[size]( );
 }
 
-NetworkBuffer::NetworkBuffer(uint8* buffer, uint32 size) : write_position_(0), read_position_(0),
-size_(size), data_allocated_(false)
+NetworkBuffer::NetworkBuffer(uint8* buffer, uint32 size) : data_allocated_(false),
+                                                           write_position_(0),
+                                                           read_position_(0),
+                                                           size_(size)
 {
     data_ = buffer;
 }

@@ -494,7 +494,8 @@ bool Unit::SetPosition(Position const& pos, bool teleport)
     // prevent crash when a bad coord is sent by the client
     if (!MaNGOS::IsValidMapCoord(pos.x, pos.y, pos.z, pos.orientation))
     {
-        DEBUG_LOG("Unit::SetPosition(%f, %f, %f, %f, %d) .. bad coordinates for unit %s!", pos.x, pos.y, pos.z, pos.orientation, teleport, GetObjectGuid().GetString().c_str());
+        DEBUG_LOG("Unit::SetPosition(%f, %f, %f, %f, %d) .. bad coordinates for unit %s!",
+                  pos.x, pos.y, pos.z, pos.orientation, teleport, GetObjectGuid().GetString().c_str());
         return false;
     }
 
@@ -660,7 +661,7 @@ void Unit::DealDamageMods(DamageInfo* damageInfo)
         damageInfo->AddAbsorb(originalDamage - damageInfo->damage);
 }
 
-uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, DamageInfo* damageInfo, DamageEffectType damagetype, SpellSchoolMask damageSchoolMask, SpellEntry const *spellProto, bool durabilityLoss)
+uint32 Unit::DealDamage(Unit* pVictim, uint32 damage, DamageInfo* damageInfo, DamageEffectType damagetype, SpellSchoolMask /*damageSchoolMask*/, SpellEntry const *spellProto, bool durabilityLoss)
 {
     // wrapper for old method of damage calculation (mostly for scripts)
     if (!damageInfo)
@@ -1725,7 +1726,7 @@ void Unit::DealSpellDamage(DamageInfo* damageInfo, bool durabilityLoss)
 
     Unit *pVictim = damageInfo->target;
 
-    if(!this || !pVictim)
+    if(!pVictim)
         return;
 
     if (!pVictim->isAlive() || pVictim->IsTaxiFlying() || (pVictim->GetTypeId() == TYPEID_UNIT && ((Creature*)pVictim)->IsInEvadeMode()))
@@ -2030,7 +2031,7 @@ void Unit::DealMeleeDamage(DamageInfo* damageInfo, bool durabilityLoss)
 
     Unit *pVictim = damageInfo->target;
 
-    if(!this || !pVictim)
+    if(!pVictim)
         return;
 
     if (!pVictim->isAlive() || pVictim->IsTaxiFlying() || (pVictim->GetTypeId() == TYPEID_UNIT && ((Creature*)pVictim)->IsInEvadeMode()))
@@ -2365,7 +2366,7 @@ void Unit::CalculateResistance(Unit* pCaster, DamageInfo* damageInfo)
             float resPct = std::min(1.0f, float(floor(10.0f * avrgMitigation + 2.0f) / 10.0f));
             for (; resPct > 0.0f; resPct -= 0.1f)
             {
-                float probability = 0.5f - 2.5f * abs(resPct - avrgMitigation);
+                float probability = 0.5f - 2.5f * std::abs(resPct - avrgMitigation);
                 if (probability > chance)
                 {
                     damageInfo->resist = uint32(float(damageInfo->damage) * resPct);
@@ -5004,11 +5005,10 @@ float Unit::GetTotalAuraScriptedMultiplierForDamageTaken(SpellEntry const* spell
     return multiplier;
 }
 
-float Unit::GetTotalAuraScriptedMultiplierForDamageDone(SpellEntry const* spellProto) const
+float Unit::GetTotalAuraScriptedMultiplierForDamageDone(SpellEntry const* /*spellProto*/) const
 {
     // spellProto may be NULL for melee damage
-    float multiplier = 1.0f;
-    return multiplier;
+    return 1.0f;
 }
 
 bool Unit::AddSpellAuraHolder(SpellAuraHolder* holder)
@@ -6704,7 +6704,7 @@ void Unit::SendSpellNonMeleeDamageLog(DamageInfo *log)
     SendMessageToSet( &data, true );
 }
 
-void Unit::SendSpellNonMeleeDamageLog(Unit *target, uint32 SpellID, uint32 Damage, SpellSchoolMask damageSchoolMask, uint32 AbsorbedDamage, uint32 Resist, bool PhysicalDamage, uint32 Blocked, bool CriticalHit)
+void Unit::SendSpellNonMeleeDamageLog(Unit *target, uint32 SpellID, uint32 Damage, SpellSchoolMask /*damageSchoolMask*/, uint32 AbsorbedDamage, uint32 Resist, bool PhysicalDamage, uint32 Blocked, bool CriticalHit)
 {
     DamageInfo log(this, target, SpellID,(Damage - AbsorbedDamage - Resist - Blocked));
     log.SetAbsorb(AbsorbedDamage);
@@ -7509,7 +7509,9 @@ void Unit::RemoveAllAttackers()
     // Cleanup
     if (!attackers.empty())
     {
-        sLog.outError("Unit::RemoveAllAttackers %s has %u attackers after step-to-step cleanup!", GetObjectGuid().GetString().c_str(), attackers.size());
+        sLog.outError("Unit::RemoveAllAttackers %s has %zu attackers after "
+                      "step-to-step cleanup!", GetObjectGuid().GetString().c_str(),
+                      attackers.size());
         GetMap()->RemoveAllAttackersFor(GetObjectGuid());
     }
 }
@@ -8941,7 +8943,7 @@ uint32 Unit::SpellCriticalDamageBonus(SpellEntry const *spellProto, uint32 damag
     return damage;
 }
 
-uint32 Unit::SpellCriticalHealingBonus(SpellEntry const *spellProto, uint32 damage, Unit *pVictim)
+uint32 Unit::SpellCriticalHealingBonus(SpellEntry const *spellProto, uint32 damage, Unit */*pVictim*/)
 {
     // Calculate critical bonus
     int32 crit_bonus;
@@ -9105,7 +9107,7 @@ uint32 Unit::SpellHealingBonusDone(Unit *pVictim, SpellEntry const *spellProto, 
  * Calculates target part of healing spell bonuses,
  * will be called on each tick for periodic damage over time auras
  */
-uint32 Unit::SpellHealingBonusTaken(Unit *pCaster, SpellEntry const *spellProto, int32 healamount, DamageEffectType damagetype, uint32 stack)
+uint32 Unit::SpellHealingBonusTaken(Unit */*pCaster*/, SpellEntry const *spellProto, int32 healamount, DamageEffectType damagetype, uint32 stack)
 {
     // Healing taken percent
     float  TakenTotalMod = GetTotalAuraMultiplier(SPELL_AURA_MOD_HEALING_PCT);
@@ -11706,6 +11708,7 @@ uint32 Unit::GetCreatePowers( Powers power ) const
         case POWER_HAPPINESS:   return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->IsPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : POWER_HAPPINESS_DEFAULT);
         case POWER_RUNE:        return (GetTypeId() == TYPEID_PLAYER && ((Player const*)this)->getClass() == CLASS_DEATH_KNIGHT ? POWER_RUNE_DEFAULT : 0);
         case POWER_RUNIC_POWER: return (GetTypeId() == TYPEID_PLAYER && ((Player const*)this)->getClass() == CLASS_DEATH_KNIGHT ? POWER_RUNIC_POWER_DEFAULT : 0);
+        default: break;
     }
 
     return 0;
@@ -13491,7 +13494,7 @@ void Unit::Blinkway(uint32 mapid, float x, float y, float z, float dist)
     const float DELTA_X = (destx - x) / numChecks;
     const float DELTA_Y = (desty - y) / numChecks;
     int j = 1;
-    for (j; j < (numChecks + 1); j++)
+    for (; j < (numChecks + 1); j++)
     {
         prevX = x + (float(j - 1)*DELTA_X);
         prevY = y + (float(j - 1)*DELTA_Y);
@@ -14132,7 +14135,7 @@ bool Unit::IsIgnoreUnitState(SpellEntry const *spell, IgnoreUnitState ignoreStat
     return false;
 }
 
-void Unit::CleanupDeletedHolders(bool force)
+void Unit::CleanupDeletedHolders(bool /*force*/)
 {
     if (m_deletedHolders.empty())
         return;

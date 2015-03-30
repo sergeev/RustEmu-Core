@@ -447,6 +447,8 @@ set(LIBRARY_SRCS
     pchdef.h
 )
 
+LIST( SORT LIBRARY_SRCS )
+
 source_group("AhBot"
   FILES
     ${SRC_GRP_AHBOT}

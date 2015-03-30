@@ -56,9 +56,7 @@ void OutdoorPvPNA::FillInitialWorldStates(uint32 zoneId)
     FillInitialWorldState(zoneId, WORLD_STATE_NA_GUARDS_LEFT, m_guardsLeft);
 }
 
-void OutdoorPvPNA::SendRemoveWorldStates(Player* player)
-{
-}
+void OutdoorPvPNA::SendRemoveWorldStates(Player* /*player*/){}
 
 void OutdoorPvPNA::HandlePlayerEnterZone(Player* player, bool isMainZone)
 {

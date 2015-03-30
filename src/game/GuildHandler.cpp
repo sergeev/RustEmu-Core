@@ -929,8 +929,8 @@ void WorldSession::HandleGuildBankDepositMoney(WorldPacket& recv_data)
     // log
     pGuild->LogBankEvent(GUILD_BANK_LOG_DEPOSIT_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
 
-    pGuild->DisplayGuildBankTabsInfo(this);
-    pGuild->DisplayGuildBankContent(this, 0);
+      pGuild->DisplayGuildBankTabsInfo(this);
+      pGuild->DisplayGuildBankContent(this, 0);
     pGuild->DisplayGuildBankMoneyUpdate(this);
 }
 
@@ -982,8 +982,8 @@ void WorldSession::HandleGuildBankWithdrawMoney(WorldPacket& recv_data)
     pGuild->LogBankEvent(GUILD_BANK_LOG_WITHDRAW_MONEY, uint8(0), GetPlayer()->GetGUIDLow(), money);
 
     pGuild->SendMoneyInfo(this, GetPlayer()->GetGUIDLow());
-    pGuild->DisplayGuildBankTabsInfo(this);
-    pGuild->DisplayGuildBankContent(this, 0);
+      pGuild->DisplayGuildBankTabsInfo(this);
+      pGuild->DisplayGuildBankContent(this, 0);
     pGuild->DisplayGuildBankMoneyUpdate(this);
 }
 

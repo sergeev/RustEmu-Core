@@ -305,7 +305,7 @@ namespace VMAP
     {
         char chunk[8];
         bool result = true;
-        uint32 chunkSize, count;
+        uint32 chunkSize, count = 0;
         triangles.clear();
         vertices.clear();
         delete iLiquid;

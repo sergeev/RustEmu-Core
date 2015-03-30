@@ -70,7 +70,9 @@ class MANGOS_DLL_SPEC MOTransport : public Transport
         static uint32 GetPossibleMapByEntry(uint32 entry, bool start = true);
         static bool   IsSpawnedAtDifficulty(uint32 entry, Difficulty difficulty);
 
-        bool Create(uint32 guidlow, uint32 mapid, float x, float y, float z, float ang, uint8 animprogress, uint16 dynamicHighValue);
+        bool Create(uint32 guidlow, uint32 mapid, float x, float y, 
+                    float z, float ang, uint8 animprogress, 
+                    uint16 dynamicHighValue);
         bool GenerateWaypoints(uint32 pathid, std::set<uint32>& mapids);
 
         virtual void Update(uint32 update_diff, uint32 p_time) override;

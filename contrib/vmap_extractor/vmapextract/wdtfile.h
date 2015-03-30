@@ -34,13 +34,12 @@ class WDTFile
         bool init(char* map_id, unsigned int mapID);
 
         string* gWmoInstansName;
-        int gnWMO, nMaps;
+        int gnWMO;
 
         ADTFile* GetMap(int x, int z);
 
     private:
         MPQFile WDT;
-        bool maps[64][64];
         string filename;
 };
 

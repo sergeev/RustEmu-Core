@@ -33,10 +33,6 @@
 #include <cstring>
 #include <cstdio>
 
-#if COMPILER == COMPILER_MICROSOFT
-#  pragma warning( disable : 4267 )                         // conversion from 'size_t' to 'int', possible loss of data
-#endif
-
 // Uncomment the following line to turn off G3D::System memory
 // allocation and use the operating system's malloc.
 //#define NO_BUFFERPOOL
@@ -298,30 +294,30 @@ void System::init() {
         m_secondsPerNS = 1.0 / 1.0e9;
         
         // System Architecture:
-	const NXArchInfo* pInfo = NXGetLocalArchInfo();
-		
-	if (pInfo) {
-	    m_cpuArch = pInfo->description;
-			
-	    switch (pInfo->cputype) {
-	    case CPU_TYPE_POWERPC:
-	        switch(pInfo->cpusubtype){
-		case CPU_SUBTYPE_POWERPC_750:
-		case CPU_SUBTYPE_POWERPC_7400:
-		case CPU_SUBTYPE_POWERPC_7450:
-		    m_cpuVendor = "Motorola";
-		    break;
-		case CPU_SUBTYPE_POWERPC_970:
-		    m_cpuVendor = "IBM";
-		    break;
-		}
-		break;
-	    
+        const NXArchInfo* pInfo = NXGetLocalArchInfo();
+                
+        if (pInfo) {
+            m_cpuArch = pInfo->description;
+                        
+            switch (pInfo->cputype) {
+            case CPU_TYPE_POWERPC:
+                switch(pInfo->cpusubtype){
+                case CPU_SUBTYPE_POWERPC_750:
+                case CPU_SUBTYPE_POWERPC_7400:
+                case CPU_SUBTYPE_POWERPC_7450:
+                    m_cpuVendor = "Motorola";
+                    break;
+                case CPU_SUBTYPE_POWERPC_970:
+                    m_cpuVendor = "IBM";
+                    break;
+                }
+                break;
+            
             case CPU_TYPE_I386:
                 m_cpuVendor = "Intel";
                 break;
-	    }
-	}
+            }
+        }
 #   endif
 
     initTime();
@@ -346,9 +342,7 @@ void getG3DVersion(std::string& s) {
 }
 
 
-std::string System::findDataFile
-(const std::string&  full,
- bool                errorIfNotFound) {
+std::string System::findDataFile(const std::string& full, bool errorIfNotFound) {
 
     // Places where specific files were most recently found.  This is
     // used to cache seeking of common files.
@@ -473,7 +467,7 @@ void System::setAppDataDir(const std::string& path) {
 }
 
 
-std::string demoFindData(bool errorIfNotFound) {
+std::string demoFindData(bool /*errorIfNotFound*/) {
     static const char* g3dPath = getenv("G3DDATA");
     if (g3dPath) {
         return g3dPath;
@@ -1659,6 +1653,8 @@ void System::setClipboardText(const std::string& s) {
             CloseClipboard();
             GlobalFree(hMem);
         }
+#else
+        (void)s;
 #   endif
 }
 
@@ -1673,7 +1669,7 @@ std::string System::getClipboardText() {
             if (h) {
                 char* temp = (char*)GlobalLock(h);
                 if (temp) {
-    	            s = temp;
+                    s = temp;
                 }
                 temp = NULL;
                 GlobalUnlock(h);
@@ -1702,7 +1698,7 @@ void System::cpuid(CPUIDFunction func, uint32& areg, uint32& breg, uint32& creg,
 
     // Intel assembler syntax
     __asm {
-        mov	  eax, func      //  eax <- func
+        mov       eax, func      //  eax <- func
         mov   ecx, 0
         cpuid              
         mov   a, eax   

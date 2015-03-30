@@ -30,18 +30,18 @@ class MANGOS_DLL_SPEC PointMovementGenerator: public MovementGeneratorMedium<T, 
         PointMovementGenerator(uint32 id, float x, float y, float z, bool generatePath) :
             m_id(id), m_x(x), m_y(y), m_z(z), m_generatePath(generatePath) {}
 
-        void Initialize(T&);
-        void Finalize(T&);
-        void Interrupt(T&);
-        void Reset(T&);
-        bool Update(T&, uint32 const&);
-
         void MovementInform(T&);
 
         MovementGeneratorType GetMovementGeneratorType() const override { return POINT_MOTION_TYPE; }
         char const* Name() const { return "<Point>"; }
 
         bool GetDestination(float& x, float& y, float& z) const { x = m_x; y = m_y; z = m_z; return true; }
+
+        void initialize(T&);
+        void finalize(T&);
+        void interrupt(T&);
+        void reset(T&);
+        bool update(T&, uint32 const&);
 
     private:
         uint32 m_id;
@@ -55,9 +55,9 @@ class MANGOS_DLL_SPEC AssistanceMovementGenerator : public PointMovementGenerato
         AssistanceMovementGenerator(float x, float y, float z) :
             PointMovementGenerator<Creature>(0, x, y, z, true) {}
 
-        void Finalize(Unit&) override;
-
         MovementGeneratorType GetMovementGeneratorType() const override { return ASSISTANCE_MOTION_TYPE; }
+
+        void finalize(Creature&) override;
 };
 
 class MANGOS_DLL_SPEC FlyOrLandMovementGenerator : public PointMovementGenerator<Creature>
@@ -67,7 +67,7 @@ class MANGOS_DLL_SPEC FlyOrLandMovementGenerator : public PointMovementGenerator
             PointMovementGenerator<Creature>(id, x, y, z, false),
             m_liftOff(liftOff) {}
 
-        void Initialize(Unit& unit) override;
+        void initialize(Creature& unit) override;
 
     private:
         bool m_liftOff;

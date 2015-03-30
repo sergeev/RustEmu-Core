@@ -40,7 +40,7 @@ namespace MaNGOS
     {
         public:
 
-            static T& Instance();
+            static T&   Instance();
 
         protected:
 

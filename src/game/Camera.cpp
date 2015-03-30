@@ -202,8 +202,9 @@ ViewPoint::~ViewPoint()
 {
     if (!m_cameras.empty())
     {
-        sLog.outError("ViewPoint destructor for %s called, but %u camera(s) referenced to it",
-            m_body.IsInitialized() ? m_body.GetObjectGuid().GetString().c_str() : "<uninitialized>", m_cameras.size());
+        sLog.outError("ViewPoint destructor for %s called, but %zu camera(s) referenced to it",
+                      m_body.IsInitialized() ? m_body.GetObjectGuid().GetString().c_str() :
+                      "<uninitialized>", m_cameras.size());
     }
 }
 

@@ -57,7 +57,6 @@ class WMORoot
         bool ConvertToVMAPRootWmo(FILE* output);
     private:
         std::string filename;
-        char outfilename;
 };
 
 struct WMOLiquidHeader
@@ -78,6 +77,8 @@ struct WMOLiquidVert
 
 class WMOGroup
 {
+    private:
+        std::string filename;
     public:
         // MOGP
         int groupName, descGroupName, mogpFlags;
@@ -109,10 +110,6 @@ class WMOGroup
 
         bool open();
         int ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPreciseVectorData);
-
-    private:
-        std::string filename;
-        char outfilename;
 };
 
 class WMOInstance

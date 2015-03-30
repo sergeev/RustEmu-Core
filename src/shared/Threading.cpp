@@ -99,10 +99,10 @@ Thread* Thread::current()
 }
 
 void Thread::setPriority(Priority priority)
-{
+{ ( void ) priority;
+#ifdef WIN32
     boost::thread::native_handle_type handle = m_ThreadImp.native_handle();
     bool _ok = true;
-#ifdef WIN32
         
     switch (priority)
     {
@@ -134,10 +134,9 @@ void Thread::setPriority(Priority priority)
              } else
                  _ok = false;
          */
-#endif
-
     // remove this ASSERT in case you don't want to know is thread priority change was successful or not
     MANGOS_ASSERT(_ok);
+#endif
 }
 
 void Thread::Sleep(unsigned long msecs)

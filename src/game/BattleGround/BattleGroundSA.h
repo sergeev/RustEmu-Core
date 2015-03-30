@@ -229,7 +229,7 @@ class BattleGroundSA : public BattleGround
 
         Team GetDefender() const { return defender; }
         uint8 GetGydController(uint8 gyd) const { return m_Gyd[gyd]; }
-        int32 GetGateStatus(int32 Type) const { return GateStatus[Type]; }
+        BG_SA_GateStatus GetGateStatus(int32 Type) const { return GateStatus[Type]; }
         void RemovePlayer(Player *plr, ObjectGuid guid);
         void HandleAreaTrigger(Player *Source, uint32 Trigger);
         void EndBattleGround(Team winner);
@@ -277,7 +277,7 @@ class BattleGroundSA : public BattleGround
         BG_SA_BannerTimer   m_BannerTimers[BG_SA_GRY_MAX];
         int32 _GatesName(GameObject* obj);
         int32 _GydName(uint8 gyd);
-        int32 GateStatus[BG_SA_GATE_MAX];
+        BG_SA_GateStatus GateStatus[BG_SA_GATE_MAX];
         bool TimerEnabled;
         void _GydOccupied(uint8 node,Team team);
         void ToggleTimer();

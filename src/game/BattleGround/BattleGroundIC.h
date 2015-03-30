@@ -330,7 +330,7 @@ class BattleGroundIC : public BattleGround
 
         virtual WorldSafeLocsEntry const* GetClosestGraveYard(Player* player);
 
-        void RemovePlayer(Player* plr);
+        void RemovePlayer(Player* plr, ObjectGuid guid);
         void HandleAreaTrigger(Player *Source, uint32 Trigger);
         bool SetupBattleGround();
         void EndBattleGround(Team winner);
@@ -339,7 +339,7 @@ class BattleGroundIC : public BattleGround
         void SpawnGates();
 
         /* Scorekeeping */
-        void UpdatePlayerScore(Player *Source, uint32 type, uint32 value, bool doAddHonor = true);
+        void UpdatePlayerScore(Player *Source, uint32 type, uint32 value );
 
         virtual Team GetSpawnTeamFor(ObjectGuid const& guid) const override;
 

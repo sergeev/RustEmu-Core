@@ -35,13 +35,14 @@ class MANGOS_DLL_SPEC HomeMovementGenerator<Creature>
         HomeMovementGenerator() : m_arrived(false) {}
         ~HomeMovementGenerator() {}
 
-        void Initialize(Creature&);
-        void Finalize(Creature&);
-        void Interrupt(Creature&) {}
-        void Reset(Creature&);
-        bool Update(Creature&, const uint32&);
         MovementGeneratorType GetMovementGeneratorType() const { return HOME_MOTION_TYPE; }
         const char* Name() const { return "<Home>"; }
+
+        void initialize(Creature&);
+        void finalize(Creature&);
+        void interrupt(Creature&) {}
+        void reset(Creature&);
+        bool update(Creature&, const uint32&);
 
     private:
         void _setTargetLocation(Creature &);

@@ -83,7 +83,7 @@ void Map::LoadMapAndVMap(int gx,int gy)
         m_bLoadedGrids[gx][gy] = true;
 }
 
-Map::Map(uint32 id, time_t expiry, uint32 InstanceId, uint8 SpawnMode)
+Map::Map(uint32 id, time_t /*expiry*/, uint32 InstanceId, uint8 SpawnMode)
   : i_mapEntry (sMapStore.LookupEntry(id)), i_spawnMode(SpawnMode),
   i_id(id), i_InstanceId(InstanceId), m_unloadTimer(0),
   m_VisibleDistance(DEFAULT_VISIBILITY_DISTANCE),
@@ -885,7 +885,7 @@ Map::Remove(T* obj, bool remove)
 }
 
 template<class T>
-void Map::Relocation(T* obj, Position const& pos)
+void Map::Relocation(T* obj, Position const& /*pos*/)
 {
     sLog.outError("Map::Relocation unhandled relocation call (object %s)!", obj ? obj->GetObjectGuid().GetString().c_str() : "<none>");
     MANGOS_ASSERT(false);
@@ -1048,9 +1048,6 @@ bool Map::UnloadGrid(NGridType& grid, bool pForce)
     if (!pForce && ActiveObjectsNearGrid(grid.getX(), grid.getY()))
         return false;
 
-    // Make refcounted pointer for deleting object in destructor
-    NGridType* deletePtr = &grid;
-
     SetGridObjectDataLoaded(false, grid);
     ObjectGridUnloader unloader(grid);
 
@@ -1067,7 +1064,8 @@ bool Map::UnloadGrid(NGridType& grid, bool pForce)
     unloader.UnloadN();
     setNGrid(NULL, grid.getX(), grid.getY());
 
-    DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "Map::UnloadGrid unloading grid[%u,%u] for map %u finished", grid.getX(), grid.getY(), GetId(), GetInstanceId());
+    DEBUG_FILTER_LOG(LOG_FILTER_MAP_LOADING, "Map::UnloadGrid unloading grid[%u,%u]"
+                     " for map %u finished", grid.getX(), grid.getY(), GetId() );
 
     int gx = (MAX_NUMBER_OF_GRIDS - 1) - grid.getX();
     int gy = (MAX_NUMBER_OF_GRIDS - 1) - grid.getY();
@@ -1290,7 +1288,7 @@ inline void Map::setNGrid(NGridType* grid, uint32 x, uint32 y)
     i_grids[x][y] = grid;
 }
 
-void Map::AddObjectToRemoveList(WorldObject* obj, bool immediateCleanup)
+void Map::AddObjectToRemoveList(WorldObject* obj, bool /*immediateCleanup*/)
 {
     MANGOS_ASSERT(obj && obj->GetMap() == this);
 
@@ -2650,7 +2648,7 @@ float Map::GetHeight(uint32 phasemask, float x, float y, float z) const
 // Find an height within a reasonable range of provided Z. This method may fail so we have to handle that case.
 bool Map::GetHeightInRange(uint32 phasemask, float x, float y, float &z, float maxSearchDist /*= 4.0f*/) const
 {
-    float height, vmapHeight, mapHeight;
+    float height, vmapHeight, mapHeight = 0.0f;
     vmapHeight = VMAP_INVALID_HEIGHT_VALUE;
 
     VMAP::IVMapManager* vmgr = VMAP::VMapFactory::createOrGetVMapManager();
@@ -2664,7 +2662,8 @@ bool Map::GetHeightInRange(uint32 phasemask, float x, float y, float &z, float m
     }
 
     // find raw height from .map file on X,Y coordinates
-    if (GridMap* gmap = const_cast<TerrainInfo*>(m_TerrainData)->GetGrid(x, y)) // TODO:: find a way to remove that const_cast
+    GridMap* gmap = const_cast<TerrainInfo*>(m_TerrainData)->GetGrid(x, y);
+    if ( gmap != NULL ) // TODO:: find a way to remove that const_cast
         mapHeight = gmap->getHeight(x, y);
 
     float diffMaps = fabs(fabs(z) - fabs(mapHeight));
@@ -2830,8 +2829,10 @@ void Map::SendRemoveNotifyToStoredClients(WorldObject* object, bool destroy)
         }
     }
 
-    DEBUG_FILTER_LOG(LOG_FILTER_VISIBILITY_CHANGES, "Map::SendRemoveNotifyToStoredClients %s send visibility notify to %u clients (%u really)",
-        object->GetObjectGuid().GetString().c_str(), object->GetNotifiedClients().size(), count);
+    DEBUG_FILTER_LOG(LOG_FILTER_VISIBILITY_CHANGES, "Map::SendRemoveNotifyToStoredClients "
+                     "%s send visibility notify to %zu clients (%u really)",
+                     object->GetObjectGuid().GetString().c_str(),
+                     object->GetNotifiedClients().size(), count);
 
     object->GetNotifiedClients().clear();
 }

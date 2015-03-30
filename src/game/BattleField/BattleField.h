@@ -130,11 +130,11 @@ class MANGOS_DLL_SPEC BattleField : public OutdoorPvP
         uint32 GetTimer() const { return m_timer; }
         void SetTimer(uint32 value) { m_timer = value; }
 
-        virtual void GraveYardChanged(uint8 id, PvpTeamIndex newOwner) { };
+        virtual void GraveYardChanged(uint8 /* id */, PvpTeamIndex /* newOwner */) { };
 
         BFPlayerScoreMap& GetPlayerScoreMap() { return m_playerScores; }
 
-        virtual bool CriteriaMeets(uint32 criteriaId, Player* plr) { return false; }
+        virtual bool CriteriaMeets(uint32 /* criteriaId */, Player* /* plr */) { return false; }
 
         uint32 GetBattleDuration() const { return m_battleDuration; }
         uint32 GetStartInviteDelay() const { return m_startInviteDelay; }
@@ -159,12 +159,18 @@ class MANGOS_DLL_SPEC BattleField : public OutdoorPvP
         void InvitePlayerToQueue(Player* player);
 
         uint32 GetBattlefieldId() const { return m_battleFieldId; }
-        ObjectGuid GetBattlefieldGuid() const { return ObjectGuid(HIGHGUID_BATTLEGROUND, uint32((2 << 16) | m_battleFieldId)); }
-        ObjectGuid GetQueueGuid() const { return ObjectGuid(uint64((HIGHGUID_BATTLEGROUND << 24) | m_battleFieldId)); }
+        ObjectGuid GetBattlefieldGuid() const { 
+          return ObjectGuid(HIGHGUID_BATTLEGROUND, uint32((2 << 16) | m_battleFieldId));
+        }
+        ObjectGuid GetQueueGuid() const { 
+          return ObjectGuid(((uint64)HIGHGUID_BATTLEGROUND << 24) | m_battleFieldId);
+        }
 
     protected:
         void KickPlayer(Player* plr);
-        virtual bool GetKickPosition(Player* plr, float& x, float& y, float& z) { return false; }
+        virtual bool GetKickPosition(Player* /*plr*/, float& /*x*/, float& /*y*/, float& /*z*/) { 
+          return false; 
+        }
         virtual void InitPlayerScore(Player* plr);
         void InitPlayerScores();
         virtual bool UpdatePlayerScores();
@@ -174,13 +180,13 @@ class MANGOS_DLL_SPEC BattleField : public OutdoorPvP
         uint32 GetPlayerCountByTeam(PvpTeamIndex teamIdx);
         bool IsTeamFull(PvpTeamIndex teamIdx);
 
-        virtual void RewardPlayersAtEnd(PvpTeamIndex winner) { };
+        virtual void RewardPlayersAtEnd(PvpTeamIndex /*winner*/) { };
 
         void SetupPlayerPositions();
-        virtual void SetupPlayerPosition(Player* player) { };
+        virtual void SetupPlayerPosition(Player* /*player*/) { };
 
         virtual void SendUpdateWorldStatesToAll();
-        virtual void SendUpdateWorldStatesTo(Player* player) { }
+        virtual void SendUpdateWorldStatesTo(Player* /*player*/) { }
 
         // variables
         uint32 m_battleFieldId;

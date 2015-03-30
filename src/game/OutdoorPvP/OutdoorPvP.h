@@ -57,7 +57,7 @@ class MANGOS_DLL_SPEC OutdoorPvP
         virtual ~OutdoorPvP() {}
 
         // called when the zone is initialized
-        virtual void FillInitialWorldStates(uint32 zoneId) {}
+        virtual void FillInitialWorldStates(uint32 /*zoneId*/) {}
 
         // Process Capture event
         virtual bool HandleEvent(uint32 /*eventId*/, GameObject* /*go*/) { return false; }
@@ -110,7 +110,7 @@ class MANGOS_DLL_SPEC OutdoorPvP
         uint32 GetId() const { return m_id; }
         bool IsBattleField() const { return m_isBattleField; }
 
-        virtual bool IsMember(ObjectGuid guid) { return true; }
+        virtual bool IsMember(ObjectGuid /*guid*/) { return true; }
 
         virtual bool InitOutdoorPvPArea() { return true; }
 

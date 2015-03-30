@@ -41,7 +41,7 @@ void OutdoorPvP::HandlePlayerEnterZone(Player* player, bool isMainZone)
    @param   player to remove
    @param   whether zone is main outdoor pvp zone or a affected zone
  */
-void OutdoorPvP::HandlePlayerLeaveZone(Player* player, bool isMainZone)
+void OutdoorPvP::HandlePlayerLeaveZone(Player* player, bool /*isMainZone*/)
 {
     if (m_zonePlayers.erase(player->GetObjectGuid()))
     {

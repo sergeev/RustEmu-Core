@@ -147,10 +147,12 @@ void CoordinateFrame::getXYZYPRRadians(float& x, float& y, float& z,
         
         // Pitch is the elevation of the yaw vector
         pitch = asin(look.y);
-        
+
+#if 0
         Vector3 actualRight = rightVector();
         Vector3 expectedRight = look.cross(Vector3::unitY());
-
+#endif
+        
         roll = 0;//acos(actualRight.dot(expectedRight));  TODO
     }
 }

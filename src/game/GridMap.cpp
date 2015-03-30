@@ -718,7 +718,7 @@ void TerrainInfo::Unload(const uint32 x, const uint32 y)
 }
 
 // call this method only
-void TerrainInfo::CleanUpGrids(const uint32 diff)
+void TerrainInfo::CleanUpGrids(const uint32 /*diff*/)
 {
     for (int y = 0; y < MAX_NUMBER_OF_GRIDS; ++y)
     {
@@ -824,8 +824,9 @@ float TerrainInfo::GetHeightStatic(float x, float y, float z, bool useVmaps/*=tr
     return mapHeight;
 }
 
-inline bool IsOutdoorWMO(uint32 mogpFlags, int32 adtId, int32 rootId, int32 groupId,
-    WMOAreaTableEntry const* wmoEntry, AreaTableEntry const* atEntry)
+inline bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/,
+                         int32 /*groupId*/, WMOAreaTableEntry const* wmoEntry,
+                         AreaTableEntry const* atEntry)
 {
     bool outdoor = true;
 

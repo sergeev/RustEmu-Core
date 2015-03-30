@@ -2905,6 +2905,7 @@ uint32 SpellMgr::GetSpellMaxTargetsWithCustom(SpellEntry const* spellInfo, Unit 
                             case RAID_DIFFICULTY_25MAN_HEROIC:
                                 unMaxTargets = 5;
                                 break;
+                            default: break;
                         }
                     }
                     break;
@@ -5645,12 +5646,12 @@ SpellPreferredTargetType GetPreferredTargetForSpell(SpellEntry const* spellInfo)
     return SPELL_PREFERRED_TARGET_SELF;
 }
 
-static char* SPELL_DBC_SPELL      = "reconstructed by spell_dbc spell";
+static char SPELL_DBC_SPELL[ ] = "reconstructed by spell_dbc spell";
 
 struct SpellDbcLoader : public SQLStorageLoaderBase<SpellDbcLoader, SQLHashStorage>
 {
     template<class S, class D>
-    void default_fill(uint32 field_pos, S src, D &dst)
+    void default_fill(uint32 /*field_pos*/, S src, D &dst)
     {
         dst = D(src);
     }
@@ -5663,8 +5664,7 @@ struct SpellDbcLoader : public SQLStorageLoaderBase<SpellDbcLoader, SQLHashStora
         }
         else
         {
-            dst = new char[1];
-            *dst = 0;
+            dst = new char[1]( );
         }
     }
 };
