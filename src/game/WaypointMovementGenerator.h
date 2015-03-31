@@ -131,12 +131,12 @@ class MANGOS_DLL_SPEC FlightPathMovementGenerator :
         void SkipCurrentNode() { ++m_currentNode; }
         void DoEventIfAny(Player& player, TaxiPathNodeEntry const& node, bool departure);
 
-        void initialize(Player &);
-        void finalize(Player &);
-        void interrupt(Player &);
-        void reset(Player &);
-        bool update(Player &, const uint32 &);
-        bool getResetPosition(Player&, float& x, float& y, float& z, float& o) const;
+        virtual void initialize(Player &);
+        virtual void finalize(Player &);
+        virtual void interrupt(Player &);
+        virtual void reset(Player &);
+        virtual bool update(Player &, const uint32 &);
+        virtual bool getResetPosition(Player&, float& x, float& y, float& z, float& o) const;
 
 };
 

@@ -126,7 +126,7 @@ public:
     const char* Name() const { return "<FlightPath>"; }
     void interrupt(Player& u)
     {
-        interrupt(u);
+        FlightPathMovementGenerator::interrupt(u);
 
         u.clearUnitState(UNIT_STAT_TAXI_FLIGHT);
         if (m_displayId)
@@ -140,11 +140,6 @@ public:
 
     void reset(Player &u)
     {
-        initialize(u);
-    }
-
-    void initialize(Player& u)
-    {
         if (m_displayId)
         {
             if (!m_previewDisplayId)
@@ -156,7 +151,7 @@ public:
         u.addUnitState(UNIT_STAT_TAXI_FLIGHT);
         u.SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISABLE_MOVE | UNIT_FLAG_TAXI_FLIGHT);
 
-        FlightPathMovementGenerator::initialize(u);
+        FlightPathMovementGenerator::reset(u);
     }
 
     void finalize(Player &u)

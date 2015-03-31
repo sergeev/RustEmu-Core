@@ -66,9 +66,14 @@ struct MassMailerQueryHandler
     }
 } massMailerQueryHandler;
 
-void MassMailMgr::AddMassMailTask(MailDraft* mailProto, const MailSender &sender, char const* query)
+void MassMailMgr::AddMassMailTask(MailDraft* mailProto, const MailSender &sender, const char *query)
 {
-  CharacterDatabase.AsyncPQuery(&massMailerQueryHandler, &MassMailerQueryHandler::HandleQueryCallback, mailProto, sender, "%s", query);
+  /*
+   * IGNORE THE WARNING BELOW, the query argument appears to be lost went placed into va-args as
+   * a result the application segfaults within the vsnprintf to follow
+   */
+  CharacterDatabase.AsyncPQuery(&massMailerQueryHandler, &MassMailerQueryHandler::HandleQueryCallback,
+                                mailProto, sender, query );
 }
 
 void MassMailMgr::Update(bool sendall /*= false*/)
