@@ -125,7 +125,7 @@ void CreatureCreatePos::SelectFinalPoint(Creature* cr, bool checkLOS /*=false*/)
 
 bool CreatureCreatePos::Relocate(Creature* cr) const
 {
-    cr->Relocate(m_pos.x, m_pos.y, m_pos.z, m_pos.o);
+    cr->Relocate(m_pos);
 
     if (!cr->IsPositionValid())
     {
@@ -1329,6 +1329,7 @@ void Creature::SelectLevel(const CreatureInfo* cinfo, float percentHealth, float
     SetFloatValue(UNIT_FIELD_MAXRANGEDDAMAGE, cinfo->MaxRangedDmg * damagemod);
 
     SetModifierValue(UNIT_MOD_ATTACK_POWER, BASE_VALUE, cinfo->MeleeAttackPower * damagemod);
+    SetModifierValue(UNIT_MOD_ATTACK_POWER_RANGED, BASE_VALUE, cinfo->RangedAttackPower * damagemod);
 }
 
 float Creature::_GetHealthMod(int32 Rank)
@@ -1456,7 +1457,8 @@ bool Creature::LoadFromDB(uint32 guidlow, Map* map)
     {
         m_respawnTime = 0;
 
-        GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), 0);
+        if (GetMap()->GetPersistentState())
+            GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), 0);
     }
 
     uint32 curhealth = data->curhealth;
@@ -1720,7 +1722,8 @@ void Creature::Respawn()
     if (IsDespawned())
     {
         if (HasStaticDBSpawnData())
-            GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), 0);
+            if (GetMap()->GetPersistentState())
+                GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), 0);
         m_respawnTime = time(NULL);                         // respawn at next tick
     }
 }
@@ -2030,9 +2033,15 @@ void Creature::SaveRespawnTime()
         return;
 
     if (m_respawnTime > time(NULL))                         // dead (no corpse)
-        GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), m_respawnTime);
+    {
+        if (GetMap()->GetPersistentState())
+            GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), m_respawnTime);
+    }
     else if (m_corpseDecayTimer > 0)                        // dead (corpse)
-        GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), time(NULL) + m_respawnDelay + m_corpseDecayTimer / IN_MILLISECONDS);
+    {
+        if (GetMap()->GetPersistentState())
+            GetMap()->GetPersistentState()->SaveCreatureRespawnTime(GetGUIDLow(), time(NULL) + m_respawnDelay + m_corpseDecayTimer / IN_MILLISECONDS);
+    }
 }
 
 bool Creature::IsOutOfThreatArea(Unit* pVictim) const
@@ -2215,14 +2224,14 @@ bool Creature::MeetsSelectAttackingRequirement(Unit* pTarget, SpellEntry const* 
 
     if (pSpellInfo)
     {
-        switch (pSpellInfo->rangeIndex)
+        switch (pSpellInfo->GetRangeIndex())
         {
-            case SPELL_RANGE_IDX_SELF_ONLY: return false;
-            case SPELL_RANGE_IDX_ANYWHERE:  return true;
-            case SPELL_RANGE_IDX_COMBAT:    return CanReachWithMeleeAttack(pTarget);
+        case SPELL_RANGE_IDX_SELF_ONLY: return false;
+        case SPELL_RANGE_IDX_ANYWHERE:  return true;
+        case SPELL_RANGE_IDX_COMBAT:    return CanReachWithMeleeAttack(pTarget);
         }
 
-        SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(pSpellInfo->rangeIndex);
+        SpellRangeEntry const* srange = sSpellRangeStore.LookupEntry(pSpellInfo->GetRangeIndex());
         float max_range = GetSpellMaxRange(srange);
         float min_range = GetSpellMinRange(srange);
         float dist = GetCombatDistance(pTarget, false);
@@ -2333,7 +2342,7 @@ void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs
     }
 }
 
-bool Creature::HasSpell(uint32 spellId) const
+bool Creature::HasSpell(uint32 spellId)
 {
     for (uint8 i = 0; i <= GetSpellMaxIndex(); ++i)
     {
@@ -2697,7 +2706,7 @@ bool Creature::HasStaticDBSpawnData() const
     return sObjectMgr.GetCreatureData(GetGUIDLow()) != NULL;
 }
 
-uint32 Creature::GetSpell(uint8 index, uint8 activeState) const
+uint32 Creature::GetSpell(uint8 index, uint8 activeState)
 {
     if (index > GetSpellMaxIndex(activeState))
         return 0;
@@ -2724,7 +2733,7 @@ uint32 Creature::GetSpell(uint8 index, uint8 activeState) const
     return spellEntry->spell;
 }
 
-uint8 Creature::GetSpellMaxIndex(uint8 activeState) const
+uint8 Creature::GetSpellMaxIndex(uint8 activeState)
 {
     CreatureSpellsList const* spellList = sObjectMgr.GetCreatureSpells(GetEntry(), activeState);
     if (!spellList)
