@@ -57,7 +57,7 @@ class MANGOS_DLL_SPEC AssistanceMovementGenerator : public PointMovementGenerato
 
         MovementGeneratorType GetMovementGeneratorType() const override { return ASSISTANCE_MOTION_TYPE; }
 
-        void finalize(Creature&) override;
+        void finalize(Creature&);
 };
 
 class MANGOS_DLL_SPEC FlyOrLandMovementGenerator : public PointMovementGenerator<Creature>
@@ -67,7 +67,7 @@ class MANGOS_DLL_SPEC FlyOrLandMovementGenerator : public PointMovementGenerator
             PointMovementGenerator<Creature>(id, x, y, z, false),
             m_liftOff(liftOff) {}
 
-        void initialize(Creature& unit) override;
+        void initialize(Creature& unit);
 
     private:
         bool m_liftOff;

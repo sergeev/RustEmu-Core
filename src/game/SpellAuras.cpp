@@ -486,8 +486,8 @@ ObjectGuid const& Aura::GetCasterGuid() const { return GetHolder() ? GetHolder()
 ObjectGuid const& Aura::GetAffectiveCasterGuid() const { return GetHolder() ? GetHolder()->GetAffectiveCasterGuid() : ObjectGuid::Null; }
 
 void Aura::AreaAura(SpellEntry const* spellproto, SpellEffectIndex eff,
-                    int32 */*currentBasePoints*/, SpellAuraHolder* /*holder*/,
-                    Unit *target,Unit *caster, Item* /*castItem*/)
+                    int32* /*currentBasePoints*/, SpellAuraHolder* /*holder*/,
+                    Unit* target,Unit* caster, Item* /*castItem*/)
 {
     m_isAreaAura = true;
 
@@ -537,15 +537,15 @@ void Aura::AreaAura(SpellEntry const* spellproto, SpellEffectIndex eff,
 }
 
 void Aura::PersistentAreaAura(SpellEntry const* /*spellproto*/, SpellEffectIndex /*eff*/,
-                              int32 */*currentBasePoints*/, SpellAuraHolder* /*holder*/,
-                              Unit */*target*/,Unit */*caster*/, Item* /*castItem*/)
+                              int32* /*currentBasePoints*/, SpellAuraHolder* /*holder*/,
+                              Unit* /*target*/, Unit* /*caster*/, Item* /*castItem*/)
 {
     m_isPersistent = true;
 }
 
 void Aura::SingleEnemyTargetAura(SpellEntry const* /*spellproto*/, SpellEffectIndex /*eff*/,
-                                 int32 */*currentBasePoints*/, SpellAuraHolder* /*holder*/,
-                                 Unit */*target*/, Unit *caster, Item* /*castItem*/)
+                                 int32* /*currentBasePoints*/, SpellAuraHolder* /*holder*/,
+                                 Unit* /*target*/, Unit* caster, Item* /*castItem*/)
 {
     if (caster)
       m_castersTargetGuid = ( caster->GetTypeId()==TYPEID_PLAYER ?

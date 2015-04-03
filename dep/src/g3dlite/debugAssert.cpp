@@ -71,7 +71,7 @@ static void createErrorMessage(
     const std::string&  message,
     const char*         filename,
     int                 lineNumber,
-    std::string&        /*outTitle*/,
+    std::string&        outTitle,
     std::string&        outMessage) {
 
     std::string le = "";

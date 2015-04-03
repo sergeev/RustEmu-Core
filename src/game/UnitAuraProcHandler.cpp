@@ -4649,7 +4649,7 @@ SpellAuraProcResult Unit::HandleProcTriggerSpellAuraProc(Unit *pVictim, DamageIn
     return SPELL_AURA_PROC_OK;
 }
 
-SpellAuraProcResult Unit::HandleProcTriggerDamageAuraProc(Unit *pVictim, DamageInfo* /*damageInfo*/, Aura const* triggeredByAura, SpellEntry const */*procSpell*/, uint32 /*procFlags*/, uint32 /*procEx*/, uint32 /*cooldown*/)
+SpellAuraProcResult Unit::HandleProcTriggerDamageAuraProc(Unit *pVictim, DamageInfo* /*damageInfo*/, Aura const* triggeredByAura, SpellEntry const* /*procSpell*/, uint32 /*procFlags*/, uint32 /*procEx*/, uint32 /*cooldown*/)
 {
     SpellEntry const *spellInfo = triggeredByAura->GetSpellProto();
     DEBUG_FILTER_LOG(LOG_FILTER_SPELL_CAST, "ProcDamageAndSpell: doing %u damage from spell id %u (triggered by auratype %u of spell %u)",
@@ -5191,7 +5191,7 @@ SpellAuraProcResult Unit::HandleRemoveByDamageProc(Unit* /*pVictim*/, DamageInfo
     return SPELL_AURA_PROC_OK;
 }
 
-SpellAuraProcResult Unit::HandleSpellMagnetAuraProc(Unit */*pVictim*/, DamageInfo* damageInfo, Aura const* triggeredByAura, SpellEntry const */*procSpell*/, uint32 /*procFlag*/, uint32 /*procEx*/, uint32 /*cooldown*/)
+SpellAuraProcResult Unit::HandleSpellMagnetAuraProc(Unit* /*pVictim*/, DamageInfo* damageInfo, Aura const* triggeredByAura, SpellEntry const* /*procSpell*/, uint32 /*procFlag*/, uint32 /*procEx*/, uint32 /*cooldown*/)
 {
     if (triggeredByAura->GetId() == 8178)                   // Grounding Totem Effect
     {
@@ -5287,7 +5287,7 @@ SPELL_AURA_PROC_CANT_TRIGGER - aura not may proc anyway
 SPELL_AURA_PROC_FAILED       - aura may proc, if this defined by Unit::IsTriggeredAtSpellProcEvent
 */
 
-SpellAuraProcResult Unit::IsTriggeredAtCustomProcEvent(Unit */*pVictim*/, SpellAuraHolder* holder, SpellEntry const* procSpell, uint32 procFlag, uint32 procExtra, WeaponAttackType /*attType*/, bool /*isVictim*/, SpellProcEventEntry const*& spellProcEvent)
+SpellAuraProcResult Unit::IsTriggeredAtCustomProcEvent(Unit* /*pVictim*/, SpellAuraHolder* holder, SpellEntry const* procSpell, uint32 procFlag, uint32 procExtra, WeaponAttackType /*attType*/, bool /*isVictim*/, SpellProcEventEntry const*& spellProcEvent)
 {
     if (!holder || holder->IsDeleted())
         return SPELL_AURA_PROC_CANT_TRIGGER;
@@ -5374,7 +5374,7 @@ SpellAuraProcResult Unit::IsTriggeredAtCustomProcEvent(Unit */*pVictim*/, SpellA
     return SPELL_AURA_PROC_FAILED;
 }
 
-SpellAuraProcResult Unit::HandleDamageShieldAuraProc(Unit* pVictim, DamageInfo* /*damageInfo*/, Aura const* triggeredByAura, SpellEntry const */*procSpell*/, uint32 /*procFlag*/, uint32 /*procEx*/, uint32 /*cooldown*/)
+SpellAuraProcResult Unit::HandleDamageShieldAuraProc(Unit* pVictim, DamageInfo* /*damageInfo*/, Aura const* triggeredByAura, SpellEntry const* /*procSpell*/, uint32 /*procFlag*/, uint32 /*procEx*/, uint32 /*cooldown*/)
 {
     if (!triggeredByAura)
         return SPELL_AURA_PROC_FAILED;
@@ -5410,7 +5410,7 @@ SpellAuraProcResult Unit::HandleDamageShieldAuraProc(Unit* pVictim, DamageInfo* 
     return SPELL_AURA_PROC_OK;
 }
 
-SpellAuraProcResult Unit::HandleDropChargeByDamageProc(Unit* /*pVictim*/, DamageInfo* /*damageInfo*/, Aura const* triggeredByAura, SpellEntry const */*procSpell*/, uint32 /*procFlag*/, uint32 /*procEx*/, uint32 /*cooldown*/)
+SpellAuraProcResult Unit::HandleDropChargeByDamageProc(Unit* /*pVictim*/, DamageInfo* /*damageInfo*/, Aura const* triggeredByAura, SpellEntry const* /*procSpell*/, uint32 /*procFlag*/, uint32 /*procEx*/, uint32 /*cooldown*/)
 {
     if (!triggeredByAura)
         return SPELL_AURA_PROC_FAILED;

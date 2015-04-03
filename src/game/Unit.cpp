@@ -8948,7 +8948,7 @@ uint32 Unit::SpellCriticalDamageBonus(SpellEntry const *spellProto, uint32 damag
     return damage;
 }
 
-uint32 Unit::SpellCriticalHealingBonus(SpellEntry const *spellProto, uint32 damage, Unit */*pVictim*/)
+uint32 Unit::SpellCriticalHealingBonus(SpellEntry const *spellProto, uint32 damage, Unit* /*pVictim*/)
 {
     // Calculate critical bonus
     int32 crit_bonus;
@@ -9112,7 +9112,7 @@ uint32 Unit::SpellHealingBonusDone(Unit *pVictim, SpellEntry const *spellProto, 
  * Calculates target part of healing spell bonuses,
  * will be called on each tick for periodic damage over time auras
  */
-uint32 Unit::SpellHealingBonusTaken(Unit */*pCaster*/, SpellEntry const *spellProto, int32 healamount, DamageEffectType damagetype, uint32 stack)
+uint32 Unit::SpellHealingBonusTaken(Unit* /*pCaster*/, SpellEntry const *spellProto, int32 healamount, DamageEffectType damagetype, uint32 stack)
 {
     // Healing taken percent
     float  TakenTotalMod = GetTotalAuraMultiplier(SPELL_AURA_MOD_HEALING_PCT);
