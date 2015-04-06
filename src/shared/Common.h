@@ -138,11 +138,17 @@
 #define UI64LIT(N) UINT64_C(N)
 #define SI64LIT(N) INT64_C(N)
 
-#if COMPILER == COMPILER_MICROSOFT || COMPILER == COMPILER_BORLAND || COMPILER == COMPILER_GNU
-#  define SIZEFMTD "%zu"
+#if COMPILER == COMPILER_MICROSOFT || COMPILER == COMPILER_BORLAND
+# define SIZEFMTD "%Iu"
+# define SSZFMT "%Id"
+# define PTRDIFFFMT "%Id" 
+#elif defined(__GNUC__)
+# define SIZEFMTD "%zu"
+# define SSZFMT "%zd"
+# define PTRDIFFFMT "%zd" 
 #else
-#  define SIZEFMTD "%Iu"
-#endif
+// todo: other compilers shit
+#endif // sizemacro
 
 inline float finiteAlways(float f) { return finite(f) ? f : 0.0f; }
 
