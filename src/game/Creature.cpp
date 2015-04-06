@@ -2342,7 +2342,7 @@ void Creature::ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs
     }
 }
 
-bool Creature::HasSpell(uint32 spellId)
+bool Creature::HasSpell(uint32 spellId) const
 {
     for (uint8 i = 0; i <= GetSpellMaxIndex(); ++i)
     {
@@ -2706,7 +2706,7 @@ bool Creature::HasStaticDBSpawnData() const
     return sObjectMgr.GetCreatureData(GetGUIDLow()) != NULL;
 }
 
-uint32 Creature::GetSpell(uint8 index, uint8 activeState)
+uint32 Creature::GetSpell(uint8 index, uint8 activeState) const
 {
     if (index > GetSpellMaxIndex(activeState))
         return 0;
@@ -2733,7 +2733,7 @@ uint32 Creature::GetSpell(uint8 index, uint8 activeState)
     return spellEntry->spell;
 }
 
-uint8 Creature::GetSpellMaxIndex(uint8 activeState)
+uint8 Creature::GetSpellMaxIndex(uint8 activeState) const
 {
     CreatureSpellsList const* spellList = sObjectMgr.GetCreatureSpells(GetEntry(), activeState);
     if (!spellList)
