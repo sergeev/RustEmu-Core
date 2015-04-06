@@ -506,7 +506,7 @@ void UnitStateMgr::DropAllStates()
     if (m_actions.size() > 1)
     {
         DEBUG_FILTER_LOG(LOG_FILTER_AI_AND_MOVEGENSS, "UnitStateMgr:DropAllStates %s drop all active"
-                         " states (count = %zu)", GetOwnerStr().c_str(), m_actions.size());
+                         " states (count = " SIZEFMTD ")", GetOwnerStr().c_str(), m_actions.size());
         DropActionHigherThen(UNIT_ACTION_PRIORITY_IDLE);
     }
     // Unique action after dropping may be not UNIT_ACTION_IDLE

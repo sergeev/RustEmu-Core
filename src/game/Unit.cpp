@@ -7514,7 +7514,7 @@ void Unit::RemoveAllAttackers()
     // Cleanup
     if (!attackers.empty())
     {
-        sLog.outError("Unit::RemoveAllAttackers %s has %zu attackers after "
+        sLog.outError("Unit::RemoveAllAttackers %s has " SIZEFMTD " attackers after "
                       "step-to-step cleanup!", GetObjectGuid().GetString().c_str(),
                       attackers.size());
         GetMap()->RemoveAllAttackersFor(GetObjectGuid());

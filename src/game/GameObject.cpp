@@ -2701,7 +2701,7 @@ void GameObject::TickCapturePoint()
         }
 
 
-        DEBUG_LOG("GameObject::TickCapturePoint gameobject %s send event %u to faction %u, players group size %zu, new state %u",
+        DEBUG_LOG("GameObject::TickCapturePoint gameobject %s send event %u to faction %u, players group size " SIZEFMTD ", new state %u",
             GetGuidStr().c_str(),
             eventId, progressFaction, players.size(), m_captureState);
 

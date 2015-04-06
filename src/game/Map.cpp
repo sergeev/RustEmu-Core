@@ -2830,7 +2830,7 @@ void Map::SendRemoveNotifyToStoredClients(WorldObject* object, bool destroy)
     }
 
     DEBUG_FILTER_LOG(LOG_FILTER_VISIBILITY_CHANGES, "Map::SendRemoveNotifyToStoredClients "
-                     "%s send visibility notify to %zu clients (%u really)",
+                     "%s send visibility notify to " SIZEFMTD " clients (%u really)",
                      object->GetObjectGuid().GetString().c_str(),
                      object->GetNotifiedClients().size(), count);
 

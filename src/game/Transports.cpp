@@ -550,7 +550,7 @@ bool MOTransport::SetPosition(WorldLocation const& loc, bool teleport)
             // Transport inserted in current map ActiveObjects list
             if (!GetTransportKit()->GetPassengers().empty())
             {
-                DEBUG_FILTER_LOG(LOG_FILTER_TRANSPORT_MOVES,"Transport::SetPosition %s notify passengers (count %zu) for change map from %u to %u",GetObjectGuid().GetString().c_str(), GetTransportKit()->GetPassengers().size(), GetPosition().GetMapId(), loc.GetMapId());
+                DEBUG_FILTER_LOG(LOG_FILTER_TRANSPORT_MOVES,"Transport::SetPosition %s notify passengers (count " SIZEFMTD ") for change map from %u to %u",GetObjectGuid().GetString().c_str(), GetTransportKit()->GetPassengers().size(), GetPosition().GetMapId(), loc.GetMapId());
                 GetTransportKit()->CallForAllPassengers(NotifyMapChangeBegin(oldMap, GetPosition(), loc));
             }
 
@@ -569,7 +569,7 @@ bool MOTransport::SetPosition(WorldLocation const& loc, bool teleport)
             // Transport inserted in current map ActiveObjects list
             if (!GetTransportKit()->GetPassengers().empty())
             {
-                DEBUG_FILTER_LOG(LOG_FILTER_TRANSPORT_MOVES,"Transport::SetPosition %s notify passengers (count %zu) for finished change map to %u",GetObjectGuid().GetString().c_str(), GetTransportKit()->GetPassengers().size(), loc.GetMapId());
+                DEBUG_FILTER_LOG(LOG_FILTER_TRANSPORT_MOVES,"Transport::SetPosition %s notify passengers (count " SIZEFMTD ") for finished change map to %u",GetObjectGuid().GetString().c_str(), GetTransportKit()->GetPassengers().size(), loc.GetMapId());
                 GetTransportKit()->CallForAllPassengers(NotifyMapChangeEnd(newMap,loc));
             }
 
