@@ -138,13 +138,13 @@
 #define UI64LIT(N) UINT64_C(N)
 #define SI64LIT(N) INT64_C(N)
 
-#if COMPILER == COMPILER_MICROSOFT || COMPILER == COMPILER_BORLAND
-# define SIZEFMTD "%Iu"
-# define SSZFMT "%Id"
+#if defined(_MSC_VER) || defined(__MINGW32__) //__MINGW32__ should goes before __GNUC__
+# define SIZEFMTD   "%Iu"
+# define SSZFMT     "%Id"
 # define PTRDIFFFMT "%Id" 
 #elif defined(__GNUC__)
-# define SIZEFMTD "%zu"
-# define SSZFMT "%zd"
+# define SIZEFMTD   "%zu"
+# define SSZFMT     "%zd"
 # define PTRDIFFFMT "%zd" 
 #else
 // todo: other compilers shit
