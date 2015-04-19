@@ -1229,7 +1229,7 @@ bool AuthSocket::HandleXferResume()
 
     try
     {
-        patch_.seekg(0, start_pos);
+        patch_.seekg(start_pos);
     }
     catch (boost::filesystem::fstream::failure&)
     {
