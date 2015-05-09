@@ -11648,6 +11648,14 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     }
                 return;
                 }
+                case 69057:                                 // Bone Spike Graveyard
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER || unitTarget->HasAura(m_spellInfo->CalculateSimpleValue(EFFECT_INDEX_1)))
+                        return;
+                        
+                    unitTarget->CastSpell(unitTarget, 69062, true);
+                    return;
+                }
                 case 69140:                                 // Coldflame (random target selection)
                 {
                     if (!unitTarget)
@@ -11903,6 +11911,22 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                         if (m_caster->GetTypeId() == TYPEID_UNIT)
                             ((Creature*)m_caster)->ForcedDespawn(800);
                     }
+                    return;
+                }
+                case 73142:                                 // Bone Spike Graveyard (during storm)
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER || unitTarget->HasAura(69065))
+                        return;
+                        
+                    uint32 spellId = 0;
+                    switch (urand(0, 2))
+                    {
+                        case 0: spellId = 69062; break;
+                        case 1: spellId = 72669; break;
+                        case 2: spellId = 72670; break;
+                    }
+                        
+                    unitTarget->CastSpell(unitTarget, spellId, true);
                     return;
                 }
                 case 74455:                                 // Conflagration
