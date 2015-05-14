@@ -10569,6 +10569,8 @@ void Aura::HandleAuraControlVehicle(bool apply, bool Real)
             seat = -1;
 
         caster->_EnterVehicle(target->GetVehicleKit(), seat);
+
+        target->GetUnitStateMgr().DropAllStates();
     }
     else
     {
@@ -10583,6 +10585,8 @@ void Aura::HandleAuraControlVehicle(bool apply, bool Real)
 
         // some SPELL_AURA_CONTROL_VEHICLE auras have a dummy effect on the player - remove them
         caster->RemoveAurasDueToSpell(GetId());
+
+        target->GetUnitStateMgr().InitDefaults();
     }
 }
 
