@@ -13549,11 +13549,19 @@ void Spell::EffectPlayerPull(SpellEffectIndex eff_idx)
     if (unitTarget->hasUnitState(UNIT_STAT_ROOT))
         return;
 
-    float dist = unitTarget->GetDistance2d(m_caster);
-    if (damage && dist > damage)
-        dist = float(damage);
+    WorldLocation loc = m_caster->GetPosition();
 
-    unitTarget->KnockBackFrom(m_caster, -dist, float(m_spellInfo->EffectMiscValue[eff_idx])/30);
+    // move back a bit
+    loc.x = loc.x - (0.6 * cos(m_caster->GetOrientation() + M_PI_F));
+    loc.y = loc.y - (0.6 * sin(m_caster->GetOrientation() + M_PI_F));
+
+    // Try to normalize Z coord cuz GetContactPoint do nothing with Z axis
+    unitTarget->UpdateAllowedPositionZ(loc.x, loc.y, loc.z);
+
+    float speed = m_spellInfo->GetSpeed() ? m_spellInfo->GetSpeed() : BASE_CHARGE_SPEED;
+
+    //unitTarget->MonsterMoveWithSpeed(loc.x, loc.y, loc.z, speed, false, false);
+    unitTarget->MonsterMoveToDestination(loc.x, loc.y, loc.z, loc.o, speed, 2.5f, false);
 }
 
 void Spell::EffectDispelMechanic(SpellEffectIndex eff_idx)
