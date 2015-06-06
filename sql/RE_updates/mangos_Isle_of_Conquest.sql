@@ -166,7 +166,7 @@ UPDATE gameobject_template SET faction = 1997 WHERE entry = 195320;
 UPDATE gameobject_template SET ScriptName = '' WHERE entry BETWEEN 195313 AND 195316;
 -- gunship portals
 -- disabled till fixed
--- UPDATE gameobject_template SET ScriptName = 'go_ic_teleport' WHERE entry IN (195320, 195326);
+UPDATE gameobject_template SET ScriptName = 'go_ic_teleport' WHERE entry IN (195320, 195326);
 
 -- teleports
 DELETE FROM `spell_script_target`WHERE `entry` IN (66550, 66551);
