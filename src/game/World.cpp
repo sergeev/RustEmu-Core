@@ -598,9 +598,6 @@ void World::LoadConfigSettings(bool reload)
 
     setConfigMinMax(CONFIG_FLOAT_MELEE_DIST_ADDITION, "Melee.Distance.Addition", 4.0f, 0.0f, 10.0f);
 
-    setConfigMinMax(CONFIG_UINT32_FIX_MOVE_PACKETS_METHOD, "Player.FixMovementPackets.Method", 0, 0, 2);
-    setConfigMinMax(CONFIG_UINT32_FIX_MOVE_PACKETS_ADD_TIME, "Player.FixMovementPackets.AddTime", 50, 1, 1000);
-
     setConfig(CONFIG_UINT32_MAX_HONOR_POINTS, "MaxHonorPoints", 75000);
 
     setConfigMinMax(CONFIG_UINT32_START_HONOR_POINTS, "StartHonorPoints", 0, 0, getConfig(CONFIG_UINT32_MAX_HONOR_POINTS));

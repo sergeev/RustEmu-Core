@@ -32,6 +32,8 @@
 #include "MapPersistentStateMgr.h"
 #include "ObjectMgr.h"
 
+#define MOVEMENT_PACKET_TIME_DELAY 0
+
 void WorldSession::HandleMoveWorldportAckOpcode(WorldPacket& /*recv_data*/)
 {
     DEBUG_LOG("WORLD: got MSG_MOVE_WORLDPORT_ACK.");
@@ -266,8 +268,11 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 {
     Opcodes opcode = recv_data.GetOpcode();
 
-    DEBUG_FILTER_LOG(LOG_FILTER_PLAYER_MOVES,"WorldSession::HandleMovementOpcodes: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
-    //recv_data.hexlike();
+    if (!sLog.HasLogFilter(LOG_FILTER_PLAYER_MOVES))
+    {
+        DEBUG_LOG("WORLD: Received opcode %s (%u, 0x%X)", LookupOpcodeName(opcode), opcode, opcode);
+        recv_data.hexlike();
+    }
 
     Unit* mover = _player->GetMover();
     Player* plMover = mover->GetTypeId() == TYPEID_PLAYER ? (Player*)mover : NULL;
@@ -296,10 +301,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
         plMover->HandleFall(movementInfo);
 
     /* process position-change */
+    HandleMoverRelocation(movementInfo);
+
     if (plMover)
     {
-        HandlePlayerRelocation(movementInfo);
-
         plMover->UpdateFallInformationIfNeed(movementInfo, opcode);
 
         if (plMover->IsSitState() && (movementInfo.GetMovementFlags() & (MOVEFLAG_MASK_MOVING | MOVEFLAG_MASK_TURNING)))
@@ -308,33 +313,7 @@ void WorldSession::HandleMovementOpcodes(WorldPacket & recv_data)
 
     WorldPacket data(opcode, recv_data.size());
     data << mover->GetPackGUID();             // write guid
-
-    // some movement packet fixes, taking into account client/server connection lag.
-    uint32 newTime = WorldTimer::getMSTime();
-
-    switch (sWorld.getConfig(CONFIG_UINT32_FIX_MOVE_PACKETS_METHOD))
-    {
-        case 1:
-        {
-            if (!m_clientTimeDelay)
-            {
-                if (newTime > movementInfo.GetTime())
-                    m_clientTimeDelay = newTime - movementInfo.GetTime();
-            }
-
-            if (m_clientTimeDelay)
-                newTime = movementInfo.GetTime() + m_clientTimeDelay;
-            break;
-        }
-        case 2:
-        {
-            newTime += sWorld.getConfig(CONFIG_UINT32_FIX_MOVE_PACKETS_ADD_TIME);
-            break;
-        }
-    }
-
-    movementInfo.UpdateTime(newTime);
-    movementInfo.Write(data);                 // write data
+    movementInfo.Write(data);                               // write data
     mover->SendMessageToSetExcept(&data, _player);
 
     UpdateMoverPosition(movementInfo);
@@ -493,7 +472,7 @@ void WorldSession::HandleMoveKnockBackAck(WorldPacket& recv_data)
     if (!VerifyMovementInfo(movementInfo, guid))
         return;
 
-    mover->m_movementInfo = movementInfo;
+    HandleMoverRelocation(movementInfo);
 
     WorldPacket data(MSG_MOVE_KNOCK_BACK, recv_data.size() + 15);
     data << mover->GetPackGUID();
@@ -525,30 +504,26 @@ void WorldSession::HandleMoveHoverAck(WorldPacket& recv_data)
 {
     DEBUG_LOG("CMSG_MOVE_HOVER_ACK");
 
-    recv_data.rpos(recv_data.wpos());
+    ObjectGuid guid;                                        // guid - unused
+    MovementInfo movementInfo;
 
-//    ObjectGuid guid;                                        // guid - unused
-//    MovementInfo movementInfo;
-//
-//    recv_data >> guid.ReadAsPacked();
-//    recv_data >> Unused<uint32>();                          // unk1
-//    recv_data >> movementInfo;
-//    recv_data >> Unused<uint32>();                          // unk2
+    recv_data >> guid.ReadAsPacked();
+    recv_data >> Unused<uint32>();                          // unk1
+    recv_data >> movementInfo;
+    recv_data >> Unused<uint32>();                          // unk2
 }
 
 void WorldSession::HandleMoveWaterWalkAck(WorldPacket& recv_data)
 {
     DEBUG_LOG("CMSG_MOVE_WATER_WALK_ACK");
 
-    recv_data.rpos(recv_data.wpos());
+    ObjectGuid guid;                                        // guid - unused
+    MovementInfo movementInfo;
 
-//    ObjectGuid guid;                                        // guid - unused
-//    MovementInfo movementInfo;
-//
-//    recv_data >> guid.ReadAsPacked();
-//    recv_data >> Unused<uint32>();                          // unk1
-//    recv_data >> movementInfo;
-//    recv_data >> Unused<uint32>();                          // unk2
+    recv_data >> guid.ReadAsPacked();
+    recv_data >> Unused<uint32>();                          // unk1
+    recv_data >> movementInfo;
+    recv_data >> Unused<uint32>();                          // unk2
 }
 
 void WorldSession::HandleSummonResponseOpcode(WorldPacket& recv_data)
@@ -591,8 +566,12 @@ bool WorldSession::VerifyMovementInfo(MovementInfo const& movementInfo, ObjectGu
     return true;
 }
 
-void WorldSession::HandlePlayerRelocation(MovementInfo& movementInfo)
+void WorldSession::HandleMoverRelocation(MovementInfo& movementInfo)
 {
+    if (m_clientTimeDelay == 0)
+        m_clientTimeDelay = WorldTimer::getMSTime() - movementInfo.GetTime();
+    movementInfo.UpdateTime(movementInfo.GetTime() + m_clientTimeDelay + MOVEMENT_PACKET_TIME_DELAY);
+
     Unit* mover = _player->GetMover();
 
     Player* plMover = mover->GetTypeId() == TYPEID_PLAYER ? (Player*)mover : NULL;

@@ -909,7 +909,7 @@ class MANGOS_DLL_SPEC WorldSession
 
         // movement
         bool VerifyMovementInfo(MovementInfo const& movementInfo, ObjectGuid const& guid) const;
-        void HandlePlayerRelocation(MovementInfo& movementInfo);
+        void HandleMoverRelocation(MovementInfo& movementInfo);
         void UpdateMoverPosition(MovementInfo& movementInfo);
 
         void ExecuteOpcode(OpcodeHandler const& opHandle, WorldPacket* packet);

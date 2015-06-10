@@ -3,7 +3,7 @@
 #####################################
 
 [MangosdConf]
-ConfVersion=2015032019
+ConfVersion=2015061020
 
 ###################################################################################################################
 # CONNECTIONS AND DIRECTORIES
@@ -887,17 +887,6 @@ LogColors = ""
 #        Addition for check strict melee distance in CheckRange()
 #        Default: 4 (overall dist ~ 9)
 #
-#    Player.FixMovementPackets.Method
-#        Movement packet fixes, taking into account client<->server connection lag.
-#        WARNING! dont change on the running server, players seeing each other will be desynchronized (looks like twitching)
-#        Default: 0  (disabled)
-#                 1  (add delay server<->client in ping times)
-#                 2  (add fixed delay (Player.FixMovementPackets.AddTime below)
-#
-#    Player.FixMovementPackets.AddTime
-#        Add fixed time (in ms.) to movement packets.
-#        Default: 50
-#
 ###################################################################################################################
 
 GameType = 1
@@ -988,8 +977,6 @@ FactiomAndRaceChangeWithoutRenaming = 0
 Resistance.CalculationMethod = 1
 Resistance.AddByOverLevel = 0
 Melee.Distance.Addition = 4
-Player.FixMovementPackets.Method = 0
-Player.FixMovementPackets.AddTime = 50
 
 ###################################################################################################################
 # PLAYER INTERACTION
