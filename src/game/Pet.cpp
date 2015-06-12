@@ -30,6 +30,10 @@
 #include "Unit.h"
 #include "Util.h"
 
+#define SPELL_FROSTSHIELD 43008
+#define SPELL_FIRESHIELD 43046
+#define SPELL_ICEBLOCK 65802
+
 Pet::Pet(PetType type) :
 Creature(CREATURE_SUBTYPE_PET),
 m_usedTalentCount(0),
@@ -562,6 +566,21 @@ void Pet::Update(uint32 update_diff, uint32 diff)
             break;
         }
         case ALIVE:
+        {
+            if (GetCreatureInfo()->Entry == 31216)          //mages illusuions
+            {
+                Unit* owner = GetOwner();
+
+                if (owner && (owner->HasAura(168) || owner->HasAura(7300) || owner->HasAura(7301)) && !HasAura(SPELL_FROSTSHIELD))
+                    CastSpell(this, SPELL_FROSTSHIELD, false);
+
+                if (owner && (owner->HasAura(543) || owner->HasAura(8457) || owner->HasAura(10223) || owner->HasAura(10225) || owner->HasAura(27128)) && !HasAura(SPELL_FIRESHIELD))
+                    CastSpell(this, SPELL_FIRESHIELD, false);
+
+                if (GetHealthPercent() <= 10.0f && !HasSpellCooldown(SPELL_ICEBLOCK))
+                    CastSpell(this, SPELL_ICEBLOCK, false);
+            }
+        }
         case GHOULED:
         {
             // unsummon pet that lost owner

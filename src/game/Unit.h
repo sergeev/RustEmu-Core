@@ -1438,7 +1438,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
 
         uint32 GetHealth()    const { return GetUInt32Value(UNIT_FIELD_HEALTH); }
         uint32 GetMaxHealth() const { return GetUInt32Value(UNIT_FIELD_MAXHEALTH); }
-        float GetHealthPercent() const { return (GetHealth()*100.0f) / GetMaxHealth(); }
+        float GetHealthPercent() const { return (GetHealth()*100.0f / GetMaxHealth()); }        
         void SetHealth(   uint32 val);
         void SetMaxHealth(uint32 val);
         void SetHealthPercent(float percent);
@@ -1448,6 +1448,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void SetPowerType(Powers power);
         uint32 GetPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_POWER1 + power); }
         uint32 GetMaxPower(Powers power) const { return GetUInt32Value(UNIT_FIELD_MAXPOWER1 + power); }
+        uint32 GetPowerPercent(Powers power) const { return (GetPower(power)*100.0f / GetMaxPower(power)); }
         void SetPower(Powers power, uint32 val);
         void SetMaxPower(Powers power, uint32 val);
         int32 ModifyPower(Powers power, int32 val);

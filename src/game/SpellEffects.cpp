@@ -57,6 +57,9 @@
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
 
+#define SPELL_CLONE_CASTER 45204
+#define SPELL_CLONE_CASTER_1 69837
+
 pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
 {
     &Spell::EffectNULL,                                     //  0
@@ -7659,6 +7662,15 @@ void Spell::DoSummonGuardian(SpellEffectIndex eff_idx, uint32 forceFaction)
                 spawnCreature->GetGUIDLow(), spawnCreature->GetEntry());
             delete spawnCreature;
             return;
+        }
+
+        if (pet_entry == 31216) //mages illusuions
+        {
+            m_caster->CastSpell(spawnCreature, SPELL_CLONE_CASTER, true, NULL, NULL); // model for mage illusion
+            m_caster->CastSpell(spawnCreature, SPELL_CLONE_CASTER_1, true, NULL, NULL); // name for mage illusion
+            spawnCreature->SetHealthPercent(m_caster->GetHealthPercent());
+            spawnCreature->SetPower(spawnCreature->GetPowerType(), spawnCreature->GetMaxPower(spawnCreature->GetPowerType()));
+            spawnCreature->SetPower(spawnCreature->GetPowerType(), spawnCreature->GetMaxPower(spawnCreature->GetPowerType()) / 100.0f * m_caster->GetPowerPercent(m_caster->GetPowerType()));
         }
 
         spawnCreature->SetSummonPoint(pos);
