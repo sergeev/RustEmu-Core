@@ -356,6 +356,9 @@ void PetAI::MoveToVictim(Unit* pTarget)
     if (!pTarget)
         return;
 
+    if (m_creature->IsNonMeleeSpellCasted(false))
+        return;
+
     switch (m_AIType)
     {
         case PET_AI_PASSIVE:
