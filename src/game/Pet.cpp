@@ -579,6 +579,14 @@ void Pet::Update(uint32 update_diff, uint32 diff)
 
                 if (GetHealthPercent() <= 10.0f && !HasSpellCooldown(SPELL_ICEBLOCK))
                     CastSpell(this, SPELL_ICEBLOCK, false);
+
+                Unit* pVictim = this->getVictim();
+                if (pVictim && pVictim->CanReachWithMeleeAttack(this, 4.0f) && !HasSpellCooldown(42917)) // icering for mirror image
+                {                    
+                    CastSpell(pVictim, 42917, false);
+                    GetMotionMaster()->Clear(true);
+                    GetMotionMaster()->MoveRandom();
+                }
             }
         }
         case GHOULED:

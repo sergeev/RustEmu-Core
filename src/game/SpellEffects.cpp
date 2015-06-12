@@ -7671,6 +7671,7 @@ void Spell::DoSummonGuardian(SpellEffectIndex eff_idx, uint32 forceFaction)
             spawnCreature->SetHealthPercent(m_caster->GetHealthPercent());
             spawnCreature->SetPower(spawnCreature->GetPowerType(), spawnCreature->GetMaxPower(spawnCreature->GetPowerType()));
             spawnCreature->SetPower(spawnCreature->GetPowerType(), spawnCreature->GetMaxPower(spawnCreature->GetPowerType()) / 100.0f * m_caster->GetPowerPercent(m_caster->GetPowerType()));
+            //spawnCreature->GetCharmInfo()->SetState(CHARM_STATE_REACT, REACT_DEFENSIVE);
         }
 
         spawnCreature->SetSummonPoint(pos);
