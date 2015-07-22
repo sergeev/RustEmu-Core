@@ -31,3 +31,7 @@
 #include "GuildMgr.h"
 #include "ObjectMgr.h"
 #include "ScriptMgr.h"
+#include "WorldObjectEvents.h"
+#include "WorldLocation.h"
+#include "WorldStateMgr.h"
+#include "LFGMgr.h"
