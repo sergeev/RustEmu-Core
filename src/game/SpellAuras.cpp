@@ -10570,6 +10570,10 @@ void Aura::HandleAuraControlVehicle(bool apply, bool Real)
 
         caster->_EnterVehicle(target->GetVehicleKit(), seat);
 
+        // set vehicle faction as per the controller faction
+        if (target->GetTypeId() == TYPEID_UNIT)
+            ((Creature*)target)->SetFactionTemporary(caster->getFaction(), TEMPFACTION_NONE);
+
         target->GetUnitStateMgr().DropAllStates();
     }
     else
@@ -10582,6 +10586,10 @@ void Aura::HandleAuraControlVehicle(bool apply, bool Real)
             else
                 caster->_ExitVehicle();
         }
+
+        // reset vehicle faction
+        if (target->GetTypeId() == TYPEID_UNIT)
+            ((Creature*)target)->ClearTemporaryFaction();
 
         // some SPELL_AURA_CONTROL_VEHICLE auras have a dummy effect on the player - remove them
         caster->RemoveAurasDueToSpell(GetId());
