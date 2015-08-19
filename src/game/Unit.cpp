@@ -1628,7 +1628,8 @@ void Unit::CalculateSpellDamage(DamageInfo* damageInfo, float DamageMultiplier)
     if (!damageInfo || int32(damageInfo->damage) < 0)
         return;
 
-    if (!damageInfo->target || !isAlive() || !damageInfo->target->isAlive())
+    // units which are not alive cannot deal damage except for dying creatures
+    if ((!isAlive() || !damageInfo->target->isAlive()) && (GetTypeId() != TYPEID_UNIT || getDeathState() != DEAD))
         return;
 
     // Check spell crit chance
