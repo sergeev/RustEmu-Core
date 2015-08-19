@@ -3783,6 +3783,9 @@ void Spell::cast(bool skipCheck)
                 AddTriggeredSpell(65116);                  // Stoneskin - armor 10% for 8 sec
             else if (m_spellInfo->Id == 71904)             // Chaos Bane strength buff
                 AddTriggeredSpell(73422);
+            // Weak Alcohol
+            else if (m_spellInfo->SpellIconID == 1306 && m_spellInfo->SpellVisual[0] == 11359)
+                AddTriggeredSpell(51655);                  // BOTM - Create Empty Brew Bottle
             else if (m_spellInfo->Id == 74607)
                 AddTriggeredSpell(74610);                  // Fiery combustion
             else if (m_spellInfo->Id == 74799)
