@@ -24,7 +24,7 @@
 #include "ObjectGuid.h"
 #include "DBCEnums.h"
 
-#include <boost/atomic.hpp>
+#include <atomic>
 
 struct AreaTriggerEntry;
 struct SpellEntry;
@@ -601,7 +601,7 @@ class ScriptMgr
         MANGOS_LIBRARY_HANDLE   m_hScriptLib;
 
         // atomic op counter for active scripts amount
-        boost::atomic_long m_scheduledScripts;
+		std::atomic_long m_scheduledScripts;
 
         void (MANGOS_IMPORT* m_pOnInitScriptLibrary)();
         void (MANGOS_IMPORT* m_pOnFreeScriptLibrary)();

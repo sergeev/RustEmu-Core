@@ -11998,9 +11998,9 @@ void CharmInfo::LoadPetActionBar(const std::string& data )
     for(iter = tokens.begin(), index = ACTION_BAR_INDEX_START; index < ACTION_BAR_INDEX_END; ++iter, ++index )
     {
         // use unsigned cast to avoid sign negative format use at long-> ActiveStates (int) conversion
-        uint8 type  = (uint8)atol(*iter);
+        uint8 type  = (uint8)std::stoul(*iter);
         ++iter;
-        uint32 action = atol(*iter);
+        uint32 action = std::stoul(*iter);
 
         PetActionBar[index].SetActionAndType(action,ActiveStates(type));
 

@@ -728,7 +728,7 @@ bool Object::LoadValues(const char* data)
 
     for (uint16 index = 0; index < m_valuesCount; ++index)
     {
-        m_uint32Values[index] = atol(tokens[index]);
+        m_uint32Values[index] = std::stoul(tokens[index]);
     }
 
     return true;
