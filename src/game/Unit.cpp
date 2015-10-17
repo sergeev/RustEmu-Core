@@ -10566,7 +10566,8 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate, bool forced)
         m_speed_rate[mtype] = rate;
         propagateSpeedChange();
 
-        const Opcodes SetSpeed2Opc_table[MAX_MOVE_TYPE][2]=
+		typedef const uint16 SpeedOpcodePair[2];
+		SpeedOpcodePair SetSpeed2Opc_table[MAX_MOVE_TYPE] =
         {
             {MSG_MOVE_SET_WALK_SPEED,        SMSG_FORCE_WALK_SPEED_CHANGE},
             {MSG_MOVE_SET_RUN_SPEED,         SMSG_FORCE_RUN_SPEED_CHANGE},
@@ -10579,13 +10580,15 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate, bool forced)
             {MSG_MOVE_SET_PITCH_RATE,        SMSG_FORCE_PITCH_RATE_CHANGE},
         };
 
+		const SpeedOpcodePair& speedOpcodes = SetSpeed2Opc_table[mtype];
+
         if (forced && GetTypeId() == TYPEID_PLAYER)
         {
             // register forced speed changes for WorldSession::HandleForceSpeedChangeAck
             // and do it only for real sent packets and use run for run/mounted as client expected
             ++((Player*)this)->m_forced_speed_changes[mtype];
 
-            WorldPacket data(SetSpeed2Opc_table[mtype][1], GetPackGUID().size() + 4 + 1 + 4);
+			WorldPacket data(Opcodes(speedOpcodes[0]), 18);
             data << GetPackGUID();
             data << (uint32)0;                                  // moveEvent, NUM_PMOVE_EVTS = 0x39
             if (mtype == MOVE_RUN)
@@ -10598,7 +10601,7 @@ void Unit::SetSpeedRate(UnitMoveType mtype, float rate, bool forced)
         m_movementInfo.UpdateTime(WorldTimer::getMSTime());
 
         // TODO: Actually such opcodes should (always?) be packed with SMSG_COMPRESSED_MOVES
-        WorldPacket data(SetSpeed2Opc_table[mtype][0], 64);
+		WorldPacket data(Opcodes(speedOpcodes[1]), 64);
         data << GetPackGUID();
         data << m_movementInfo;
         data << float(GetSpeed(mtype));

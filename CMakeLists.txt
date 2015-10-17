@@ -16,67 +16,22 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+project(RustEmu)
+
 cmake_minimum_required(VERSION 2.8)
 
-project(MaNGOS)
 set(MANGOS_VERSION 0.18)
 
-set(CMAKE_MODULE_PATH
-  ${CMAKE_MODULE_PATH}
-  ${CMAKE_SOURCE_DIR}/cmake
-)
+include(cmake/common.cmake)
 
-# Check c++11 compiler support
-if(UNIX)
-  message("Checking compiler requierement c++11 support...")
-  include(CheckCXXCompilerFlag)
-  CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-  CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-  elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-  else()
-    message(FATAL_ERROR "Error, CMaNGOS requires compiler that support C++11!")
-  endif()
-endif()
+# Set RPATH-handing (CMake parameters)
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+set(CMAKE_INSTALL_RPATH ${LIBS_DIR})
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# define all options here
-option(DEBUG                "Debug mode"                            OFF)
-option(TBB_USE_EXTERNAL     "Use external TBB"                      OFF)
-option(USE_STD_MALLOC       "Use standard malloc instead of TBB"    OFF)
-option(POSTGRESQL           "Use PostgreSQL"                        OFF)
-
-if(PCHSupport_FOUND AND WIN32) # TODO: why only enable it on windows by default?
-  option(PCH                "Use precompiled headers"               ON)
-else()
-  option(PCH                "Use precompiled headers"               OFF)
-endif()
-# TODO: options that should be checked/created:
-#option(CLI                  "With CLI"                              ON)
-#option(RA                   "With Remote Access"                    OFF)
-#option(SQL                  "Copy SQL files"                        OFF)
-#option(TOOLS                "Build tools"                           OFF)
-
-# Output description of this script
-message("")
-message(
-  "This script builds the MaNGOS server.
-  Options that can be used in order to configure the process:
-    CMAKE_INSTALL_PREFIX    Path where the server should be installed to
-    PCH                     Use precompiled headers
-    DEBUG                   Debug mode
-    INCLUDE_BINDINGS_DIR    Include a script library in src/bindings/ with the
-                            defined name. the name must corespond to the name of
-                            the folder and the folder must contain a valid
-                            CMakeLists.txt
-    TBB_USE_EXTERNAL        Use external TBB
-    USE_STD_MALLOC          Use standard malloc instead of TBB
-  To set an option simply type -D<OPTION>=<VALUE> after 'cmake <srcs>'.
-  Also, you can specify the generator with -G. see 'cmake --help' for more details
-  For example: cmake .. -DDEBUG=1 -DCMAKE_INSTALL_PREFIX=/opt/mangos"
-)
-message("")
+# set default buildoptions and print them
+include(cmake/options.cmake)
 
 # Force out-of-source build
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
@@ -84,14 +39,6 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     "This project requires an out of source build. Remove the file 'CMakeCache.txt' found in this directory before continuing, create a separate build directory and run 'cmake [options] <srcs>' from there."
   )
 endif()
-
-# find boost lib
-set(BOOST_ROOT $ENV{BOOST_ROOT})
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS regex system filesystem thread program_options random REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS} ${CMAKE_SOURCE_DIR}/dep/include/g3dlite/)
-link_directories(${Boost_LIBRARY_DIRS})
 
 # TODO: allow other compilers under windows in the future
 if(WIN32 AND NOT MSVC)
@@ -105,9 +52,10 @@ if(PREFIX)
   message(FATAL_ERROR "The parameter PREFIX has been removed. Please re-run CMake and use CMAKE_INSTALL_PREFIX instead to define your installation location!")
 endif()
 
+include(CheckPlatform)
+
 # TODO: use MSVC_CXX_ARCHITECTURE_ID instead to identify platform on windows (not required on other systems)
 # find platform: required to build 3rd party libraries w/o CMake files
-find_package(Platform REQUIRED)
 # Find out what system we use to include the needed libs
 if(WIN32)
   if(PLATFORM MATCHES X86) # 32-bit
@@ -149,8 +97,11 @@ endif()
 # For Unix systems set the rpath so that libraries are found
 set(CMAKE_INSTALL_RPATH ${LIBS_DIR})
 set(CMAKE_INSTALL_NAME_DIR ${LIBS_DIR})
-# Run out of build tree
-set(CMAKE_BUILD_WITH_INSTALL_RPATH OFF)
+
+# find boost lib
+include(ConfigureBoost)
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 if(NOT USE_STD_MALLOC)
   unset(TBB_INCLUDE_DIR CACHE)
@@ -167,7 +118,7 @@ if(NOT USE_STD_MALLOC)
       )
     endif()
   else()
-    include(cmake/ImportTBB.cmake)
+    include(cmake/macros/ImportTBB.cmake)
   endif()
 endif()
 
@@ -199,17 +150,6 @@ if(UNIX)
   find_package(ZLIB REQUIRED)
 endif()
 
-# Add uninstall script and target
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY
-)
-
-add_custom_target(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-)
-
 # Find core revision
 if(GIT_EXECUTABLE)
   execute_process(
@@ -227,9 +167,6 @@ else()
   set(GIT_REVISION "Git not found")
 endif()
 
-message(STATUS "MaNGOS-Core revision  : ${GIT_REVISION}")
-message(STATUS "Install server to     : ${CMAKE_INSTALL_PREFIX}")
-
 if(DEFINED INCLUDE_BINDINGS_DIR AND INCLUDE_BINDINGS_DIR)
   # check if the directory exists
   if(NOT IS_DIRECTORY ${CMAKE_SOURCE_DIR}/src/bindings/${INCLUDE_BINDINGS_DIR})
@@ -239,24 +176,8 @@ if(DEFINED INCLUDE_BINDINGS_DIR AND INCLUDE_BINDINGS_DIR)
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/src/bindings/${INCLUDE_BINDINGS_DIR}/CMakeLists.txt)
     message(FATAL_ERROR "The script library does not contain a CMakeLists.txt!")
   endif()
-  message(STATUS "Build script library  : Yes (using ${INCLUDE_BINDINGS_DIR})")
 else()
-  message(STATUS "Build script library  : No")
 endif()
-
-# if(CLI)
-#   message(STATUS "Build with CLI        : Yes (default)")
-#   add_definitions(-DENABLE_CLI)
-# else()
-#   message(STATUS "Build with CLI        : No")
-# endif()
-
-# if(RA)
-#   message(STATUS "* Build with RA         : Yes")
-#   add_definitions(-DENABLE_RA)
-# else(RA)
-#   message(STATUS "* Build with RA         : No  (default)")
-# endif(RA)
 
 if(PCH AND NOT PCHSupport_FOUND)
   set(PCH 0 CACHE BOOL
@@ -265,65 +186,15 @@ if(PCH AND NOT PCHSupport_FOUND)
   message(WARNING "No PCH for your system possible but PCH was set to 1. Resetting it."
   )
 endif()
-if(PCH)
-  message(STATUS "Use PCH               : Yes")
-else()
-  message(STATUS "Use PCH               : No")
-endif()
 
 if(DEBUG)
-  message(STATUS "Build in debug-mode   : Yes")
   set(CMAKE_BUILD_TYPE Debug)
 else()
   set(CMAKE_BUILD_TYPE Release)
-  message(STATUS "Build in debug-mode   : No  (default)")
-endif()
-# Handle debugmode compiles (this will require further work for proper WIN32-setups)
-if(UNIX)
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 endif()
 
-# Set warning levels for different builds
-if(UNIX)
-  set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} --no-warnings")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} --no-warnings")
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wfatal-errors -Wextra")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wfatal-errors -Wextra")
-elseif(WIN32)
-  # Disable warnings in Visual Studio 8 and above and add /MP
-  if(MSVC AND NOT CMAKE_GENERATOR MATCHES "Visual Studio 7")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /wd4996 /wd4355 /wd4244 /wd4985 /wd4267 /MP")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /wd4996 /wd4355 /wd4244 /wd4267 /MP")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /wd4996 /wd4355 /wd4244 /wd4985 /wd4267 /MP")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4996 /wd4355 /wd4244 /wd4985 /wd4267 /MP")
-  endif()
-endif()
-
-# if(SQL)
-#   message(STATUS "Install SQL-files     : Yes")
-# else()
-#   message(STATUS "Install SQL-files     : No  (default)")
-# endif()
-
-# if(TOOLS)
-#   message(STATUS "Build map/vmap tools  : Yes")
-# else()
-#   message(STATUS "Build map/vmap tools  : No  (default)")
-# endif()
-
-# Some small tweaks for Visual Studio 7 and above.
-if(MSVC)
-  # Mark 32 bit executables large address aware so they can use > 2GB address space
-  if(PLATFORM MATCHES X86)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LARGEADDRESSAWARE")
-  endif()
-endif()
-
-set(CMAKE_SKIP_BUILD_RPATH FALSE)
-set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-set(CMAKE_INSTALL_RPATH ${LIBS_DIR})
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+# print out the results before continuing
+include(cmake/showoptions.cmake)
 
 # Generate revision-extractor
 set(GENREV_SRC
@@ -334,9 +205,8 @@ add_executable(genrev
   ${GENREV_SRC}
 )
 
-get_target_property(GENERATE_EXE genrev LOCATION)
 add_custom_target("revision.h" ALL
-  COMMAND ${GENERATE_EXE} ${CMAKE_SOURCE_DIR}
+  COMMAND genrev ${CMAKE_SOURCE_DIR}
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
   DEPENDS genrev
 )
@@ -382,8 +252,8 @@ if(XCODE)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-include_directories(${CMAKE_BINARY_DIR})
-add_subdirectory(dep)
+
+add_subdirectory(dep) # TODO: add vmap extractor build support
 
 # Add definitions for all build types
 # Don't place this above 'dep' subdirectory! Because of defines build will crash.
@@ -404,7 +274,6 @@ set(DEFINITIONS_DEBUG _DEBUG MANGOS_DEBUG)
 
 if(WIN32)
   set(DEFINITIONS ${DEFINITIONS} WIN32 _WIN32)
-  set(DEFINITIONS_RELEASE ${DEFINITIONS_RELEASE} _CRT_SECURE_NO_WARNINGS)
 endif()
 
 if(USE_STD_MALLOC)
@@ -416,8 +285,6 @@ set_directory_properties(PROPERTIES COMPILE_DEFINITIONS_RELEASE "${DEFINITIONS_R
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS_DEBUG "${DEFINITIONS_DEBUG}")
 
 add_subdirectory(src)
-add_subdirectory(contrib)
-
 # if(SQL)
 #   add_subdirectory(sql)
 # endif()
