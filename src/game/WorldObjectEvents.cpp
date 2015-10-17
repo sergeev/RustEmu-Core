@@ -565,7 +565,7 @@ bool BGQueueRemoveEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
 
     BattleGround* bg = sBattleGroundMgr.GetBattleGround(m_BgInstanceGUID, m_BgTypeId);
     //battleground can be deleted already when we are removing queue info
-    //bg pointer can be NULL! so use it carefully!
+    //bg pointer can be nullptr! so use it carefully!
 
     uint32 queueSlot = plr->GetBattleGroundQueueIndex(m_BgQueueTypeId);
     if (queueSlot < PLAYER_MAX_BATTLEGROUND_QUEUES)         // player is in queue, or in Battleground

@@ -109,8 +109,8 @@ void BattleGroundIC::Reset()
 
     SpawnGates();
 
-    gunshipHorde = NULL;
-    gunshipAlliance = NULL;
+    gunshipHorde = nullptr;
+    gunshipAlliance = nullptr;
 }
 
 void BattleGroundIC::SendTransportInit(Player* player)
@@ -202,12 +202,12 @@ void BattleGroundIC::Update(uint32 diff)
                 // Message to chatlog
                 if (teamIndex == TEAM_INDEX_ALLIANCE)
                 {
-                    SendMessage2ToAll(LANG_BG_IC_NODE_TAKEN,CHAT_MSG_BG_SYSTEM_ALLIANCE,NULL,LANG_BG_ALLY,_GetNodeNameId(node));
+                    SendMessage2ToAll(LANG_BG_IC_NODE_TAKEN,CHAT_MSG_BG_SYSTEM_ALLIANCE,nullptr,LANG_BG_ALLY,_GetNodeNameId(node));
                     PlaySoundToAll(BG_IC_SOUND_NODE_CAPTURED_ALLIANCE);
                 }
                 else
                 {
-                    SendMessage2ToAll(LANG_BG_IC_NODE_TAKEN,CHAT_MSG_BG_SYSTEM_HORDE,NULL,LANG_BG_HORDE,_GetNodeNameId(node));
+                    SendMessage2ToAll(LANG_BG_IC_NODE_TAKEN,CHAT_MSG_BG_SYSTEM_HORDE,nullptr,LANG_BG_HORDE,_GetNodeNameId(node));
                     PlaySoundToAll(BG_IC_SOUND_NODE_CAPTURED_HORDE);
                 }
 
@@ -753,7 +753,7 @@ WorldSafeLocsEntry const* BattleGroundIC::GetClosestGraveYard(Player* player)
         if (m_Nodes[i] == teamIndex + 3)
             nodes.push_back(i);
 
-    WorldSafeLocsEntry const* good_entry = NULL;
+    WorldSafeLocsEntry const* good_entry = nullptr;
     // If so, select the closest node to place ghost on
     if (!nodes.empty())
     {
@@ -793,7 +793,7 @@ Transport* BattleGroundIC::CreateTransport(uint32 goEntry, uint32 period)
     {
         sLog.outErrorDb("Transport ID: %u will not be loaded, gameobject_template missing", goEntry);
         delete t;
-        return NULL;
+        return nullptr;
     }
 
     std::set<uint32> mapsUsed;
@@ -804,7 +804,7 @@ Transport* BattleGroundIC::CreateTransport(uint32 goEntry, uint32 period)
     {
         sLog.outErrorDb("Transport (path id %u) path size = 0. Transport ignored, check DBC files or transport GO data0 field.",goinfo->moTransport.taxiPathId);
         delete t;
-        return NULL;
+        return nullptr;
     }
 
     WorldLocation const& loc = t->GetWayPoint(0).loc;
@@ -813,7 +813,7 @@ Transport* BattleGroundIC::CreateTransport(uint32 goEntry, uint32 period)
     if (!t->Create(goEntry, loc.GetMapId(), loc.x, loc.y, loc.z, loc.o, GO_ANIMPROGRESS_DEFAULT, 0))
     {
         delete t;
-        return NULL;
+        return nullptr;
     }
 
     t->SetMap(GetBgMap());

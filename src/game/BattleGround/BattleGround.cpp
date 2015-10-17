@@ -775,7 +775,7 @@ void BattleGround::RewardXpToTeam(uint32 Xp, float percentOfLevel, Team team)
                 percentOfLevel = percentOfLevel / 100;
                 gain = uint32(float(plr->GetUInt32Value(PLAYER_NEXT_LEVEL_XP))*percentOfLevel);
             }
-            plr->GiveXP(gain, NULL);
+            plr->GiveXP(gain, nullptr);
         }
     }
 }
@@ -1821,7 +1821,7 @@ void BattleGround::SpawnBGObject(ObjectGuid guid, uint32 respawntime)
         obj->Respawn();
         map->Add(obj);
         if (obj->GetGOInfo()->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
-            obj->Rebuild(NULL);
+            obj->Rebuild(nullptr);
 
         GameObjectData const *data = sObjectMgr.GetGOData(obj->GetGUIDLow());
         if (data)
@@ -1836,7 +1836,7 @@ void BattleGround::SpawnBGObject(ObjectGuid guid, uint32 respawntime)
         obj->SetRespawnTime(respawntime);
         obj->SetLootState(GO_JUST_DEACTIVATED);
         if (obj->GetGOInfo()->type == GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
-            obj->Rebuild(NULL);
+            obj->Rebuild(nullptr);
     }
     if (Team team = GetSpawnTeamFor(obj->GetObjectGuid()))
         obj->SetTeam(team);

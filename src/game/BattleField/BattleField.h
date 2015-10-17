@@ -144,7 +144,7 @@ class MANGOS_DLL_SPEC BattleField : public OutdoorPvP
 
         void SendWarningToAll(int32 entry);
 
-        void QuestCreditTeam(uint32 credit, Team team, WorldObject* source = NULL, float radius = -1.0f);
+        void QuestCreditTeam(uint32 credit, Team team, WorldObject* source = nullptr, float radius = -1.0f);
 
         uint32 GetZoneId() { return m_zoneId; }
 

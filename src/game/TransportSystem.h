@@ -60,7 +60,7 @@ class MANGOS_DLL_SPEC TransportInfo
             m_owner(info.m_owner), m_transport(info.m_transport), m_seat(info.m_seat)
         {};
 
-        ~TransportInfo() { m_owner.SetTransportInfo(NULL); };
+        ~TransportInfo() { m_owner.SetTransportInfo(nullptr); };
 
         // Set local positions
         void SetLocalPosition(Position const& pos);

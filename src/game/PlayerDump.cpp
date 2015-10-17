@@ -217,7 +217,7 @@ std::string CreateDumpString(char const* tableName, QueryResult *result)
             ss << ", ";
 
         if (fields[i].IsNULL())
-            ss << "NULL";
+            ss << "nullptr";
         else
         {
             std::string s =  fields[i].GetCppString();

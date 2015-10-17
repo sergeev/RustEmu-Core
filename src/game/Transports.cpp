@@ -31,7 +31,7 @@
 #include "movement/MoveSpline.h"
 
 // Transport - base class for regular Transport && MOTransport class
-Transport::Transport() : GameObject(), m_transportKit(NULL)
+Transport::Transport() : GameObject(), m_transportKit(nullptr)
 {
     m_updateFlag = (UPDATEFLAG_TRANSPORT | UPDATEFLAG_HIGHGUID | UPDATEFLAG_HAS_POSITION | UPDATEFLAG_ROTATION);
 }

@@ -33,7 +33,7 @@ struct VehicleEntry;
 
 struct VehicleSeat
 {
-    VehicleSeat(VehicleSeatEntry const* pSeatInfo = NULL) : seatInfo(pSeatInfo), passengerGuid(ObjectGuid()), b_dismount(true) {}
+    VehicleSeat(VehicleSeatEntry const* pSeatInfo = nullptr) : seatInfo(pSeatInfo), passengerGuid(ObjectGuid()), b_dismount(true) {}
 
     VehicleSeatEntry const* seatInfo;
     ObjectGuid              passengerGuid;
@@ -105,7 +105,7 @@ class MANGOS_DLL_SPEC VehicleKit : public TransportBase
         void InstallAccessory(VehicleAccessory const* accessory);
         void InstallAllAccessories(uint32 entry);
 
-        void Dismount(Unit* passenger, VehicleSeatEntry const* pSeatInfo = NULL);
+        void Dismount(Unit* passenger, VehicleSeatEntry const* pSeatInfo = nullptr);
         void DismountFromFlyingVehicle(Unit* passenger);
 
         VehicleEntry const* m_vehicleEntry;

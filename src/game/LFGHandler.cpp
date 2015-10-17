@@ -231,12 +231,12 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket &/*recv_data
             uint8 done = 0;
             data << uint32((*itr)->Entry());                     // Entry
             LFGReward const* reward = sLFGMgr.GetRandomDungeonReward(*itr,GetPlayer());
-            Quest const* qRew = NULL;
+            Quest const* qRew = nullptr;
             if (reward)
             {
                 Quest const* pQuest = sObjectMgr.GetQuestTemplate(reward->reward[0].questId);
 
-                if (pQuest != NULL)
+                if (pQuest != nullptr)
                 {
                     if (!GetPlayer()->CanTakeQuest(pQuest, false))
                         done = 1;
@@ -256,7 +256,7 @@ void WorldSession::HandleLfgPlayerLockInfoRequestOpcode(WorldPacket &/*recv_data
                 data << uint8(qRew->GetRewItemsCount());
                 if (qRew->GetRewItemsCount())
                 {
-                    ItemPrototype const* iProto = NULL;
+                    ItemPrototype const* iProto = nullptr;
                     for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
                     {
                         if (!qRew->RewItemId[i])
@@ -322,7 +322,7 @@ void WorldSession::HandleLfgPartyLockInfoRequestOpcode(WorldPacket & /*recv_data
         lockMap.clear();
         uint8 membersCount = 0;
 
-        for (GroupReference *itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+        for (GroupReference *itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
             Player* player = itr->getSource();
 
@@ -384,7 +384,7 @@ void WorldSession::SendLfgJoinResult(LFGJoinResult checkResult, uint8 checkValue
     if (pGroup && withLockMap)
     {
         size +=1;
-        for (GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+        for (GroupReference *itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
             Player* player = itr->getSource();
 
@@ -618,7 +618,7 @@ void WorldSession::SendLfgUpdateList(uint32 dungeonID)
 
         players.insert(*itr);
 
-        for (GroupReference *itr2 = pGroup->GetFirstMember(); itr2 != NULL; itr2 = itr2->next())
+        for (GroupReference *itr2 = pGroup->GetFirstMember(); itr2 != nullptr; itr2 = itr2->next())
         {
             Player* player = itr2->getSource();
 
@@ -916,7 +916,7 @@ void WorldSession::SendLfgPlayerReward(LFGDungeonEntry const* dungeon, const LFG
         return;
     }
 
-    LFGDungeonEntry const* realdungeon = NULL;
+    LFGDungeonEntry const* realdungeon = nullptr;
     if (GetPlayer()->GetGroup())
         realdungeon = sLFGMgr.GetLFGGroupState(GetPlayer()->GetGroup()->GetObjectGuid())->GetDungeon();
     else
@@ -945,7 +945,7 @@ void WorldSession::SendLfgPlayerReward(LFGDungeonEntry const* dungeon, const LFG
     data << uint8(itemNum);
     if (itemNum)
     {
-        ItemPrototype const* iProto = NULL;
+        ItemPrototype const* iProto = nullptr;
         for (uint8 i = 0; i < QUEST_REWARDS_COUNT; ++i)
         {
             if (!qRew->RewItemId[i])
@@ -983,7 +983,7 @@ void WorldSession::SendLfgQueueStatus(LFGDungeonEntry const* dungeon, LFGQueueSt
     data << uint8(pqInfo->tanks);                                  // Tanks needed
     data << uint8(pqInfo->healers);                                // Healers needed
     data << uint8(pqInfo->dps);                                    // Dps needed
-    data << uint32(time(NULL) - pqInfo->joinTime);
+    data << uint32(time(nullptr) - pqInfo->joinTime);
                                                                    // Player/group wait time in queue
     SendPacket(&data);
 }
@@ -1040,7 +1040,7 @@ void WorldSession::SendLfgBootPlayer()
     LFGAnswer playerVote = votesItr->second;
     uint8 votesNum = 0;
     uint8 agreeNum = 0;
-    uint32 secsleft = uint8(sLFGMgr.GetLFGGroupState(pGroup->GetObjectGuid())->GetBootCancelTime() - time(NULL));
+    uint32 secsleft = uint8(sLFGMgr.GetLFGGroupState(pGroup->GetObjectGuid())->GetBootCancelTime() - time(nullptr));
 
     bool isBootContinued = (sLFGMgr.GetLFGGroupState(pGroup->GetObjectGuid())->GetBootResult() == LFG_ANSWER_PENDING);
 
@@ -1097,7 +1097,7 @@ void WorldSession::SendLfgUpdateProposal(LFGProposal* pProposal)
 
     if (Group* group = pProposal->GetGroup())
     {
-        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+        for (GroupReference* itr = group->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
             Player* pGroupMember = itr->getSource();
             if (pGroupMember && pGroupMember->IsInWorld())
@@ -1211,7 +1211,7 @@ void WorldSession::SendLfgRoleCheckUpdate()
         data << uint32(roles);                                               // Roles
         data << uint8(leaderLevel);                                          // Level
 
-        for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+        for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
             if (Player* pGroupMember = itr->getSource())
             {

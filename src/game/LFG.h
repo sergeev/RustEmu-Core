@@ -254,7 +254,7 @@ struct LFGProposal
     void SetDeleted() { m_bDeleted = true; };
     bool IsDeleted() const { return m_bDeleted; };
 
-    bool IsExpired() { return ( m_cancelTime > 0 && m_cancelTime < time_t(time(NULL)));};
+    bool IsExpired() { return ( m_cancelTime > 0 && m_cancelTime < time_t(time(nullptr)));};
 
     private:
     LFGDungeonEntry const* m_dungeon;                    // Dungeon
@@ -296,7 +296,7 @@ public:
 
 protected:
     LFGStateStructure(ObjectGuid const& guid)
-          : m_type(LFG_TYPE_NONE), m_uiFlags(0), m_bUpdate(false), m_state(LFG_STATE_NONE), m_proposal(NULL), m_guid(guid) {};
+          : m_type(LFG_TYPE_NONE), m_uiFlags(0), m_bUpdate(false), m_state(LFG_STATE_NONE), m_proposal(nullptr), m_guid(guid) {};
     LFGType          m_type;
     uint32           m_uiFlags;
     bool             m_bUpdate;
@@ -391,7 +391,7 @@ public:
     LFGRoleCheckState GetRoleCheckState() const { return m_roleCheckState;};
     void SetRoleCheckState( LFGRoleCheckState _state) { m_roleCheckState = _state; };
     void StartRoleCheck();
-    bool QueryRoleCheckTime() {return (time_t(time(NULL)) < m_roleCheckCancelTime);};
+    bool QueryRoleCheckTime() {return (time_t(time(nullptr)) < m_roleCheckCancelTime);};
     bool IsRoleCheckActive();
 
     uint8 GetRandomPlayersCount() const { return m_uiRandomPlayersCount; };

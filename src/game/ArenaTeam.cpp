@@ -474,7 +474,7 @@ void ArenaTeam::Disband(WorldSession* session)
 
 void ArenaTeam::Roster(WorldSession* session)
 {
-    Player* pl = NULL;
+    Player* pl = nullptr;
 
     uint8 unk308 = 0;
 

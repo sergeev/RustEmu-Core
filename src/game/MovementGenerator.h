@@ -71,33 +71,33 @@ class MANGOS_DLL_SPEC MovementGeneratorMedium : public MovementGenerator
         void Initialize(Unit &u)
         {
           T *unit = dynamic_cast< T * >( &u );
-          if ( unit != NULL ) ((D *)this)->initialize(*unit);
+          if ( unit != nullptr ) ((D *)this)->initialize(*unit);
         }
         void Finalize(Unit &u)
         {
           T *unit = dynamic_cast< T * >( &u );
-          if ( unit != NULL ) ((D *)this)->finalize(*unit);
+          if ( unit != nullptr ) ((D *)this)->finalize(*unit);
         }
         void Interrupt(Unit &u)
         {
           T *unit = dynamic_cast< T * >( &u );
-          if ( unit != NULL ) ((D *)this)->interrupt(*unit);
+          if ( unit != nullptr ) ((D *)this)->interrupt(*unit);
         }
         void Reset(Unit &u)
         {
           T *unit = dynamic_cast< T * >( &u );
-          if ( unit != NULL ) ((D *)this)->reset(*unit);
+          if ( unit != nullptr ) ((D *)this)->reset(*unit);
         }
         bool Update(Unit &u, const uint32 &time_diff)
         {
           T *unit = dynamic_cast< T * >( &u );
-          return ( unit != NULL ) ? ((D *)this)->update(*unit, time_diff) : true;
+          return ( unit != nullptr ) ? ((D *)this)->update(*unit, time_diff) : true;
         }
 
         bool GetResetPosition(Unit& u, float& x, float& y, float& z, float& o) const override
         {
           T *unit = dynamic_cast< T * >( &u );
-          return ( unit != NULL ) ? ((D *)this)->getResetPosition(*unit, x, y, z, o) : false;
+          return ( unit != nullptr ) ? ((D *)this)->getResetPosition(*unit, x, y, z, o) : false;
         }
 
         // will not link if not overridden in the generators

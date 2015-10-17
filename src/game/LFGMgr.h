@@ -125,8 +125,8 @@ struct LFGEvent
     uint8         eventParm;
     time_t        executeTime;
     // helpers
-    void          Start(uint32 delay) { executeTime = time_t(time(NULL) + delay); };
-    bool          IsActive() { return ((executeTime > 0) && (time_t(time(NULL)) >= executeTime)); };
+    void          Start(uint32 delay) { executeTime = time_t(time(nullptr) + delay); };
+    bool          IsActive() { return ((executeTime > 0) && (time_t(time(nullptr)) >= executeTime)); };
 };
 
 typedef UNORDERED_MULTIMAP<uint32 /*dungeonId*/, LFGReward /*reward*/> LFGRewardMap;
@@ -180,7 +180,7 @@ class LFGMgr : public MaNGOS::Singleton<LFGMgr, MaNGOS::ClassLevelLockable<LFGMg
         void DungeonEncounterReached(Group* pGroup);
 
         // Proposal system
-        uint32 CreateProposal(LFGDungeonEntry const* pDungeon, Group* pGroup = NULL, GuidSet* playerGuids = NULL);
+        uint32 CreateProposal(LFGDungeonEntry const* pDungeon, Group* pGroup = nullptr, GuidSet* playerGuids = nullptr);
         bool SendProposal(uint32 uiID, ObjectGuid guid);
         LFGProposal* GetProposal(uint32 uiID);
         void RemoveProposal(Player* pDecliner, uint32 uiID);
@@ -215,16 +215,16 @@ class LFGMgr : public MaNGOS::Singleton<LFGMgr, MaNGOS::ClassLevelLockable<LFGMg
         void CleanupRoleChecks(LFGType type);
         void StartRoleCheck(Group* pGroup);
         void UpdateRoleCheck(Group* pGroup);
-        bool CheckRoles(Group* pGroup, Player* pPlayer = NULL);
+        bool CheckRoles(Group* pGroup, Player* pPlayer = nullptr);
         bool CheckRoles(LFGRolesMap& roleMap);
         bool RoleChanged(Player* pPlayer, LFGRoleMask roles);
-        void SetGroupRoles(Group* pGroup, GuidSet* = NULL);
+        void SetGroupRoles(Group* pGroup, GuidSet* = nullptr);
         bool SetRoles(LFGRolesMap& roleMap);
 
         // Social check system
         bool HasIgnoreState(ObjectGuid guid1, ObjectGuid guid2);
         bool HasIgnoreState(Group* pGroup, ObjectGuid guid);
-        bool CheckTeam(Group* pGroup, Player* pPlayer = NULL);
+        bool CheckTeam(Group* pGroup, Player* pPlayer = nullptr);
         bool CheckTeam(ObjectGuid guid1, ObjectGuid guid2);
 
         // Dungeon operations

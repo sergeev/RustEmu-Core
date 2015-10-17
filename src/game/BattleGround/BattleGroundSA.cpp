@@ -196,7 +196,7 @@ void BattleGroundSA::Update(uint32 diff)
             if (Phase == SA_ROUND_ONE) // Timeout of first round
             {
                 PlaySoundToAll(BG_SA_SOUND_GYD_VICTORY);
-                SendMessageToAll(defender == ALLIANCE ? LANG_BG_SA_ALLIANCE_TIMEOUT_END_1ROUND : LANG_BG_SA_HORDE_TIMEOUT_END_1ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, NULL);
+                SendMessageToAll(defender == ALLIANCE ? LANG_BG_SA_ALLIANCE_TIMEOUT_END_1ROUND : LANG_BG_SA_HORDE_TIMEOUT_END_1ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, nullptr);
                 SendWarningToAll(LANG_BG_SA_END_1ROUND);
                 RoundScores[0].winner = GetDefender();
                 RoundScores[0].time = BG_SA_ROUNDLENGTH;
@@ -212,7 +212,7 @@ void BattleGroundSA::Update(uint32 diff)
             }
             else // Timeout of second round
             {
-                SendMessageToAll(defender == ALLIANCE ? LANG_BG_SA_ALLIANCE_TIMEOUT_END_2ROUND : LANG_BG_SA_HORDE_TIMEOUT_END_2ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, NULL);
+                SendMessageToAll(defender == ALLIANCE ? LANG_BG_SA_ALLIANCE_TIMEOUT_END_2ROUND : LANG_BG_SA_HORDE_TIMEOUT_END_2ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, nullptr);
                 RoundScores[1].winner = GetDefender();
 
                 for (BattleGroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
@@ -255,7 +255,7 @@ void BattleGroundSA::Update(uint32 diff)
         {
             if (shipsTimer <= diff)
             {
-                SendMessageToAll(LANG_BG_SA_START_ONE_MINUTE, CHAT_MSG_BG_SYSTEM_NEUTRAL, NULL);
+                SendMessageToAll(LANG_BG_SA_START_ONE_MINUTE, CHAT_MSG_BG_SYSTEM_NEUTRAL, nullptr);
                 StartShips();
             }
             else
@@ -404,7 +404,7 @@ void BattleGroundSA::ResetBattle(uint32 /*winner*/, Team teamDefending)
 
         TeleportPlayerToCorrectLoc(plr, true);
 
-        if (plr->GetBGTeam() == defender && plr->GetItemByEntry(39213) != NULL)
+        if (plr->GetBGTeam() == defender && plr->GetItemByEntry(39213) != nullptr)
             plr->DestroyItemCount(39213, 1, true);
     }
 
@@ -437,7 +437,7 @@ void BattleGroundSA::UpdatePhase()
 
         Round_timer = (BG_SA_ROUNDLENGTH - RoundScores[0].time);
         SetStatus(STATUS_WAIT_JOIN);
-        SendMessageToAll(LANG_BG_SA_START_TWO_MINUTE, CHAT_MSG_BG_SYSTEM_NEUTRAL, NULL);
+        SendMessageToAll(LANG_BG_SA_START_TWO_MINUTE, CHAT_MSG_BG_SYSTEM_NEUTRAL, nullptr);
 
         // adding Preparation buff for the 2nd round, has to be added in status STATUS_WAIT_JOIN
         for (BattleGroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
@@ -840,7 +840,7 @@ void BattleGroundSA::EventPlayerDamageGO(Player *player, GameObject* target_obj,
                     RoundScores[0].winner = GetDefender() == ALLIANCE ? HORDE : ALLIANCE;
                     RoundScores[0].time = Round_timer;
                     PlaySoundToAll(BG_SA_SOUND_GYD_VICTORY);
-                    SendMessageToAll(defender == HORDE ? LANG_BG_SA_ALLIANCE_END_1ROUND : LANG_BG_SA_HORDE_END_1ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, NULL);
+                    SendMessageToAll(defender == HORDE ? LANG_BG_SA_ALLIANCE_END_1ROUND : LANG_BG_SA_HORDE_END_1ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, nullptr);
                     SendWarningToAll(LANG_BG_SA_END_1ROUND);
                     RewardHonorToTeam(150, (teamIndex == 0) ? ALLIANCE : HORDE);
                     ResetBattle(player->GetTeam(), GetDefender());
@@ -848,7 +848,7 @@ void BattleGroundSA::EventPlayerDamageGO(Player *player, GameObject* target_obj,
                 else // Victory at second round
                 {
                     RoundScores[1].winner = GetDefender() == ALLIANCE ? HORDE : ALLIANCE;
-                    SendMessageToAll(defender == HORDE ? LANG_BG_SA_ALLIANCE_END_2ROUND : LANG_BG_SA_HORDE_END_2ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, NULL);
+                    SendMessageToAll(defender == HORDE ? LANG_BG_SA_ALLIANCE_END_2ROUND : LANG_BG_SA_HORDE_END_2ROUND, CHAT_MSG_BG_SYSTEM_NEUTRAL, nullptr);
                     RewardHonorToTeam(150, (teamIndex == 0) ? ALLIANCE : HORDE);
                     EndBattleGround(player->GetTeam());
                 }
@@ -923,7 +923,7 @@ WorldSafeLocsEntry const* BattleGroundSA::GetClosestGraveYard(Player* player)
         if ((m_Gyd[i] == teamIndex + BG_SA_GRAVE_STATUS_CONTESTED) || (m_Gyd[i] == teamIndex + BG_SA_GRAVE_STATUS_OCCUPIED))
             gyd.push_back(i);
 
-    WorldSafeLocsEntry const* good_entry = NULL;
+    WorldSafeLocsEntry const* good_entry = nullptr;
     // If so, select the closest node to place ghost on
     if (!gyd.empty())
     {

@@ -122,7 +122,7 @@ void WorldSocket::CloseSocket(void)
     {
         GuardType Guard(m_SessionLock);
 
-        m_Session = NULL;
+        m_Session = nullptr;
     }
     Socket::CloseSocket();
 }
@@ -195,7 +195,7 @@ bool WorldSocket::ProcessIncomingData()
         // hope this is not hack ,as proper m_RecvWPct is asserted around
         if (!m_RecvWPct)
         {
-            sLog.outError("Forcing close on input m_RecvWPct = NULL");
+            sLog.outError("Forcing close on input m_RecvWPct = nullptr");
             return false;
         }
 
@@ -226,7 +226,7 @@ bool WorldSocket::ProcessIncomingData()
 
 int WorldSocket::handle_input_header(void)
 {
-    MANGOS_ASSERT(m_RecvWPct == NULL);
+    MANGOS_ASSERT(m_RecvWPct == nullptr);
 
     MANGOS_ASSERT(m_Header.length() == sizeof(ClientPktHeader));
 
@@ -269,12 +269,12 @@ int WorldSocket::handle_input_payload(void)
 
     MANGOS_ASSERT(m_RecvPct.space() == 0);
     MANGOS_ASSERT(m_Header.space() == 0);
-    MANGOS_ASSERT(m_RecvWPct != NULL);
+    MANGOS_ASSERT(m_RecvWPct != nullptr);
 
     const int ret = ProcessIncoming(m_RecvWPct);
 
     m_RecvPct.UnassignBuffer();
-    m_RecvWPct = NULL;
+    m_RecvWPct = nullptr;
 
     m_Header.Reset();
 
@@ -325,7 +325,7 @@ int WorldSocket::ProcessIncoming(WorldPacket* new_pct)
         {
             GuardType Guard(m_SessionLock);
 
-            if (m_Session != NULL)
+            if (m_Session != nullptr)
             {
                 // OK ,give the packet to WorldSession
                 aptr.release();
@@ -546,7 +546,7 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     sha.UpdateData((uint8*)&t, 4);
     sha.UpdateData((uint8*)&clientSeed, 4);
     sha.UpdateData((uint8*)&seed, 4);
-    sha.UpdateBigNumbers(&K, NULL);
+    sha.UpdateBigNumbers(&K, nullptr);
     sha.Finalize();
 
     if (memcmp(sha.GetDigest(), digest, 20))

@@ -212,7 +212,7 @@ UnitAction* UnitStateMgr::CreateStandartState(UnitActionId stateId, ...)
     va_list vargs;
     va_start(vargs, stateId);
 
-    UnitAction* state = NULL;
+    UnitAction* state = nullptr;
     switch (stateId)
     {
         case UNIT_ACTION_IDLE:
@@ -277,7 +277,7 @@ UnitStateMgr::UnitStateMgr(Unit* owner) : m_owner(owner), m_needReinit(false)
 UnitStateMgr::~UnitStateMgr()
 {
     for (UnitActionStorage::reverse_iterator itr = m_actions.rbegin(); itr != m_actions.rend(); ++itr)
-        itr->second.m_action = NULL;
+        itr->second.m_action = nullptr;
 
     m_actions.clear();
 }
@@ -286,7 +286,7 @@ void UnitStateMgr::InitDefaults(bool immediate)
 {
     if (immediate)
     {
-        m_oldAction = NULL;
+        m_oldAction = nullptr;
         DropAllStates();
     }
     else
@@ -361,7 +361,7 @@ void UnitStateMgr::DropAction(UnitActionPriority priority)
     {
         bool bActiveActionChanged = false;
         ActionInfo* oldInfo = CurrentState();
-        UnitAction* oldAction = oldInfo ? oldInfo->Action() : NULL;
+        UnitAction* oldAction = oldInfo ? oldInfo->Action() : nullptr;
 
         // if dropped current active state...
         if (oldInfo && itr->second.Action() == oldInfo->Action() && !oldInfo->HasFlag(ACTION_STATE_FINALIZED))
@@ -369,7 +369,7 @@ void UnitStateMgr::DropAction(UnitActionPriority priority)
 
         // in first - erasing current action, if his active
         if (itr->second.Action() == m_oldAction)
-            m_oldAction = NULL;
+            m_oldAction = nullptr;
 
         // Possible erasing by iterator more fast and logic, but by Key much more safe
         m_actions.erase(priority);
@@ -466,7 +466,7 @@ ActionInfo* UnitStateMgr::GetAction(UnitActionPriority priority)
         if (itr->first == priority)
             return &itr->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 ActionInfo* UnitStateMgr::GetAction(UnitAction* action)
@@ -476,7 +476,7 @@ ActionInfo* UnitStateMgr::GetAction(UnitAction* action)
         if (itr->second.Action() == action)
             return &itr->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 ActionInfo* UnitStateMgr::GetAction(UnitActionId actionId)
@@ -486,18 +486,18 @@ ActionInfo* UnitStateMgr::GetAction(UnitActionId actionId)
         if (itr->second.m_id == actionId)
             return &itr->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 UnitAction* UnitStateMgr::CurrentAction()
 {
     ActionInfo* action = CurrentState();
-    return action ? action->Action() : NULL;
+    return action ? action->Action() : nullptr;
 }
 
 ActionInfo* UnitStateMgr::CurrentState()
 {
-    return m_actions.empty() ? NULL : &m_actions.rbegin()->second;
+    return m_actions.empty() ? nullptr : &m_actions.rbegin()->second;
 }
 
 void UnitStateMgr::DropAllStates()

@@ -178,7 +178,7 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recv_data)
             return;
 
         bool have_bots = false;
-        for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
+        for (GroupReference* itr = grp->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
             Player* member = itr->getSource();
             if (!member)

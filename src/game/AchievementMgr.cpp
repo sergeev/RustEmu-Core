@@ -1767,7 +1767,7 @@ void AchievementMgr::UpdateAchievementCriteria(AchievementCriteriaTypes type, ui
                         continue;
 
                     AchievementCriteriaRequirementSet const* data = sAchievementMgr.GetCriteriaRequirementSet(achievementCriteria);
-                    if (!data || !data->Meets(GetPlayer(), NULL))
+                    if (!data || !data->Meets(GetPlayer(), nullptr))
                         continue;
                 }
 

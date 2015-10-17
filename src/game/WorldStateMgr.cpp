@@ -88,7 +88,7 @@ void WorldStateMgr::Update()
                     break;
             }
 
-            if (state->GetRenewTime() < time(NULL) - time_t(sWorld.getConfig(CONFIG_UINT32_WORLD_STATE_EXPIRETIME)))
+            if (state->GetRenewTime() < time(nullptr) - time_t(sWorld.getConfig(CONFIG_UINT32_WORLD_STATE_EXPIRETIME)))
             {
                 if (state->HasFlag(WORLD_STATE_FLAG_NOT_EXPIREABLE))
                     continue;
@@ -467,7 +467,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                     // state 1
                     if (goInfo->capturePoint.worldState1)
                     {
-                        WorldState const* _state = NULL;
+                        WorldState const* _state = nullptr;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->capturePoint.worldState1, WORLD_STATE_TYPE_CAPTURE_POINT, goInfo->id);
                         MANGOS_ASSERT(tmpl);
                         if ((_state = GetWorldState(tmpl, instanceId)))
@@ -488,7 +488,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                     // state 2
                     if (goInfo->capturePoint.worldState2)
                     {
-                        WorldState const* _state = NULL;
+                        WorldState const* _state = nullptr;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->capturePoint.worldState2, WORLD_STATE_TYPE_CAPTURE_POINT, goInfo->id);
                         MANGOS_ASSERT(tmpl);
                         if ((_state = GetWorldState(tmpl, instanceId)))
@@ -509,7 +509,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                     // state 3
                     if (goInfo->capturePoint.worldState3)
                     {
-                        WorldState const* _state = NULL;
+                        WorldState const* _state = nullptr;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->capturePoint.worldState3, WORLD_STATE_TYPE_CAPTURE_POINT, goInfo->id);
                         MANGOS_ASSERT(tmpl);
                         if ((_state  = GetWorldState(tmpl, instanceId)))
@@ -532,7 +532,7 @@ void WorldStateMgr::CreateLinkedWorldStatesIfNeed(WorldObject* object)
                 {
                     if (CheckWorldState(goInfo->destructibleBuilding.linkedWorldState))
                     {
-                        WorldState const* _state = NULL;
+                        WorldState const* _state = nullptr;
                         WorldStateTemplate const* tmpl = FindTemplate(goInfo->destructibleBuilding.linkedWorldState, WORLD_STATE_TYPE_DESTRUCTIBLE_OBJECT, object->GetZoneId());
                         MANGOS_ASSERT(tmpl);
                         if ((_state = GetWorldState(tmpl, instanceId)))
@@ -641,13 +641,13 @@ WorldStateTemplate const* WorldStateMgr::FindTemplate(uint32 stateId, uint32 typ
     if (type == WORLD_STATE_TYPE_MAX && condition == 0 && linkedId == 0 && ((int)m_worldStateTemplates.count(stateId) > 1))
     {
         sLog.outError("WorldStateMgr::FindTemplate tru find template with simple rules, but in DB not one template Id %u!", stateId);
-        return NULL;
+        return nullptr;
     }
 
     WorldStateTemplateBounds bounds = m_worldStateTemplates.equal_range(stateId);
 
     if (bounds.first == bounds.second)
-        return NULL;
+        return nullptr;
 
     for (WorldStateTemplateMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
     {
@@ -657,7 +657,7 @@ WorldStateTemplate const* WorldStateMgr::FindTemplate(uint32 stateId, uint32 typ
             && (linkedId == 0 || iter->second.m_linkedId == linkedId))
             return &iter->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 void WorldStateMgr::MapUpdate(Map* map)
@@ -731,7 +731,7 @@ void WorldStateMgr::MapUpdate(Map* map)
 
 WorldStateSet* WorldStateMgr::GetWorldStatesFor(Player* player, uint32 flags)
 {
-    WorldStateSet* stateSet = NULL;
+    WorldStateSet* stateSet = nullptr;
 
     bool bFull = player ? !player->IsInWorld() : true;
 
@@ -752,7 +752,7 @@ WorldStateSet* WorldStateMgr::GetWorldStatesFor(Player* player, uint32 flags)
 
 WorldStateSet* WorldStateMgr::GetUpdatedWorldStatesFor(Player* player, time_t updateTime)
 {
-    WorldStateSet* stateSet = NULL;
+    WorldStateSet* stateSet = nullptr;
 
     for (WorldStateMap::iterator itr = m_worldState.begin(); itr != m_worldState.end(); ++itr)
     {
@@ -763,7 +763,7 @@ WorldStateSet* WorldStateMgr::GetUpdatedWorldStatesFor(Player* player, time_t up
 
         if (state->HasFlag(WORLD_STATE_FLAG_ACTIVE) &&
             state->GetRenewTime() >= updateTime &&
-            state->GetRenewTime() != time(NULL) &&
+            state->GetRenewTime() != time(nullptr) &&
             IsFitToCondition(player, state))
         {
             // Always send UpLinked worldstate with own chains
@@ -1152,7 +1152,7 @@ WorldState const* WorldStateMgr::CreateWorldState(uint32 stateId, uint32 instanc
 {
     // Don't create special states as custom!
     if (stateId == 0)
-        return NULL;
+        return nullptr;
 
     WorldStateTemplate const* tmpl = FindTemplate(stateId);
     return CreateWorldState(tmpl, instanceId, value);
@@ -1161,12 +1161,12 @@ WorldState const* WorldStateMgr::CreateWorldState(uint32 stateId, uint32 instanc
 WorldState const* WorldStateMgr::CreateWorldState(WorldStateTemplate const* tmpl, uint32 instanceId, uint32 value)
 {
     if (!tmpl)
-        return NULL;
+        return nullptr;
 
     if (tmpl->IsGlobal() && instanceId > 0)
     {
         sLog.outError("WorldStateMgr::CreateWorldState tru create GLOBAL state %u  with instance Id %u.",tmpl->m_stateId, instanceId);
-        return NULL;
+        return nullptr;
     }
 
     if (WorldState const* _state = GetWorldState(tmpl, instanceId))
@@ -1204,7 +1204,7 @@ WorldState const* WorldStateMgr::GetWorldState(uint32 stateId, uint32 instanceId
 {
     WorldStateBounds bounds = m_worldState.equal_range(stateId);
     if (bounds.first == bounds.second)
-        return NULL;
+        return nullptr;
 
     for (WorldStateMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
     {
@@ -1213,14 +1213,14 @@ WorldState const* WorldStateMgr::GetWorldState(uint32 stateId, uint32 instanceId
             && condition == iter->second.GetCondition())
             return &iter->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 WorldState const* WorldStateMgr::GetWorldState(uint32 stateId, uint32 instanceId, Player* player)
 {
     WorldStateBounds bounds = m_worldState.equal_range(stateId);
     if (bounds.first == bounds.second)
-        return NULL;
+        return nullptr;
 
     for (WorldStateMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
     {
@@ -1228,24 +1228,24 @@ WorldState const* WorldStateMgr::GetWorldState(uint32 stateId, uint32 instanceId
             && (!player || IsFitToCondition(player, &iter->second)))
             return &iter->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 WorldState const* WorldStateMgr::GetWorldState(WorldStateTemplate const* tmpl, uint32 instanceId)
 {
     if (!tmpl)
-        return NULL;
+        return nullptr;
 
     WorldStateBounds bounds = m_worldState.equal_range(tmpl->m_stateId);
     if (bounds.first == bounds.second)
-        return NULL;
+        return nullptr;
 
     for (WorldStateMap::const_iterator iter = bounds.first; iter != bounds.second; ++iter)
     {
         if (iter->second.GetInstance() == instanceId && iter->second.GetTemplate() == tmpl)
             return &iter->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 void WorldStateMgr::AddWorldStateFor(Player* player, uint32 stateId, uint32 instanceId)
@@ -1377,14 +1377,14 @@ void WorldStateMgr::DeleteInstanceState(uint32 mapId, uint32 instanceId)
 WorldStateSet* WorldStateMgr::GetInstanceStates(Map* map, uint32 flags, bool full)
 {
     if (!map)
-        return NULL;
+        return nullptr;
 
     return GetInstanceStates(map->GetId(), map->GetInstanceId(), flags, full);
 }
 
 WorldStateSet* WorldStateMgr::GetInstanceStates(uint32 mapId, uint32 instanceId, uint32 flags, bool full)
 {
-    WorldStateSet* stateSet = NULL;
+    WorldStateSet* stateSet = nullptr;
 
     for (WorldStateMap::iterator itr = m_worldState.begin(); itr != m_worldState.end(); ++itr)
     {
@@ -1413,7 +1413,7 @@ WorldStateSet* WorldStateMgr::GetInstanceStates(uint32 mapId, uint32 instanceId,
 
 WorldStateSet* WorldStateMgr::GetInitWorldStates(uint32 mapId, uint32 instanceId, uint32 zoneId, uint32 areaId)
 {
-    WorldStateSet* stateSet = NULL;
+    WorldStateSet* stateSet = nullptr;
 
     for (WorldStateMap::const_iterator itr = m_worldState.begin(); itr != m_worldState.end(); ++itr)
     {
@@ -1445,9 +1445,9 @@ WorldStateSet* WorldStateMgr::GetDownLinkedWorldStates(WorldState const* state)
 {
     // This method get DownLinked worldstates with this
     if (!state->HasDownLink())
-        return NULL;
+        return nullptr;
 
-    WorldStateSet* stateSet = NULL;
+    WorldStateSet* stateSet = nullptr;
 
     for (WorldStatesLinkedSet::const_iterator itr = state->GetLinkedSet()->begin(); itr != state->GetLinkedSet()->end(); ++itr)
     {
@@ -1464,11 +1464,11 @@ WorldStateSet* WorldStateMgr::GetDownLinkedWorldStates(WorldState const* state)
 WorldState const* WorldStateMgr::GetUpLinkWorldState(WorldState const* state)
 {
     if (!state->HasUpLink())
-        return NULL;
+        return nullptr;
 
     WorldStateTemplate const* tmpl = FindTemplate(state->GetTemplate()->m_linkedId, state->GetType(), state->GetCondition());
     if (!tmpl)
-        return NULL;
+        return nullptr;
 
     return GetWorldState(tmpl, state->GetInstance());
 }
@@ -1490,7 +1490,7 @@ uint32 WorldStateMgr::GetMapIdByZoneId(uint32 zoneId) const
 
 bool WorldState::IsExpired() const
 {
-    return time(NULL) > time_t(m_renewTime + sWorld.getConfig(CONFIG_UINT32_WORLD_STATE_EXPIRETIME));
+    return time(nullptr) > time_t(m_renewTime + sWorld.getConfig(CONFIG_UINT32_WORLD_STATE_EXPIRETIME));
 }
 
 void WorldState::AddClient(Player* player)

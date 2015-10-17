@@ -166,14 +166,14 @@ struct WorldState
 
     // For load custom state
     WorldState(uint32 _stateid, uint32 _instance, uint32 _flags, uint32 _value, time_t _renewtime)
-        : m_pState(NULL), m_stateId(_stateid), m_instanceId(_instance), m_type(WORLD_STATE_TYPE_CUSTOM), m_flags(_flags), m_value(_value), m_renewTime(_renewtime)
+        : m_pState(nullptr), m_stateId(_stateid), m_instanceId(_instance), m_type(WORLD_STATE_TYPE_CUSTOM), m_flags(_flags), m_value(_value), m_renewTime(_renewtime)
     {
         Initialize();
     }
 
     // For create new custom state
     WorldState(uint32 _stateid, uint32 _instance, uint32 value)
-        : m_pState(NULL), m_stateId(_stateid), m_instanceId(_instance), m_type(WORLD_STATE_TYPE_CUSTOM), m_value(value)
+        : m_pState(nullptr), m_stateId(_stateid), m_instanceId(_instance), m_type(WORLD_STATE_TYPE_CUSTOM), m_value(value)
     {
         Initialize();
     }
@@ -247,7 +247,7 @@ struct WorldState
     bool HasUpLink()   const { return GetTemplate() ? GetTemplate()->m_linkedId != 0 : false; }
     bool HasDownLink() const { return GetTemplate() ? !GetTemplate()->m_linkedList.empty() : false; }
     bool HasDownLink(uint32 stateId) const { return GetTemplate() ? (GetTemplate()->m_linkedList.find(stateId) != GetTemplate()->m_linkedList.end()) : false; }
-    WorldStatesLinkedSet const* GetLinkedSet() const { return GetTemplate() ? &GetTemplate()->m_linkedList : NULL; }
+    WorldStatesLinkedSet const* GetLinkedSet() const { return GetTemplate() ? &GetTemplate()->m_linkedList : nullptr; }
 
     void AddFlag(WorldStateFlags flag)    { m_flags |= (1 << flag); }
     void RemoveFlag(WorldStateFlags flag) { m_flags &= ~(1 << flag); }
@@ -271,12 +271,12 @@ struct WorldState
     void          Renew()
     {
         AddFlag(WORLD_STATE_FLAG_UPDATED);
-        m_renewTime = time(NULL);
+        m_renewTime = time(nullptr);
     }
 
     private:
     // const parameters (must be setted in constructor)
-    const WorldStateTemplate*          m_pState;        // pointer to template (may be NULL for custom states)
+    const WorldStateTemplate*          m_pState;        // pointer to template (may be nullptr for custom states)
     const uint32                       m_stateId;       // state id  (not unique, 0 for custom and BG states)
     const uint32                       m_instanceId;    // instance Id
     const uint32                       m_type;          // type
@@ -360,7 +360,7 @@ class WorldStateMgr : public MaNGOS::Singleton<WorldStateMgr, MaNGOS::ClassLevel
         WorldState const* CreateWorldState(WorldStateTemplate const* tmpl, uint32 instanceId, uint32 value = UINT32_MAX);
         WorldState const* CreateWorldState(uint32 stateId, uint32 instanceId, uint32 value = UINT32_MAX);
         WorldState const* GetWorldState(uint32 stateId, uint32 instanceId, WorldStateType type, uint32 condition);
-        WorldState const* GetWorldState(uint32 stateId, uint32 instanceId, Player* player = NULL);
+        WorldState const* GetWorldState(uint32 stateId, uint32 instanceId, Player* player = nullptr);
         WorldState const* GetWorldState(WorldStateTemplate const* tmpl, uint32 instanceId);
         void DeleteWorldState(WorldState* state);
         WorldStateTemplate const* FindTemplate(uint32 stateId, uint32 type = WORLD_STATE_TYPE_MAX, uint32 condition = 0, uint32 linkedId = 0);
@@ -378,7 +378,7 @@ class WorldStateMgr : public MaNGOS::Singleton<WorldStateMgr, MaNGOS::ClassLevel
         void   SetWorldStateValueFor(WorldObject* object, uint32 stateId, uint32 value);
         void   SetWorldStateValueFor(uint32 zoneId, uint32 stateId, uint32 value);
 
-        WorldStateSet* GetWorldStates(uint32 flags) { return GetWorldStatesFor(NULL, flags); };
+        WorldStateSet* GetWorldStates(uint32 flags) { return GetWorldStatesFor(nullptr, flags); };
         WorldStateSet* GetWorldStatesFor(Player* player, WorldStateFlags flag) { return GetWorldStatesFor(player, (1 << flag)); };
         WorldStateSet* GetWorldStatesFor(Player* player, uint32 flags = UINT32_MAX);
 

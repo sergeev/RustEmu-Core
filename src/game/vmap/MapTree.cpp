@@ -319,7 +319,7 @@ namespace VMAP
                 else
                 {
                     delete[] iTreeValues;
-                    iTreeValues = NULL;
+                    iTreeValues = nullptr;
 
                     success = false;
                     ERROR_LOG("StaticMapTree::InitMap() could not acquire WorldModel pointer for '%s'!", spawn.name.c_str());

@@ -481,7 +481,7 @@ void WorldSession::HandleAuctionRemoveItem(WorldPacket& recv_data)
     if (!auction || auction->owner != pl->GetGUIDLow())
     {
         SendAuctionCommandResult(nullptr, AUCTION_REMOVED, AUCTION_ERR_DATABASE);
-        sLog.outError("CHEATER : %u, he tried to cancel auction (id: %u) of another player, or auction is NULL", pl->GetGUIDLow(), auctionId);
+        sLog.outError("CHEATER : %u, he tried to cancel auction (id: %u) of another player, or auction is nullptr", pl->GetGUIDLow(), auctionId);
         return;
     }
 

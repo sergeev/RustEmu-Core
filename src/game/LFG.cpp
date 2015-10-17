@@ -78,7 +78,7 @@ void LFGPlayerState::Clear()
     m_LockMap.clear();
     m_comment.clear();
     m_answer = LFG_ANSWER_PENDING;
-    m_proposal = NULL;
+    m_proposal = nullptr;
     SetState(LFG_STATE_NONE);
     m_bTeleported = false;
 }
@@ -120,7 +120,7 @@ LFGRoleMask LFGPlayerState::GetRoles()
 
 void LFGPlayerState::SetJoined()
 {
-    m_jointime = time_t(time(NULL));
+    m_jointime = time_t(time(nullptr));
     m_bTeleported = false;
 }
 
@@ -152,13 +152,13 @@ void LFGGroupState::Clear()
     m_uiVotesNeeded = 3;
     m_uiKicksLeft = sWorld.getConfig(CONFIG_UINT32_LFG_MAXKICKS);
     m_uiFlags = LFG_MEMBER_FLAG_NONE | LFG_MEMBER_FLAG_COMMENT | LFG_MEMBER_FLAG_ROLES | LFG_MEMBER_FLAG_BIND;
-    m_proposal = NULL;
+    m_proposal = nullptr;
     m_roleCheckCancelTime = 0;
     m_roleCheckState      = LFG_ROLECHECK_NONE;
     m_type = LFG_TYPE_NONE;
     m_DungeonsList.clear();
     m_LockMap.clear();
-    SetDungeon(NULL);
+    SetDungeon(nullptr);
     SetState(LFG_STATE_NONE);
     SaveState();
     StopBoot();
@@ -182,7 +182,7 @@ uint8 LFGGroupState::GetKicksLeft() const
 
 void LFGGroupState::StartRoleCheck()
 {
-    m_roleCheckCancelTime = time_t(time(NULL) + LFG_TIME_ROLECHECK);
+    m_roleCheckCancelTime = time_t(time(nullptr) + LFG_TIME_ROLECHECK);
     SetRoleCheckState(LFG_ROLECHECK_INITIALITING);
     SetState(LFG_STATE_ROLECHECK);
 }
@@ -198,7 +198,7 @@ bool LFGGroupState::IsBootActive()
 {
     if (GetState() != LFG_STATE_BOOT)
         return false;
-    return (time(NULL) < m_bootCancelTime);
+    return (time(nullptr) < m_bootCancelTime);
 }
 
 void LFGGroupState::StartBoot(ObjectGuid kicker, ObjectGuid victim, std::string reason)
@@ -208,10 +208,10 @@ void LFGGroupState::StartBoot(ObjectGuid kicker, ObjectGuid victim, std::string 
 
     m_bootReason = reason;
     m_bootVictim = victim;
-    m_bootCancelTime = time_t(time(NULL) + LFG_TIME_BOOT);
+    m_bootCancelTime = time_t(time(nullptr) + LFG_TIME_BOOT);
     if (Group* pGroup = sObjectMgr.GetGroup(GetOwnerGuid()))
     {
-        for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+        for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
             if (Player* pGroupMember = itr->getSource())
             {
@@ -298,7 +298,7 @@ LFGQueueInfo::LFGQueueInfo(ObjectGuid _guid, LFGType type, uint32 _queueID) :
     tanks = LFG_TANKS_NEEDED;
     healers = LFG_HEALERS_NEEDED;
     dps = LFG_DPS_NEEDED;
-    joinTime = time_t(time(NULL));
+    joinTime = time_t(time(nullptr));
 }
 
 LFGProposal::LFGProposal(LFGDungeonEntry const* _dungeon)
@@ -311,7 +311,7 @@ LFGProposal::LFGProposal(LFGDungeonEntry const* _dungeon)
 
 void LFGProposal::Start()
 {
-    m_cancelTime = time_t(time(NULL) + LFG_TIME_PROPOSAL);
+    m_cancelTime = time_t(time(nullptr) + LFG_TIME_PROPOSAL);
 }
 
 void LFGProposal::RemoveDecliner(ObjectGuid guid)
@@ -374,7 +374,7 @@ LFGType LFGProposal::GetType()
 Group* LFGProposal::GetGroup()
 {
     if (m_groupGuid.IsEmpty())
-        return NULL;
+        return nullptr;
 
     return sObjectMgr.GetGroup(m_groupGuid);
 }
