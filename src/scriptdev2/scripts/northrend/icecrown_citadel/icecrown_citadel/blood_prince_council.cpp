@@ -370,7 +370,7 @@ struct base_blood_prince_council_bossAI : public base_icc_bossAI
                     if (pTmp->isAlive())
                     {
                         pTmp->RemoveAurasDueToSpell(SPELL_INVOCATION_VALANAR);
-                        pKiller->DealDamage(pTmp, pTmp->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                        pKiller->DealDamage(pTmp, pTmp->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
                     }
                 }
             }
@@ -382,7 +382,7 @@ struct base_blood_prince_council_bossAI : public base_icc_bossAI
                     if (pTmp->isAlive())
                     {
                         pTmp->RemoveAurasDueToSpell(SPELL_INVOCATION_KELESETH);
-                        pKiller->DealDamage(pTmp, pTmp->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                        pKiller->DealDamage(pTmp, pTmp->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
                     }
                 }
             }
@@ -394,7 +394,7 @@ struct base_blood_prince_council_bossAI : public base_icc_bossAI
                     if (pTmp->isAlive())
                     {
                         pTmp->RemoveAurasDueToSpell(SPELL_INVOCATION_TALDARAM);
-                        pKiller->DealDamage(pTmp, pTmp->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                        pKiller->DealDamage(pTmp, pTmp->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
                     }
                 }
             }
@@ -402,7 +402,7 @@ struct base_blood_prince_council_bossAI : public base_icc_bossAI
             if (Creature* pTmp = m_pInstance->GetSingleCreatureFromStorage(NPC_QUEEN_LANATHEL_INTRO))
             {
                 if (pTmp->isAlive())
-                    pTmp->DealDamage(pTmp, pTmp->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                    pTmp->DealDamage(pTmp, pTmp->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
             }
         }
     }
@@ -698,7 +698,7 @@ struct boss_taldaram_iccAI : public base_blood_prince_council_bossAI
 
     Player* GetFarthestPlayer(Creature* pCreature, float MaxRangeDistance = 100.0f)
     {
-        Player* farPlayer = NULL;
+        Player* farPlayer = nullptr;
         std::list<Player*> targets;
         float distance = 0.0f;
 

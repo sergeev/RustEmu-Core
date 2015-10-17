@@ -115,13 +115,13 @@ struct BSWScriptedAI : public ScriptedAI
                  return queryIndex(_findSpellIDX(SpellID)) ? _QuerySpellPeriod(_findSpellIDX(SpellID), diff, ignorecast) : false;
              };
 
-        CanCastResult timedCast(uint32 SpellID, uint32 diff, Unit* pTarget = NULL)
+        CanCastResult timedCast(uint32 SpellID, uint32 diff, Unit* pTarget = nullptr)
              {
                  if (!queryIndex(_findSpellIDX(SpellID))) return CAST_FAIL_OTHER;
                  return _QuerySpellPeriod(_findSpellIDX(SpellID), diff) ? _BSWSpellSelector(_findSpellIDX(SpellID), pTarget) : CAST_FAIL_STATE;
              };
 
-        CanCastResult doCast(uint32 SpellID, Unit* pTarget = NULL)
+        CanCastResult doCast(uint32 SpellID, Unit* pTarget = nullptr)
              {
                   return queryIndex(_findSpellIDX(SpellID)) ? _BSWSpellSelector(_findSpellIDX(SpellID), pTarget) : CAST_FAIL_OTHER;
              };
@@ -132,7 +132,7 @@ struct BSWScriptedAI : public ScriptedAI
                   return queryIndex(_findSpellIDX(SpellID)) ? _BSWCastOnTarget(pTarget, _findSpellIDX(SpellID)) : CAST_FAIL_OTHER;
              };
 
-        bool doRemove(uint32 SpellID, Unit* pTarget = NULL, uint8 index = EFFECT_INDEX_ALL)
+        bool doRemove(uint32 SpellID, Unit* pTarget = nullptr, uint8 index = EFFECT_INDEX_ALL)
              {
                  return queryIndex(_findSpellIDX(SpellID)) ? _doRemove(_findSpellIDX(SpellID),pTarget,index) : _doRemove(SpellID,pTarget,index);
              };
@@ -147,18 +147,18 @@ struct BSWScriptedAI : public ScriptedAI
                  return queryIndex(_findSpellIDX(SpellID)) ? _doAura(_findSpellIDX(SpellID), pTarget, index, isStack) : _doAura(SpellID, pTarget, index, basepoint, isStack);
              };
 
-        bool doAura(uint32 SpellID, Unit* pTarget = NULL)
+        bool doAura(uint32 SpellID, Unit* pTarget = nullptr)
              {
                  return queryIndex(_findSpellIDX(SpellID)) ? _doAura(_findSpellIDX(SpellID), pTarget) : _doAura(SpellID, pTarget);
              };
 
-        bool hasAura(uint32 SpellID, Unit* pTarget = NULL)
+        bool hasAura(uint32 SpellID, Unit* pTarget = nullptr)
              {
                  if (!pTarget) pTarget = m_creature;
                  return queryIndex(_findSpellIDX(SpellID)) ? _hasAura(_findSpellIDX(SpellID),pTarget) : _hasAura(SpellID,pTarget);
              };
 
-        uint8 auraCount(uint32 SpellID, Unit* pTarget = NULL, SpellEffectIndex index = EFFECT_INDEX_0)
+        uint8 auraCount(uint32 SpellID, Unit* pTarget = nullptr, SpellEffectIndex index = EFFECT_INDEX_0)
              {
                  if (!pTarget) pTarget = m_creature;
                  return queryIndex(_findSpellIDX(SpellID)) ? _auraCount(_findSpellIDX(SpellID),pTarget,index) : _auraCount(SpellID,pTarget,index);
@@ -166,7 +166,7 @@ struct BSWScriptedAI : public ScriptedAI
 
         Unit* doSummon(uint32 SpellID, TempSummonType type = TEMPSUMMON_CORPSE_TIMED_DESPAWN, uint32 delay = 60000)
              {
-                 return queryIndex(_findSpellIDX(SpellID)) ? _doSummon(_findSpellIDX(SpellID), type, delay) : NULL;
+                 return queryIndex(_findSpellIDX(SpellID)) ? _doSummon(_findSpellIDX(SpellID), type, delay) : nullptr;
              };
 
         Unit* doSelectRandomPlayer(uint32 SpellID = 0, bool spellsearchtype = false, float range = 100.0f, bool includeVictim = true)
@@ -247,7 +247,7 @@ struct BSWScriptedAI : public ScriptedAI
 
         CanCastResult _BSWDoForceCast(uint8 m_uiSpellIdx, Unit* pTarget);
 
-        CanCastResult _BSWSpellSelector(uint8 m_uiSpellIdx, Unit* pTarget = NULL);
+        CanCastResult _BSWSpellSelector(uint8 m_uiSpellIdx, Unit* pTarget = nullptr);
 
         CanCastResult _BSWCastOnTarget(Unit* pTarget, uint8 m_uiSpellIdx);
 
@@ -255,7 +255,7 @@ struct BSWScriptedAI : public ScriptedAI
 
         CanCastResult _DoCastSpellIfCan(Unit* pTarget, uint32 uiSpell, uint32 uiCastFlags = 0, ObjectGuid uiOriginalCasterGUID = ObjectGuid());
 
-        bool          _doRemove(uint8 m_uiSpellIdx, Unit* pTarget = NULL, uint8 index = EFFECT_INDEX_ALL);
+        bool          _doRemove(uint8 m_uiSpellIdx, Unit* pTarget = nullptr, uint8 index = EFFECT_INDEX_ALL);
 
         bool          _doRemove(uint32 SpellID, Unit* pTarget, uint8 index = EFFECT_INDEX_ALL);
 
@@ -275,7 +275,7 @@ struct BSWScriptedAI : public ScriptedAI
 
         bool          _hasAura(uint32 SpellID, Unit* pTarget);
 
-        uint8         _auraCount(uint8 m_uiSpellIdx, Unit* pTarget = NULL, SpellEffectIndex index = EFFECT_INDEX_0);
+        uint8         _auraCount(uint8 m_uiSpellIdx, Unit* pTarget = nullptr, SpellEffectIndex index = EFFECT_INDEX_0);
 
         uint8         _auraCount(uint32 SpellID, Unit* pTarget, SpellEffectIndex index);
 

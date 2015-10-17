@@ -25,8 +25,8 @@ class BSWScriptedInstance : public ScriptedInstance
         void DoOpenDoor(uint32 entry);
         void DoCloseDoor(uint32 entry);
 
-        void SetCriteriaState(uint32 criteria_id, bool state = true, Player* player = NULL);
-        bool GetCriteriaState(uint32 criteria_id, Player const* player = NULL);
+        void SetCriteriaState(uint32 criteria_id, bool state = true, Player* player = nullptr);
+        bool GetCriteriaState(uint32 criteria_id, Player const* player = nullptr);
 
         void   SetNextEvent(uint32 EventNum, uint32 creatureID, uint32 timer = 1000);
         uint32 GetEvent(uint32 creatureID);

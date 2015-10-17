@@ -21,7 +21,7 @@ struct TSpellSummary
 
 ScriptedAI::ScriptedAI(Creature* pCreature) : CreatureAI(pCreature),
     m_bCombatMovement(true),
-    m_events(NULL),
+    m_events(nullptr),
     m_uiEvadeCheckCooldown(2500)
 {}
 
@@ -148,7 +148,7 @@ void ScriptedAI::EnterEvadeMode()
         m_creature->GetMotionMaster()->MoveTargetedHome();
     }
 
-    m_creature->SetLootRecipient(NULL);
+    m_creature->SetLootRecipient(nullptr);
 
     Reset();
 }
@@ -209,7 +209,7 @@ void ScriptedAI::DoCastAOE(uint32 spellId, bool triggered)
     if (!triggered && m_creature->IsNonMeleeSpellCasted(false))
         return;
 
-    m_creature->CastSpell((Unit*)NULL, spellId, triggered);
+    m_creature->CastSpell((Unit*)nullptr, spellId, triggered);
 }
 
 void ScriptedAI::DoCastSpellOnPlayers(uint32 spellId)
@@ -242,11 +242,11 @@ SpellEntry const* ScriptedAI::SelectSpell(Unit* pTarget, int32 uiSchool, int32 i
 {
     // No target so we can't cast
     if (!pTarget)
-        return NULL;
+        return nullptr;
 
     // Silenced so we can't cast
     if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_SILENCED))
-        return NULL;
+        return nullptr;
 
     // Using the extended script system we first create a list of viable spells
     SpellEntry const* apSpell[4];
@@ -319,7 +319,7 @@ SpellEntry const* ScriptedAI::SelectSpell(Unit* pTarget, int32 uiSchool, int32 i
 
     // We got our usable spells so now lets randomly pick one
     if (!uiSpellCount)
-        return NULL;
+        return nullptr;
 
     return apSpell[urand(0, uiSpellCount - 1)];
 }
@@ -474,7 +474,7 @@ void ScriptedAI::DoTeleportPlayer(Unit* pUnit, float fX, float fY, float fZ, flo
 
 Unit* ScriptedAI::DoSelectLowestHpFriendly(float fRange, uint32 uiMinHPDiff)
 {
-    Unit* pUnit = NULL;
+    Unit* pUnit = nullptr;
 
     MaNGOS::MostHPMissingInRangeCheck u_check(m_creature, fRange, uiMinHPDiff);
     MaNGOS::UnitLastSearcher<MaNGOS::MostHPMissingInRangeCheck> searcher(pUnit, u_check);
@@ -510,7 +510,7 @@ std::list<Creature*> ScriptedAI::DoFindFriendlyMissingBuff(float fRange, uint32 
 
 Player* ScriptedAI::GetPlayerAtMinimumRange(float fMinimumRange)
 {
-    Player* pPlayer = NULL;
+    Player* pPlayer = nullptr;
 
     MaNGOS::AnyPlayerInObjectRangeCheck check(m_creature, fMinimumRange);
     MaNGOS::PlayerSearcher<MaNGOS::AnyPlayerInObjectRangeCheck> searcher(pPlayer, check);

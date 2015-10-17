@@ -62,15 +62,15 @@ enum EscortFaction
 
 struct Script
 {
-    Script(char const* scriptName = NULL) : Name(scriptName),
-        pGossipHello(NULL), pGossipHelloGO(NULL), pGossipSelect(NULL), pGossipSelectGO(NULL),
-        pGossipSelectWithCode(NULL), pGossipSelectGOWithCode(NULL),
-        pDialogStatusNPC(NULL), pDialogStatusGO(NULL),
-        pQuestAcceptNPC(NULL), pQuestAcceptGO(NULL), pQuestAcceptItem(NULL),
-        pQuestRewardedNPC(NULL), pQuestRewardedGO(NULL),
-        pGOUse(NULL), pItemUse(NULL), pAreaTrigger(NULL), pNpcSpellClick(NULL), pProcessEventId(NULL),
-        pEffectDummyNPC(NULL), pEffectDummyGO(NULL), pEffectDummyItem(NULL), pEffectScriptEffectNPC(NULL),
-        pEffectAuraDummy(NULL), GetAI(NULL), GetInstanceData(NULL)
+    Script(char const* scriptName = nullptr) : Name(scriptName),
+        pGossipHello(nullptr), pGossipHelloGO(nullptr), pGossipSelect(nullptr), pGossipSelectGO(nullptr),
+        pGossipSelectWithCode(nullptr), pGossipSelectGOWithCode(nullptr),
+        pDialogStatusNPC(nullptr), pDialogStatusGO(nullptr),
+        pQuestAcceptNPC(nullptr), pQuestAcceptGO(nullptr), pQuestAcceptItem(nullptr),
+        pQuestRewardedNPC(nullptr), pQuestRewardedGO(nullptr),
+        pGOUse(nullptr), pItemUse(nullptr), pAreaTrigger(nullptr), pNpcSpellClick(nullptr), pProcessEventId(nullptr),
+        pEffectDummyNPC(nullptr), pEffectDummyGO(nullptr), pEffectDummyItem(nullptr), pEffectScriptEffectNPC(nullptr),
+        pEffectAuraDummy(nullptr), GetAI(nullptr), GetInstanceData(nullptr)
     {}
 
     char const* Name;
@@ -120,10 +120,10 @@ class AutoScript
         void Register();
 
     public:
-        AutoScript() : m_script(NULL), m_reportError(true) {}
-        AutoScript(char const* scriptName, bool reportError = true) : m_script(NULL) { newScript(scriptName, reportError); }
-        AutoScript(char const* scriptName, TGetAI getAIPtr, bool reportError = true) : m_script(NULL) { newScript(scriptName, reportError); m_script->GetAI = getAIPtr; }
-        AutoScript(char const* scriptName, TGetInstanceData getIDPtr, bool reportError = true) : m_script(NULL) { newScript(scriptName, reportError); m_script->GetInstanceData = getIDPtr; }
+        AutoScript() : m_script(nullptr), m_reportError(true) {}
+        AutoScript(char const* scriptName, bool reportError = true) : m_script(nullptr) { newScript(scriptName, reportError); }
+        AutoScript(char const* scriptName, TGetAI getAIPtr, bool reportError = true) : m_script(nullptr) { newScript(scriptName, reportError); m_script->GetAI = getAIPtr; }
+        AutoScript(char const* scriptName, TGetInstanceData getIDPtr, bool reportError = true) : m_script(nullptr) { newScript(scriptName, reportError); m_script->GetInstanceData = getIDPtr; }
 
         ~AutoScript() { Register(); }
 
@@ -132,7 +132,7 @@ class AutoScript
 
         Script* operator -> ()
         {
-            MANGOS_ASSERT(m_script != NULL && "AutoScript: use newScript() before!");
+            MANGOS_ASSERT(m_script != nullptr && "AutoScript: use newScript() before!");
             return m_script;
         }
 };
@@ -141,8 +141,8 @@ class AutoScript
 // ************* Some functions used globally **************
 
 // Generic scripting text function
-void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget = NULL);
-void DoOrSimulateScriptTextForMap(int32 iTextEntry, uint32 uiCreatureEntry, Map* pMap, Creature* pCreatureSource = NULL, Unit* pTarget = NULL);
+void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget = nullptr);
+void DoOrSimulateScriptTextForMap(int32 iTextEntry, uint32 uiCreatureEntry, Map* pMap, Creature* pCreatureSource = nullptr, Unit* pTarget = nullptr);
 
 //DB query
 QueryResult* strSD2Pquery(char*);

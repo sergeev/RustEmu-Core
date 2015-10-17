@@ -137,7 +137,7 @@ CanCastResult BSWScriptedAI::_BSWSpellSelector(uint8 m_uiSpellIdx, Unit* pTarget
 
     BSWRecord* pSpell = &m_BSWRecords[m_uiSpellIdx];
 
-    Unit* pSummon = NULL;
+    Unit* pSummon = nullptr;
 
     CanCastResult result = CAST_FAIL_OTHER;
 
@@ -269,7 +269,7 @@ CanCastResult BSWScriptedAI::_BSWSpellSelector(uint8 m_uiSpellIdx, Unit* pTarget
                          pTarget->GetRandomPoint(fPosX, fPosY, fPosZ, urand((uint32)pSpell->LocData.x, (uint32)pSpell->LocData.y), fPosX, fPosY, fPosZ);
                          if ((int)fPosZ == 0)
                          {
-                             error_log("BSW: CAST_ON_RANDOM_POINT FAILED: Positon Z is NULL. Strange bug");
+                             error_log("BSW: CAST_ON_RANDOM_POINT FAILED: Positon Z is nullptr. Strange bug");
                              result = CAST_FAIL_OTHER;
                              break;
                          }
@@ -407,7 +407,7 @@ BSWRecord* BSWScriptedAI::_getRecord(uint32 SpellID)
             if (m_BSWRecords[i].m_uiSpellEntry[RAID_DIFFICULTY_10MAN_NORMAL] == SpellID) return &m_BSWRecords[i];
     }
     error_log("BSW: spell %u not found  in m_creature %u spelltable. Memory or database error?", SpellID, m_creature->GetEntry());
-    return NULL;
+    return nullptr;
 }
 
 BossSpellTableParameters BSWScriptedAI::_getBSWCastType(uint32 pTemp)
@@ -511,7 +511,7 @@ Unit* BSWScriptedAI::_doSummon(uint8 m_uiSpellIdx, TempSummonType summontype, ui
         if (!m_creature->IsPositionValid())
             {
                error_log("BSW: FAILED summoning creature, creature %u has invalid position",m_creature->GetEntry());
-               return NULL;
+               return nullptr;
             }
         m_creature->GetPosition(fPosX, fPosY, fPosZ);
         m_creature->GetRandomPoint(fPosX, fPosY, fPosZ, urand((uint32)pSpell->LocData.x, (uint32)pSpell->LocData.y), fPosX, fPosY, fPosZ);
@@ -542,7 +542,7 @@ Unit* BSWScriptedAI::_doSummonAtPosition(uint8 m_uiSpellIdx, float fPosX, float 
              break;
     }
     error_log("BSW: FAILED creature number %u type %u ",pSpell->m_uiSpellEntry[currentDifficulty], pSpell->m_CastTarget);
-    return NULL;
+    return nullptr;
 };
 
 Unit* BSWScriptedAI::_doSummonAtPosition(uint32 guid, TempSummonType summontype, uint32 delay, float fPosX, float fPosY, float fPosZ)
@@ -730,7 +730,7 @@ bool BSWScriptedAI::_doAura(uint32 SpellID, Unit* pTarget, SpellEffectIndex inde
 
             SpellAuraHolder* holder = pTarget->GetSpellAuraHolder(SpellID, pTarget->GetObjectGuid());
 
-            Aura* aura = NULL;
+            Aura* aura = nullptr;
 
             if (!holder)
             {
@@ -746,7 +746,7 @@ bool BSWScriptedAI::_doAura(uint32 SpellID, Unit* pTarget, SpellEffectIndex inde
             }
             else
             {
-                aura = holder->CreateAura(spell, index, &_basepoint, holder, pTarget, m_creature, NULL);
+                aura = holder->CreateAura(spell, index, &_basepoint, holder, pTarget, m_creature, nullptr);
                 holder->SetAuraDuration(aura->GetAuraMaxDuration());
             }
 
@@ -780,7 +780,7 @@ Unit* BSWScriptedAI::_doSelect(uint32 SpellID, bool spellsearchtype, float range
 {
     Map* pMap = m_creature->GetMap();
     Map::PlayerList const &pList = pMap->GetPlayers();
-        if (pList.isEmpty()) return NULL;
+        if (pList.isEmpty()) return nullptr;
 
     std::vector<Unit*> _list;
     _list.clear();
@@ -803,7 +803,7 @@ Unit* BSWScriptedAI::_doSelect(uint32 SpellID, bool spellsearchtype, float range
 
     debug_log("BSW: search random player with criteria = %u, found %u players.",SpellID,_list.size());
 
-    if (_list.empty()) return NULL;
+    if (_list.empty()) return nullptr;
         else return _list[urand(0,_list.size() - 1)];
 };
 
@@ -819,7 +819,7 @@ Creature* BSWScriptedAI::doSelectNearestCreature(uint32 id, float range)
     else
     {
         debug_log("BSW: search creature %u in range %f - NOT found.",id,range);
-        return NULL;
+        return nullptr;
     }
 }
 

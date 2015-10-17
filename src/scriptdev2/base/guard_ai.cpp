@@ -188,7 +188,7 @@ void guardAI::UpdateAI(const uint32 uiDiff)
         if (m_creature->CanReachWithMeleeAttack(m_creature->getVictim()))
         {
             bool bHealing = false;
-            const SpellEntry* pSpellInfo = NULL;
+            const SpellEntry* pSpellInfo = nullptr;
 
             // Select a healing spell if less than 30% hp
             if (m_creature->GetHealthPercent() < 30.0f)
@@ -224,7 +224,7 @@ void guardAI::UpdateAI(const uint32 uiDiff)
         if (!m_creature->IsNonMeleeSpellCasted(false))
         {
             bool bHealing = false;
-            const SpellEntry* pSpellInfo = NULL;
+            const SpellEntry* pSpellInfo = nullptr;
 
             // Select a healing spell if less than 30% hp ONLY 33% of the time
             if (m_creature->GetHealthPercent() < 30.0f && !urand(0, 2))

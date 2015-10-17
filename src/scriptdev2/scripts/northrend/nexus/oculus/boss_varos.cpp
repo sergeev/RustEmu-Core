@@ -133,7 +133,7 @@ struct boss_varosAI : public ScriptedAI
               DoCast(m_creature, SPELL_ARCANE_SHIELD);
            }
            if(Creature* Dragon = m_pInstance->instance->GetCreature(m_uiAzureDrakeGUID))
-              Dragon->DealDamage(Dragon, Dragon->GetMaxHealth(),NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+              Dragon->DealDamage(Dragon, Dragon->GetMaxHealth(),nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
         }
         m_uiAzureDrakeGUID.Clear();
     }
@@ -294,7 +294,7 @@ struct boss_varosAI : public ScriptedAI
         if(spell->Id == (m_bIsRegularMode ? SPELL_ENERGIZE_CORES : SPELL_ENERGIZE_CORES_2) && target->GetTypeId() == TYPEID_PLAYER)
         {
            int32 uiDmg = m_bIsRegularMode ? urand(5938, 6562) : urand(9025, 9975);
-           m_creature->DealDamage(target, uiDmg,NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, NULL, false);
+           m_creature->DealDamage(target, uiDmg,nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, nullptr, false);
         }
     }*/
 

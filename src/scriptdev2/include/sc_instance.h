@@ -71,7 +71,7 @@ class ScriptedInstance : public InstanceData
             DoOrSimulateScriptTextForMap(iTextEntry, uiCreatureEntry, instance, GetSingleCreatureFromStorage(uiCreatureEntry, true));
         }
 
-        void DoCastSpellOnPlayers(uint32 spellId, int32* bp0 = NULL, int32* bp1 = NULL, int32* bp2 = NULL);
+        void DoCastSpellOnPlayers(uint32 spellId, int32* bp0 = nullptr, int32* bp1 = nullptr, int32* bp2 = nullptr);
         void DoRemoveAurasDueToSpellOnPlayers(uint32 spellId);
         void DoSetAlternativePowerOnPlayers(int32 amt);
 
@@ -79,7 +79,7 @@ class ScriptedInstance : public InstanceData
         void DoStartTimedAchievement(AchievementCriteriaTypes criteriaType, uint32 uiTimedCriteriaMiscId);
 
         virtual bool SetBossState(uint32 id, EncounterState state) { return true; }
-        void SendEncounterUnit(uint32 type, Unit* unit = NULL, uint8 param1 = 0, uint8 param2 = 0) { }
+        void SendEncounterUnit(uint32 type, Unit* unit = nullptr, uint8 param1 = 0, uint8 param2 = 0) { }
 
     protected:
         // Storage for GO-Guids and NPC-Guids
@@ -136,7 +136,7 @@ class DialogueHelper
         /// Will be called when a dialogue step was done
         virtual void JustDidDialogueStep(int32 /*iEntry*/) {}
         /// Will be called to get a speaker, MUST be implemented if not used in instances
-        virtual Creature* GetSpeakerByEntry(uint32 /*uiEntry*/) { return NULL; }
+        virtual Creature* GetSpeakerByEntry(uint32 /*uiEntry*/) { return nullptr; }
 
     private:
         void DoNextDialogueStep();

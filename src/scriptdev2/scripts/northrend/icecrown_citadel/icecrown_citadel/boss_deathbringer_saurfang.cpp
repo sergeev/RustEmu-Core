@@ -205,7 +205,7 @@ struct npc_highlord_saurfang_iccAI : public base_icc_bossAI
         if (m_pInstance)
             return m_pInstance->GetSingleCreatureFromStorage(NPC_DEATHBRINGER_SAURFANG);
 
-        return NULL;
+        return nullptr;
     }
 
     void DoSummonGuards()
@@ -604,7 +604,7 @@ struct boss_deathbringer_saurfangAI : public base_icc_bossAI
         if (m_creature->isAlive())
             m_creature->GetMotionMaster()->MovePoint(POINT_ID_EVADE, fPositions[1][0], fPositions[1][1], fPositions[1][2]);
 
-        m_creature->SetLootRecipient(NULL);
+        m_creature->SetLootRecipient(nullptr);
 
         Reset();
     }
@@ -671,7 +671,7 @@ struct boss_deathbringer_saurfangAI : public base_icc_bossAI
 
     Player* SelectRandomPlayerForMark()
     {
-        Player* pResult = NULL;
+        Player* pResult = nullptr;
         GuidList lPlayers;
         ThreatList const& threatlist = m_creature->getThreatManager().getThreatList();
 
@@ -730,7 +730,7 @@ struct boss_deathbringer_saurfangAI : public base_icc_bossAI
                     // decrease the buff
                     m_creature->RemoveAurasDueToSpell(SPELL_BLOOD_POWER);
                     int32 power = m_creature->GetPower(m_powerBloodPower);
-                    m_creature->CastCustomSpell(m_creature, SPELL_BLOOD_POWER, &power, &power, NULL, true);
+                    m_creature->CastCustomSpell(m_creature, SPELL_BLOOD_POWER, &power, &power, nullptr, true);
                     DoScriptText(SAY_FALLENCHAMPION, m_creature);
                     // count mark for achievement
                     ++m_iMarkOfFallenCount;

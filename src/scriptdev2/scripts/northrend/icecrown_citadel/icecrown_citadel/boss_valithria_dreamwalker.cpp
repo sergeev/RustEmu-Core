@@ -257,7 +257,7 @@ struct boss_valithria_dreamwalkerAI : public ScriptedAI
         Map* pMap = m_creature->GetMap();
         Map::PlayerList const& playerlist = pMap->GetPlayers();
         if (playerlist.isEmpty())
-            return NULL;
+            return nullptr;
 
         std::vector<Unit*> list;
         list.clear();
@@ -278,7 +278,7 @@ struct boss_valithria_dreamwalkerAI : public ScriptedAI
         }
 
         if (list.empty())
-            return NULL;
+            return nullptr;
         else
             return list[urand(0, list.size() - 1)];
     }
@@ -482,7 +482,7 @@ struct mob_valithria_dream_phaseAI : public ScriptedAI
             Creature* pValithria = m_pInstance->GetSingleCreatureFromStorage(NPC_VALITHRIA);
             if (pValithria && pValithria->isAlive())
             {
-                pValithria->DealDamage(pValithria, uiDamage, NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                pValithria->DealDamage(pValithria, uiDamage, nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
             }
         }
 

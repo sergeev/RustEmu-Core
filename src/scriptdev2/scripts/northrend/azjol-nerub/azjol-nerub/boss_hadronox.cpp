@@ -141,7 +141,7 @@ struct boss_hadronoxAI : public ScriptedAI
         m_creature->CombatStop(true);
         m_creature->LoadCreatureAddon(true);
 
-        m_creature->SetLootRecipient(NULL);
+        m_creature->SetLootRecipient(nullptr);
 
         Reset();
 
@@ -215,9 +215,9 @@ struct boss_hadronoxAI : public ScriptedAI
                 {
                     if (Creature* pTrigger = m_creature->GetMap()->GetCreature(*itr))
                     {
-                        pTrigger->CastSpell(pTrigger, SPELL_SUMMON_CHAMPION, true, NULL, NULL, m_creature->GetObjectGuid());
-                        pTrigger->CastSpell(pTrigger, SPELL_SUMMON_NECROMANCER, true, NULL, NULL, m_creature->GetObjectGuid());
-                        pTrigger->CastSpell(pTrigger, SPELL_SUMMON_CRYPT_FIEND, true, NULL, NULL, m_creature->GetObjectGuid());
+                        pTrigger->CastSpell(pTrigger, SPELL_SUMMON_CHAMPION, true, nullptr, nullptr, m_creature->GetObjectGuid());
+                        pTrigger->CastSpell(pTrigger, SPELL_SUMMON_NECROMANCER, true, nullptr, nullptr, m_creature->GetObjectGuid());
+                        pTrigger->CastSpell(pTrigger, SPELL_SUMMON_CRYPT_FIEND, true, nullptr, nullptr, m_creature->GetObjectGuid());
                     }
                 }
 

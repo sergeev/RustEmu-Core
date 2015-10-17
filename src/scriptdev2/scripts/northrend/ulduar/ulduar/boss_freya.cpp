@@ -309,7 +309,7 @@ struct boss_freyaAI : public ScriptedAI
         if (m_creature->isAlive() && !m_bEventFinished)
             m_creature->GetMotionMaster()->MoveTargetedHome();
 
-        m_creature->SetLootRecipient(NULL);
+        m_creature->SetLootRecipient(nullptr);
 
         Reset();
     }
@@ -545,9 +545,9 @@ struct boss_freyaAI : public ScriptedAI
 
                 if (pSpirit->HasAura(SPELL_FEIGN_DEATH) && pStormLasher->HasAura(SPELL_FEIGN_DEATH) && pSnapLasher->HasAura(SPELL_FEIGN_DEATH))
                 {
-                    m_creature->DealDamage(pSpirit, pSpirit->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
-                    m_creature->DealDamage(pStormLasher, pStormLasher->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
-                    m_creature->DealDamage(pSnapLasher, pSnapLasher->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                    m_creature->DealDamage(pSpirit, pSpirit->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
+                    m_creature->DealDamage(pStormLasher, pStormLasher->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
+                    m_creature->DealDamage(pSnapLasher, pSnapLasher->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
                 }
                 else
                 {

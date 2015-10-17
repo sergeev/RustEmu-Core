@@ -327,7 +327,7 @@ struct base_icc_bossAI : public ScriptedAI
 
     Unit* SelectRandomRangedTarget(Unit* pSource)
     {
-        Unit* pResult = NULL;
+        Unit* pResult = nullptr;
         std::list<Unit*> lTargets;
         ThreatList const& tList = m_creature->getThreatManager().getThreatList();
 

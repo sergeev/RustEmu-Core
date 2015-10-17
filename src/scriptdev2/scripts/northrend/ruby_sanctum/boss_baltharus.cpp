@@ -88,7 +88,7 @@ struct boss_baltharusAI : public ScriptedAI
             m_pInstance->SetData(TYPE_BALTHARUS, NOT_STARTED);
 
         m_creature->SetRespawnDelay(7*DAY);
-        pClone = NULL;
+        pClone = nullptr;
         m_uiStage = 0;
         m_uiBladeTempestTimer = 22000;
         m_uiEnervatingBrandTimer = 10000;
@@ -174,7 +174,7 @@ struct boss_baltharusAI : public ScriptedAI
             return;
 
         if (pSummoned == pClone)
-            pClone = NULL;
+            pClone = nullptr;
     }
 
     void Aggro(Unit* pWho)

@@ -102,7 +102,7 @@ struct npc_air_force_botsAI : public ScriptedAI
 {
     npc_air_force_botsAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_pSpawnAssoc = NULL;
+        m_pSpawnAssoc = nullptr;
 
         // find the correct spawnhandling
         for (uint8 i = 0; i < countof(m_aSpawnAssociations); ++i)
@@ -123,7 +123,7 @@ struct npc_air_force_botsAI : public ScriptedAI
             if (!spawnedTemplate)
             {
                 error_db_log("SD2: Creature template entry %u does not exist in DB, which is required by npc_air_force_bots", m_pSpawnAssoc->m_uiSpawnedCreatureEntry);
-                m_pSpawnAssoc = NULL;
+                m_pSpawnAssoc = nullptr;
                 return;
             }
         }
@@ -143,7 +143,7 @@ struct npc_air_force_botsAI : public ScriptedAI
         else
         {
             error_db_log("SD2: npc_air_force_bots: wasn't able to spawn creature %u", m_pSpawnAssoc->m_uiSpawnedCreatureEntry);
-            m_pSpawnAssoc = NULL;
+            m_pSpawnAssoc = nullptr;
         }
 
         return pSummoned;
@@ -156,7 +156,7 @@ struct npc_air_force_botsAI : public ScriptedAI
         if (pCreature && pCreature->isAlive())
             return pCreature;
 
-        return NULL;
+        return nullptr;
     }
 
     void MoveInLineOfSight(Unit* pWho) override
@@ -166,13 +166,13 @@ struct npc_air_force_botsAI : public ScriptedAI
 
         if (pWho->isTargetableForAttack() && m_creature->IsHostileTo(pWho))
         {
-            Player* pPlayerTarget = pWho->GetTypeId() == TYPEID_PLAYER ? (Player*)pWho : NULL;
+            Player* pPlayerTarget = pWho->GetTypeId() == TYPEID_PLAYER ? (Player*)pWho : nullptr;
 
             // airforce guards only spawn for players
             if (!pPlayerTarget)
                 return;
 
-            Creature* pLastSpawnedGuard = m_spawnedGuid ? GetSummonedGuard() : NULL;
+            Creature* pLastSpawnedGuard = m_spawnedGuid ? GetSummonedGuard() : nullptr;
 
             // prevent calling GetCreature at next MoveInLineOfSight call - speedup
             if (!pLastSpawnedGuard)
@@ -515,7 +515,7 @@ struct npc_injured_patientAI : public ScriptedAI
     void Reset() override
     {
         m_doctorGuid.Clear();
-        m_pCoord = NULL;
+        m_pCoord = nullptr;
 
         // no select
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -1179,7 +1179,7 @@ struct npc_rune_blade : public ScriptedAI
         // Add stats scaling
         int32 damageDone=owner->CalculateDamage(BASE_ATTACK, true); // might be average damage instead ?
         int32 meleeSpeed=owner->m_modAttackSpeedPct[BASE_ATTACK];
-        m_creature->CastCustomSpell(m_creature, 51906, &damageDone, &meleeSpeed, NULL, true);
+        m_creature->CastCustomSpell(m_creature, 51906, &damageDone, &meleeSpeed, nullptr, true);
 
         // Visual Glow
         m_creature->CastSpell(m_creature, 53160, true);
@@ -1295,7 +1295,7 @@ struct npc_explosive_decoyAI : public ScriptedAI
 
     void Reset() override
     {
-        p_owner = NULL;
+        p_owner = nullptr;
         SetCombatMovement(false);
     }
 
@@ -1351,7 +1351,7 @@ struct npc_eye_of_kilrogg : public ScriptedAI
 
     void Reset() override
     {
-        p_owner = NULL;
+        p_owner = nullptr;
     }
 
     void UpdateAI(const uint32 /*diff*/) override
@@ -1785,13 +1785,13 @@ struct npc_spring_rabbitAI : public ScriptedPetAI
     }
 
     // Helper to get the Other Bunnies AI
-    npc_spring_rabbitAI* GetPartnerAI(Creature* pBunny = NULL)
+    npc_spring_rabbitAI* GetPartnerAI(Creature* pBunny = nullptr)
     {
         if (!pBunny)
             pBunny = m_creature->GetMap()->GetAnyTypeCreature(m_partnerGuid);
 
         if (!pBunny)
-            return NULL;
+            return nullptr;
 
         return dynamic_cast<npc_spring_rabbitAI*>(pBunny->AI());
     }

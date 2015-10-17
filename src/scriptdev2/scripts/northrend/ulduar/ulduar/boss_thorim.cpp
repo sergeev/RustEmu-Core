@@ -221,7 +221,7 @@ struct boss_thorimAI : public ScriptedAI, private DialogueHelper
         if (m_creature->isAlive() && !m_bEventFinished)
             m_creature->GetMotionMaster()->MoveTargetedHome();
 
-        m_creature->SetLootRecipient(NULL);
+        m_creature->SetLootRecipient(nullptr);
 
         Reset();
     }
@@ -434,7 +434,7 @@ struct boss_thorimAI : public ScriptedAI, private DialogueHelper
     Creature* SelectRandomUpperBunny()
     {
         if (m_lUpperBunniesGuids.empty())
-            return NULL;
+            return nullptr;
 
         GuidList::iterator iter = m_lUpperBunniesGuids.begin();
         advance(iter, urand(0, m_lUpperBunniesGuids.size() - 1));
@@ -446,7 +446,7 @@ struct boss_thorimAI : public ScriptedAI, private DialogueHelper
     Creature* GetClosestLowerBunny(Creature* pSource)
     {
         if (m_lLowerBunniesGuids.empty())
-            return NULL;
+            return nullptr;
 
         std::list<Creature*> lBunnies;
         for (GuidList::const_iterator itr = m_lLowerBunniesGuids.begin(); itr != m_lLowerBunniesGuids.end(); ++itr)
@@ -463,11 +463,11 @@ struct boss_thorimAI : public ScriptedAI, private DialogueHelper
     Unit* GetRandomArenaPlayer()
     {
         if (!m_pInstance)
-            return NULL;
+            return nullptr;
 
         Creature* pTrigger = m_pInstance->GetSingleCreatureFromStorage(NPC_THORIM_COMBAT_TRIGGER);
         if (!pTrigger)
-            return NULL;
+            return nullptr;
 
         std::vector<Unit*> suitableTargets;
         ThreatList const& threatList = m_creature->getThreatManager().getThreatList();
@@ -486,7 +486,7 @@ struct boss_thorimAI : public ScriptedAI, private DialogueHelper
         {
             m_uiBerserkTimer = 1000;
             m_uiStormHammerTimer = 60000;
-            return NULL;
+            return nullptr;
         }
         else
             return suitableTargets[urand(0, suitableTargets.size() - 1)];
@@ -734,7 +734,7 @@ struct boss_sifAI : public ScriptedAI
         m_creature->RemoveAllAurasOnEvade();
         m_creature->DeleteThreatList();
         m_creature->CombatStop(true);
-        m_creature->SetLootRecipient(NULL);
+        m_creature->SetLootRecipient(nullptr);
 
         Reset();
     }

@@ -12,7 +12,7 @@
 // return closest attackable Unit in grid, with range from pSource
 Unit* GetClosestAttackableUnit(Unit* pSource, float fMaxSearchRange) 
 { 
-    Unit* pTarget = NULL; 
+    Unit* pTarget = nullptr; 
     MaNGOS::NearestAttackableUnitInObjectRangeCheck unit_check(pSource, fMaxSearchRange); 
     MaNGOS::UnitLastSearcher<MaNGOS::NearestAttackableUnitInObjectRangeCheck> searcher(pTarget, unit_check); 
     Cell::VisitAllObjects(pSource, searcher, fMaxSearchRange); 
@@ -22,7 +22,7 @@ Unit* GetClosestAttackableUnit(Unit* pSource, float fMaxSearchRange)
 // return closest GO in grid, with range from pSource
 GameObject* GetClosestGameObjectWithEntry(WorldObject* pSource, uint32 uiEntry, float fMaxSearchRange)
 {
-    GameObject* pGo = NULL;
+    GameObject* pGo = nullptr;
 
     MaNGOS::NearestGameObjectEntryInObjectRangeCheck go_check(*pSource, uiEntry, fMaxSearchRange);
     MaNGOS::GameObjectLastSearcher<MaNGOS::NearestGameObjectEntryInObjectRangeCheck> searcher(pGo, go_check);
@@ -35,7 +35,7 @@ GameObject* GetClosestGameObjectWithEntry(WorldObject* pSource, uint32 uiEntry, 
 // return closest creature alive in grid, with range from pSource
 Creature* GetClosestCreatureWithEntry(WorldObject* pSource, uint32 uiEntry, float fMaxSearchRange, bool bOnlyAlive/*=true*/, bool bOnlyDead/*=false*/, bool bExcludeSelf/*=false*/)
 {
-    Creature* pCreature = NULL;
+    Creature* pCreature = nullptr;
 
     MaNGOS::NearestCreatureEntryWithLiveStateInObjectRangeCheck creature_check(*pSource, uiEntry, bOnlyAlive, bOnlyDead, fMaxSearchRange, bExcludeSelf);
     MaNGOS::CreatureLastSearcher<MaNGOS::NearestCreatureEntryWithLiveStateInObjectRangeCheck> searcher(pCreature, creature_check);

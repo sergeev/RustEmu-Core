@@ -316,7 +316,7 @@ struct npc_planar_anomalyAI : public ScriptedAI
         } else uiPulseTimer -= diff;
 
         if (uiDeathTimer < diff)
-            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth(),NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth(),nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
         else uiDeathTimer -= diff;
     }
 };

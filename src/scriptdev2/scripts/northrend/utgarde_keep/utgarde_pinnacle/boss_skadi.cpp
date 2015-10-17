@@ -225,7 +225,7 @@ struct boss_skadiAI : public ScriptedAI
         // Prepare to periodic summon the mobs
         if (Creature* pTrigger = m_creature->GetMap()->GetCreature(m_pInstance->GetSkadiMobsTrigger()))
         {
-            pTrigger->CastSpell(pTrigger, m_bIsRegularMode ? SPELL_SUMMON_GAUNTLET_MOBS : SPELL_SUMMON_GAUNTLET_MOBS_H, true, NULL, NULL, m_creature->GetObjectGuid());
+            pTrigger->CastSpell(pTrigger, m_bIsRegularMode ? SPELL_SUMMON_GAUNTLET_MOBS : SPELL_SUMMON_GAUNTLET_MOBS_H, true, nullptr, nullptr, m_creature->GetObjectGuid());
 
             // Spawn the intro mobs
             m_IntroMobs = true;
@@ -370,7 +370,7 @@ struct npc_graufAI : public ScriptedAI
             }
 
             // Deal 35% damage on each harpoon hit
-            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth() * 0.35f, NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+            m_creature->DealDamage(m_creature, m_creature->GetMaxHealth() * 0.35f, nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
         }
         // TODO: Temporary workaround - please remove when the boarding wrappers are implemented in core
         else if (pSpell->Id == SPELL_RIDE_VEHICLE && pCaster->GetEntry() == NPC_SKADI)

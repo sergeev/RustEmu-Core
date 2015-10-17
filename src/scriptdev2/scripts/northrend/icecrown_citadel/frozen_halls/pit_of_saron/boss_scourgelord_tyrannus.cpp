@@ -236,7 +236,7 @@ struct boss_rimefang_posAI : public ScriptedAI
         m_creature->CombatStop(true);
         m_creature->LoadCreatureAddon(true);
 
-        m_creature->SetLootRecipient(NULL);
+        m_creature->SetLootRecipient(nullptr);
 
         Reset();
 

@@ -220,7 +220,7 @@ struct boss_blood_queen_lanathelAI : public base_icc_bossAI
 
     Unit* SelectClosestFriendlyTarget(Unit* pVictim)
     {
-        Unit* pResult = NULL;
+        Unit* pResult = nullptr;
 
         if (m_pInstance)
         {
@@ -265,7 +265,7 @@ struct boss_blood_queen_lanathelAI : public base_icc_bossAI
             }
         }
 
-        return NULL;
+        return nullptr;
     }
 
     void RemoveAurasFromAllPlayers()

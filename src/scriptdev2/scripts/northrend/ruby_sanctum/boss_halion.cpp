@@ -281,7 +281,7 @@ struct boss_halion_realAI : public ScriptedAI
             else
             {
                 m_creature->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
-                pKiller->DealDamage(pclone, pclone->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+                pKiller->DealDamage(pclone, pclone->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
             }
         }
     }
@@ -751,7 +751,7 @@ struct boss_halion_twilightAI : public ScriptedAI
                 DoScriptText(SAY_HALION_DEATH, m_creature);
                 EndBattle();
             }
-            else pKiller->DealDamage(pReal, pReal->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, NULL, false);
+            else pKiller->DealDamage(pReal, pReal->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NONE, nullptr, false);
         }
 
         m_creature->SetVisibility(VISIBILITY_OFF);

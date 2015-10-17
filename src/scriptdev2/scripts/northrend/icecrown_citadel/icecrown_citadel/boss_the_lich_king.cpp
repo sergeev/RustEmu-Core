@@ -1127,7 +1127,7 @@ struct boss_the_lich_king_iccAI : public base_icc_bossAI
             }
         }
 
-        Unit* pTarget = NULL;
+        Unit* pTarget = nullptr;
         if (!lPotentialTargets.empty())
         {
             std::list<ObjectGuid>::iterator i = lPotentialTargets.begin();
@@ -1437,7 +1437,7 @@ struct boss_the_lich_king_iccAI : public base_icc_bossAI
                 // Harvest Soul
                 if (m_uiHarvestSoulTimer <= uiDiff)
                 {
-                    Unit* pTarget = NULL;
+                    Unit* pTarget = nullptr;
                     if (m_bIsHeroic)
                         pTarget = m_creature;
                     else
@@ -2184,7 +2184,7 @@ struct mob_vile_spiritAI : public base_icc_bossAI
             }
         }
 
-        return NULL;
+        return nullptr;
     }
 
     void UpdateAI(const uint32 uiDiff) override
@@ -2212,7 +2212,7 @@ struct mob_vile_spiritAI : public base_icc_bossAI
         {
             if (m_uiReadyTimer <= uiDiff)
             {
-                Unit* pTarget = NULL;
+                Unit* pTarget = nullptr;
 
                 m_creature->SetInCombatWithZone();
 

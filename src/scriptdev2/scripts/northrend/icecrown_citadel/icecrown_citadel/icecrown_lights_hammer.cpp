@@ -294,7 +294,7 @@ struct npc_the_damned_lhAI : public ScriptedAI
         if (m_pInstance && m_pInstance->GetData(TYPE_ICC_INTRO) != DONE)
         {
             if (Creature* pFordring = m_pInstance->GetSingleCreatureFromStorage(NPC_HIGHLORD_TIRION_FORDRING_LH))
-                SendAIEvent(AI_EVENT_CUSTOM_A, NULL, pFordring);
+                SendAIEvent(AI_EVENT_CUSTOM_A, nullptr, pFordring);
         }
     }
 

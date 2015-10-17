@@ -45,7 +45,7 @@ bool ItemUse_item_arcane_charges(Player* pPlayer, Item* pItem, const SpellCastTa
     if (pPlayer->IsTaxiFlying())
         return false;
 
-    pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, NULL);
+    pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, nullptr);
 
     if (const SpellEntry* pSpellInfo = GetSpellStore()->LookupEntry(SPELL_ARCANE_CHARGES))
         Spell::SendCastResult(pPlayer, pSpellInfo, 1, SPELL_FAILED_NOT_ON_GROUND);
@@ -70,7 +70,7 @@ bool ItemUse_item_flying_machine(Player* pPlayer, Item* pItem, const SpellCastTa
             return false;
 
     debug_log("SD2: Player attempt to use item %u, but did not meet riding requirement", itemId);
-    pPlayer->SendEquipError(EQUIP_ERR_CANT_EQUIP_SKILL, pItem, NULL);
+    pPlayer->SendEquipError(EQUIP_ERR_CANT_EQUIP_SKILL, pItem, nullptr);
     return true;
 }
 
@@ -88,7 +88,7 @@ bool ItemUse_item_gor_dreks_ointment(Player* pPlayer, Item* pItem, const SpellCa
 {
     if (pTargets.getUnitTarget() && pTargets.getUnitTarget()->GetTypeId() == TYPEID_UNIT && pTargets.getUnitTarget()->HasAura(SPELL_GORDREKS_OINTMENT))
     {
-        pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, NULL);
+        pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, nullptr);
 
         if (const SpellEntry* pSpellInfo = GetSpellStore()->LookupEntry(SPELL_GORDREKS_OINTMENT))
             Spell::SendCastResult(pPlayer, pSpellInfo, 1, SPELL_FAILED_TARGET_AURASTATE);
@@ -117,7 +117,7 @@ bool ItemUse_item_petrov_cluster_bombs(Player* pPlayer, Item* pItem, const Spell
 
     if (!pPlayer->GetTransport() || pPlayer->GetAreaId() != AREA_ID_SHATTERED_STRAITS)
     {
-        pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, NULL);
+        pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, nullptr);
 
         if (const SpellEntry* pSpellInfo = GetSpellStore()->LookupEntry(SPELL_PETROV_BOMB))
             Spell::SendCastResult(pPlayer, pSpellInfo, 1, SPELL_FAILED_NOT_HERE);
@@ -147,7 +147,7 @@ bool ItemUse_item_jungle_punch_sample(Player* pPlayer, Item* pItem, const SpellC
     }
     else
     {
-        pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, NULL);
+        pPlayer->SendEquipError(EQUIP_ERR_NONE, pItem, nullptr);
         return true;
     }
 }

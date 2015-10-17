@@ -233,7 +233,7 @@ static void GetValidNPCsOfList(Map* pMap, GuidList& lGUIDs, std::list<Creature*>
 void instance_halls_of_stone::SortFaces()
 {
     std::list<Creature*> lPossibleEyes;
-    GameObject* pFace = NULL;
+    GameObject* pFace = nullptr;
 
     // FACE_MARNAK
     if (pFace = instance->GetGameObject(m_aFaces[FACE_MARNAK].m_goFaceGuid))
@@ -387,7 +387,7 @@ void instance_halls_of_stone::ProcessFace(uint8 uiFace)
             if (Creature* pEye = instance->GetCreature(m_aFaces[uiFace].m_leftEyeGuid))
                 pEye->CastSpell(pEye, instance->IsRegularDifficulty() ? SPELL_GLARE_OF_THE_TRIBUNAL : SPELL_GLARE_OF_THE_TRIBUNAL_H, true);
             if (Creature* pEye = instance->GetCreature(m_aFaces[uiFace].m_rightEyeGuid))
-                pEye->CastSpell(pEye, instance->IsRegularDifficulty() ? SPELL_GLARE_OF_THE_TRIBUNAL : SPELL_GLARE_OF_THE_TRIBUNAL_H, true, NULL, NULL, m_aFaces[uiFace].m_leftEyeGuid);
+                pEye->CastSpell(pEye, instance->IsRegularDifficulty() ? SPELL_GLARE_OF_THE_TRIBUNAL : SPELL_GLARE_OF_THE_TRIBUNAL_H, true, nullptr, nullptr, m_aFaces[uiFace].m_leftEyeGuid);
             m_aFaces[uiFace].m_uiTimer = urand(1000, 2000);
             break;
         case FACE_MARNAK:

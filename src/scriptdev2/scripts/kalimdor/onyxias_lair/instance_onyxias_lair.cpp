@@ -33,7 +33,7 @@ instance_onyxias_lair::instance_onyxias_lair(Map* pMap) : ScriptedInstance(pMap)
 void instance_onyxias_lair::Initialize()
 {
     m_uiEncounter = NOT_STARTED;
-    m_tPhaseTwoStart = time(NULL);
+    m_tPhaseTwoStart = time(nullptr);
 }
 
 bool instance_onyxias_lair::IsEncounterInProgress() const
@@ -49,7 +49,7 @@ void instance_onyxias_lair::OnCreatureCreate(Creature* pCreature)
             m_mNpcEntryGuidStore[NPC_ONYXIA_TRIGGER] = pCreature->GetObjectGuid();
             break;
         case NPC_ONYXIA_WHELP:
-            if (m_uiEncounter >= DATA_LIFTOFF && time_t(m_tPhaseTwoStart + TIME_LIMIT_MANY_WHELPS) >= time(NULL))
+            if (m_uiEncounter >= DATA_LIFTOFF && time_t(m_tPhaseTwoStart + TIME_LIMIT_MANY_WHELPS) >= time(nullptr))
                 ++m_uiAchievWhelpsCount;
             break;
     }
@@ -67,7 +67,7 @@ void instance_onyxias_lair::SetData(uint32 uiType, uint32 uiData)
         m_uiAchievWhelpsCount = 0;
     }
     if (uiData == DATA_LIFTOFF)
-        m_tPhaseTwoStart = time(NULL);
+        m_tPhaseTwoStart = time(nullptr);
 
     // Currently no reason to save anything
 }

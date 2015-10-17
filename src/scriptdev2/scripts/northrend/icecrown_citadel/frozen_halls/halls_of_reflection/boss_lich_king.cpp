@@ -396,7 +396,7 @@ struct boss_lich_king_hrAI : public npc_escortAI
 
         case 900:
             if (Creature* pLider = m_pInstance->GetSingleCreatureFromStorage(m_pInstance->GetData(DATA_ESCAPE_LIDER)))
-                m_creature->DealDamage(pLider, pLider->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                m_creature->DealDamage(pLider, pLider->GetHealth(), nullptr, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, nullptr, false);
             m_pInstance->SetData(TYPE_LICH_KING, FAIL);
             m_creature->SetActiveObjectState(false);
             m_pInstance->SetData(TYPE_PHASE, 3);

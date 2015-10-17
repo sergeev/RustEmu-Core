@@ -652,10 +652,10 @@ struct mob_icc_gas_cloudAI : public base_icc_bossAI
     {
         if (!m_pInstance)
             return;
-        m_creature->FixateTarget(NULL); // Clear target
+        m_creature->FixateTarget(nullptr); // Clear target
         if (Creature* pProf = m_pInstance->GetSingleCreatureFromStorage(NPC_PROFESSOR_PUTRICIDE))
         {
-            Unit* pTarget = NULL;
+            Unit* pTarget = nullptr;
 
             pTarget = pProf->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1, SPELL_GASEOUS_BLOAT, SELECT_FLAG_PLAYER);
             if (!pTarget)
@@ -778,10 +778,10 @@ struct mob_icc_volatile_oozeAI : public base_icc_bossAI
     {
         if (!m_pInstance)
             return;
-        m_creature->FixateTarget(NULL); // Clear target
+        m_creature->FixateTarget(nullptr); // Clear target
         if (Creature* pProf = m_pInstance->GetSingleCreatureFromStorage(NPC_PROFESSOR_PUTRICIDE))
         {
-            Unit* pTarget = NULL;
+            Unit* pTarget = nullptr;
 
             pTarget = pProf->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 1, SPELL_OOZE_ADHESIVE, SELECT_FLAG_PLAYER);
             if (!pTarget)

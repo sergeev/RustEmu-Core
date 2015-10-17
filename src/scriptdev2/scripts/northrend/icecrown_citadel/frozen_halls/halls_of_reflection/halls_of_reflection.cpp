@@ -163,7 +163,7 @@ struct npc_jaina_and_sylvana_HRintroAI : public ScriptedAI
       m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
       m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
       Small = false;
-      pUther = NULL;
+      pUther = nullptr;
    }
 
    void Event()

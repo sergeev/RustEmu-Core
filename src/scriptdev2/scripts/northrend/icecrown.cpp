@@ -341,7 +341,7 @@ struct npc_infantryAI : public ScriptedAI
         m_creature->CombatStop(true);
         m_creature->LoadCreatureAddon(true);
 
-        m_creature->SetLootRecipient(NULL);
+        m_creature->SetLootRecipient(nullptr);
 
         Reset();
 
@@ -760,7 +760,7 @@ struct npc_grand_admiral_westwindAI : public ScriptedAI
             if (m_creature->isAlive())
                 m_creature->GetMotionMaster()->MoveTargetedHome();
 
-            m_creature->SetLootRecipient(NULL);
+            m_creature->SetLootRecipient(nullptr);
 
             Reset();
         }

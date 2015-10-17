@@ -18,8 +18,8 @@ typedef std::vector<Script*> SDScriptVec;
 typedef std::map<std::string, Script*> SDScriptMap;
 
 int num_sc_scripts;
-SDScriptVec *m_scripts = NULL;
-SDScriptMap *m_scriptStorage = NULL;    // Not registered scripts storage
+SDScriptVec *m_scripts = nullptr;
+SDScriptMap *m_scriptStorage = nullptr;    // Not registered scripts storage
 
 Config SD2Config;
 
@@ -108,7 +108,7 @@ void FreeScriptLibrary()
 
     SD2Database.HaltDelayThread();
 
-    setScriptLibraryErrorFile(NULL, NULL);
+    setScriptLibraryErrorFile(nullptr, nullptr);
 }
 
 MANGOS_DLL_EXPORT
@@ -154,7 +154,7 @@ void InitScriptLibrary()
     // outstring_log("");
 
     // Initialize script ids to needed ammount of assigned ScriptNames (from core)
-    m_scripts = new SDScriptVec(GetScriptIdsCount(), NULL);
+    m_scripts = new SDScriptVec(GetScriptIdsCount(), nullptr);
 
     m_scriptStorage = new SDScriptMap();
 
@@ -180,9 +180,9 @@ void InitScriptLibrary()
  *
  * @param iTextEntry Entry of the text, stored in SD2-database
  * @param pSource Source of the text
- * @param pTarget Can be NULL (depending on CHAT_TYPE of iTextEntry). Possible target for the text
+ * @param pTarget Can be nullptr (depending on CHAT_TYPE of iTextEntry). Possible target for the text
  */
-void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget/*=NULL*/)
+void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget/*=nullptr*/)
 {
     if (!pSource)
     {
@@ -208,10 +208,10 @@ void DoScriptText(int32 iTextEntry, WorldObject* pSource, Unit* pTarget/*=NULL*/
  * @param iTextEntry Entry of the text, stored in SD2-database, only type CHAT_TYPE_ZONE_YELL supported
  * @param uiCreatureEntry Id of the creature of whom saying will be simulated
  * @param pMap Given Map on which the map-wide text is displayed
- * @param pCreatureSource Can be NULL. If pointer to Creature is given, then the creature does the map-wide text
- * @param pTarget Can be NULL. Possible target for the text
+ * @param pCreatureSource Can be nullptr. If pointer to Creature is given, then the creature does the map-wide text
+ * @param pTarget Can be nullptr. Possible target for the text
  */
-void DoOrSimulateScriptTextForMap(int32 iTextEntry, uint32 uiCreatureEntry, Map* pMap, Creature* pCreatureSource /*=NULL*/, Unit* pTarget /*=NULL*/)
+void DoOrSimulateScriptTextForMap(int32 iTextEntry, uint32 uiCreatureEntry, Map* pMap, Creature* pCreatureSource /*=nullptr*/, Unit* pTarget /*=nullptr*/)
 {
     if (!pMap)
     {
@@ -300,7 +300,7 @@ void AutoScript::Register()
     if (!m_script)
         return;
     m_script->RegisterSelf(m_reportError);
-    m_script = NULL;
+    m_script = nullptr;
 }
 
 //********************************
@@ -579,12 +579,12 @@ MANGOS_DLL_EXPORT
 CreatureAI* GetCreatureAI(Creature* pCreature)
 {
     if (!pCreature)
-        return NULL;
+        return nullptr;
 
     Script* pTempScript = m_scripts->at(pCreature->GetScriptId());
 
     if (!pTempScript || !pTempScript->GetAI)
-        return NULL;
+        return nullptr;
 
     return pTempScript->GetAI(pCreature);
 }
@@ -673,7 +673,7 @@ InstanceData* CreateInstanceData(Map* pMap)
     Script* pTempScript = m_scripts->at(pMap->GetScriptId());
 
     if (!pTempScript || !pTempScript->GetInstanceData)
-        return NULL;
+        return nullptr;
 
     return pTempScript->GetInstanceData(pMap);
 }
@@ -684,5 +684,5 @@ Script* GetScriptByName(std::string scriptName)
     if (itr != m_scriptStorage->end())
         return itr->second;
     else
-        return NULL;
+        return nullptr;
 }
