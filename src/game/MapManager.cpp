@@ -58,11 +58,11 @@ Map* MapManager::CreateMap(uint32 id, WorldObject const* obj)
     //if(!obj->IsInWorld()) sLog.outError("GetMap: called for map %d with object (typeid %d, guid %d, mapid %d, instanceid %d) who is not in world!", id, obj->GetTypeId(), obj->GetGUIDLow(), obj->GetMapId(), obj->GetInstanceId());
     Guard guard(*this);
 
-    Map* map = NULL;
+    Map* map = nullptr;
 
     MapEntry const* entry = sMapStore.LookupEntry(id);
     if(!entry)
-        return NULL;
+        return nullptr;
 
     if (entry->Instanceable())
     {
@@ -103,12 +103,12 @@ Map* MapManager::FindMap(uint32 mapid, uint32 instanceId) const
 {
     //this is a small workaround for transports
     if (IsTransportMap(mapid))
-        return NULL;
+        return nullptr;
 
     Guard guard(*this);
     MapMapType::const_iterator iter = m_maps.find(MapID(mapid, instanceId));
     if (iter == m_maps.end())
-        return NULL;
+        return nullptr;
 
 
     return &*(iter->second);
@@ -119,7 +119,7 @@ Map* MapManager::GetMapPtr(uint32 mapid, uint32 instanceId)
     Guard guard(*this);
     MapMapType::const_iterator iter = m_maps.find(MapID(mapid, instanceId));
     if (iter == m_maps.end())
-        return NULL;
+        return nullptr;
     return iter->second;
 }
 
@@ -127,7 +127,7 @@ Map* MapManager::FindFirstMap(uint32 mapid) const
 {
     //this is a small workaround for transports
     if (IsTransportMap(mapid))
-        return NULL;
+        return nullptr;
 
     Guard guard(*this);
 
@@ -136,7 +136,7 @@ Map* MapManager::FindFirstMap(uint32 mapid) const
         if (iter->first.GetId() == mapid)
             return &*(iter->second);
     }
-    return NULL;
+    return nullptr;
 }
 
 /*
@@ -244,7 +244,7 @@ uint32 MapManager::GetNumInstances()
 
 struct TMapInfo
 {
-    TMapInfo() : m_mapName(NULL), m_mapCount(0), m_playerCount(0) {}
+    TMapInfo() : m_mapName(nullptr), m_mapCount(0), m_playerCount(0) {}
     const char* m_mapName;
     uint32 m_mapCount;
     uint32 m_playerCount;
@@ -289,8 +289,8 @@ uint32 MapManager::GetNumPlayersInInstances()
 ///// in case of battlegrounds it will only return an existing map, those maps are created by bg-system
 Map* MapManager::CreateInstance(uint32 id, Player * player)
 {
-    Map* map = NULL;
-    Map* pNewMap = NULL;
+    Map* map = nullptr;
+    Map* pNewMap = nullptr;
     uint32 NewInstanceId = 0;                                   // instanceId of the resulting map
     const MapEntry* entry = sMapStore.LookupEntry(id);
 
@@ -354,7 +354,7 @@ DungeonMap* MapManager::CreateDungeonMap(uint32 id, uint32 InstanceId, Difficult
     DungeonMap* map = new DungeonMap(id, sWorld.getConfig(CONFIG_UINT32_INTERVAL_GRIDCLEAN), InstanceId, difficulty);
 
     // Dungeons can have saved instance data
-    bool load_data = save != NULL;
+    bool load_data = save != nullptr;
     map->CreateInstanceData(load_data);
 
     return map;

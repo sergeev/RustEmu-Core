@@ -53,13 +53,13 @@ CalendarInvite* CalendarEvent::GetInviteById(ObjectGuid const& inviteId)
     if (m_Invitee.find(inviteId) != m_Invitee.end())
         return sCalendarMgr.GetInviteById(inviteId);
 
-    return NULL;
+    return nullptr;
 }
 
 CalendarInvite* CalendarEvent::GetInviteByGuid(ObjectGuid const& guid)
 {
     if (guid.IsEmpty() || !guid.IsPlayer())
-        return NULL;
+        return nullptr;
 
     for (GuidSet::const_iterator itr = m_Invitee.begin(); itr != m_Invitee.end(); ++itr)
     {
@@ -70,7 +70,7 @@ CalendarInvite* CalendarEvent::GetInviteByGuid(ObjectGuid const& guid)
         if (invite->InviteeGuid == guid)
             return invite;
     }
-    return NULL;
+    return nullptr;
 }
 
 void CalendarEvent::RemoveInviteById(ObjectGuid const& inviteId)
@@ -118,7 +118,7 @@ bool CalendarEvent::RemoveInviteById(ObjectGuid inviteId, ObjectGuid const& remo
     {
         // check if remover is an invitee
         CalendarInvite* removerInvite = GetInviteByGuid(removerGuid);
-        if (removerInvite == NULL)
+        if (removerInvite == nullptr)
         {
             // remover is not invitee cheat???
             sCalendarMgr.SendCalendarCommandResult(removerGuid, CALENDAR_ERROR_NOT_INVITED);
@@ -168,7 +168,7 @@ void CalendarEvent::SendMailOnRemoveEvent(ObjectGuid const& removerGuid)
 
     // build mail body
     std::ostringstream body;
-    body << secsToTimeBitFields(time(NULL));
+    body << secsToTimeBitFields(time(nullptr));
 
     // creating mail draft
     MailDraft draft(title.str(), body.str());
@@ -220,13 +220,13 @@ CalendarMgr::~CalendarMgr()
 CalendarEvent* CalendarMgr::GetEventById(ObjectGuid const& eventId)
 {
     CalendarEventStore::iterator iter = m_EventStore.find(eventId);
-    return IsValidEvent(iter) ? &iter->second : NULL;
+    return IsValidEvent(iter) ? &iter->second : nullptr;
 }
 
 CalendarInvite* CalendarMgr::GetInviteById(ObjectGuid const& inviteId)
 {
     CalendarInviteStore::iterator iter = m_InviteStore.find(inviteId);
-    return IsValidInvite(iter) ? &iter->second : NULL;
+    return IsValidInvite(iter) ? &iter->second : nullptr;
 }
 
 CalendarEventsList* CalendarMgr::GetPlayerEventsList(ObjectGuid const& guid)
@@ -301,18 +301,18 @@ CalendarEvent* CalendarMgr::AddEvent(ObjectGuid const& guid, std::string title, 
 {
     Player* player = sObjectMgr.GetPlayer(guid);
     if (!player)
-        return NULL;
+        return nullptr;
 
     if (title.empty())
     {
         SendCalendarCommandResult(guid, CALENDAR_ERROR_NEEDS_TITLE);
-        return NULL;
+        return nullptr;
     }
 
-    if (eventTime < time(NULL))
+    if (eventTime < time(nullptr))
     {
         SendCalendarCommandResult(guid, CALENDAR_ERROR_INVALID_DATE);
-        return NULL;
+        return nullptr;
     }
 
     ObjectGuid eventGuid = ObjectGuid(HIGHGUID_CALENDAR_EVENT, GenerateEventLowGuid());
@@ -356,7 +356,7 @@ void CalendarMgr::RemoveEvent(ObjectGuid const& eventId, ObjectGuid const& remov
 CalendarInvite* CalendarMgr::AddInvite(CalendarEvent* event, ObjectGuid const& senderGuid, ObjectGuid const& inviteeGuid, CalendarInviteStatus status, CalendarModerationRank rank, std::string text, time_t statusTime)
 {
     if (!event)
-        return NULL;
+        return nullptr;
 
 //    CalendarInvite* calendarInvite = new CalendarInvite(event, GetNewInviteId(), senderGuid, inviteeGuid, statusTime, status, rank, text);
     ObjectGuid inviteGuid = ObjectGuid(HIGHGUID_INVITE, GenerateInviteLowGuid());
@@ -375,7 +375,7 @@ CalendarInvite* CalendarMgr::AddInvite(CalendarEvent* event, ObjectGuid const& s
     if (event->IsGuildAnnouncement())
     {
         calendarInvite.AddFlag(CALENDAR_STATE_FLAG_DELETED);
-        return NULL;
+        return nullptr;
     }
 
     DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "CalendarMgr::AddInvite eventId[%u], senderGuid[%u], inviteGuid[%u], Status[%u], rank[%u], text[%s], time[%u]", (uint32)event->EventId, senderGuid.GetCounter(), inviteeGuid.GetCounter(), status, rank, text.c_str(), (uint32)statusTime);
@@ -384,7 +384,7 @@ CalendarInvite* CalendarMgr::AddInvite(CalendarEvent* event, ObjectGuid const& s
     {
         sLog.outError("CalendarEvent::AddInvite Fail adding invite!");
         calendarInvite.AddFlag(CALENDAR_STATE_FLAG_DELETED);
-        return NULL;
+        return nullptr;
     }
 
     calendarInvite.RemoveFlag(CALENDAR_STATE_FLAG_SAVED);
@@ -442,7 +442,7 @@ void CalendarMgr::CopyEvent(ObjectGuid const& eventId, time_t newTime, ObjectGui
     }
 
     if (newEvent->IsGuildAnnouncement())
-        AddInvite(newEvent, guid, guid,  CALENDAR_STATUS_CONFIRMED, CALENDAR_RANK_OWNER, "", time(NULL));
+        AddInvite(newEvent, guid, guid,  CALENDAR_STATUS_CONFIRMED, CALENDAR_RANK_OWNER, "", time(nullptr));
     else
     {
         // copy all invitees, set new owner as the one who make the copy, set invitees status to invited
@@ -456,7 +456,7 @@ void CalendarMgr::CopyEvent(ObjectGuid const& eventId, time_t newTime, ObjectGui
 
             if (invite->InviteeGuid == guid)
             {
-                AddInvite(newEvent, guid, invite->InviteeGuid,  CALENDAR_STATUS_CONFIRMED, CALENDAR_RANK_OWNER, "", time(NULL));
+                AddInvite(newEvent, guid, invite->InviteeGuid,  CALENDAR_STATUS_CONFIRMED, CALENDAR_RANK_OWNER, "", time(nullptr));
             }
             else
             {
@@ -465,7 +465,7 @@ void CalendarMgr::CopyEvent(ObjectGuid const& eventId, time_t newTime, ObjectGui
                 if (invite->Rank == CALENDAR_RANK_MODERATOR)
                     rank = CALENDAR_RANK_MODERATOR;
 
-                AddInvite(newEvent, guid, invite->InviteeGuid,  CALENDAR_STATUS_INVITED, rank, "", time(NULL));
+                AddInvite(newEvent, guid, invite->InviteeGuid,  CALENDAR_STATUS_INVITED, rank, "", time(nullptr));
             }
         }
     }
@@ -644,7 +644,7 @@ void CalendarMgr::LoadFromDB()
                     field[5].GetInt32(),
                     time_t(field[6].GetUInt32()),
                     field[4].GetUInt32(),
-                    time_t(time(NULL)),
+                    time_t(time(nullptr)),
                     field[7].GetString(),
                     field[8].GetString())));
 
@@ -688,7 +688,7 @@ void CalendarMgr::LoadFromDB()
                 uint32 eventId = field[1].GetUInt32();
                 ObjectGuid eventGuid = ObjectGuid(HIGHGUID_CALENDAR_EVENT, eventId);
 
-                CalendarEvent* event = GetEventById(eventGuid); // may be NULL!
+                CalendarEvent* event = GetEventById(eventGuid); // may be nullptr!
 
                 ObjectGuid inviteGuid       = ObjectGuid(HIGHGUID_INVITE, field[0].GetUInt32());
                 ObjectGuid inviteeGuid      = ObjectGuid(HIGHGUID_PLAYER, field[2].GetUInt32());
@@ -939,7 +939,7 @@ void CalendarMgr::SendCalendarEventInvite(CalendarInvite const* invite)
     time_t statusTime = invite->LastUpdateTime;
     bool preInvite = true;
     uint64 eventId = 0;
-    if (event != NULL)
+    if (event != nullptr)
     {
        preInvite = false;
        eventId = event->EventId;
@@ -977,7 +977,7 @@ void CalendarMgr::SendCalendarEventInvite(CalendarInvite const* invite)
         SendPacketToAllEventRelatives(data, event);
 }
 
-void CalendarMgr::SendCalendarCommandResult(ObjectGuid const& guid, CalendarResponseResult err, char const* param /*= NULL*/)
+void CalendarMgr::SendCalendarCommandResult(ObjectGuid const& guid, CalendarResponseResult err, char const* param /*= nullptr*/)
 {
     if (Player* player = sObjectMgr.GetPlayer(guid))
     {
@@ -1187,7 +1187,7 @@ void CalendarMgr::SendCalendarRaidLockoutRemove(ObjectGuid const& guid, DungeonP
         return;
 
     DEBUG_LOG("SMSG_CALENDAR_RAID_LOCKOUT_REMOVED [%u]", guid.GetCounter());
-    time_t currTime = time(NULL);
+    time_t currTime = time(nullptr);
 
     WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_REMOVED, 4 + 4 + 4 + 8);
     data << uint32(save->GetMapId());
@@ -1205,7 +1205,7 @@ void CalendarMgr::SendCalendarRaidLockoutAdd(ObjectGuid const& guid, DungeonPers
         return;
 
     DEBUG_LOG("SMSG_CALENDAR_RAID_LOCKOUT_ADDED [%u]", guid.GetCounter());
-    time_t currTime = time(NULL);
+    time_t currTime = time(nullptr);
 
     WorldPacket data(SMSG_CALENDAR_RAID_LOCKOUT_ADDED, 4 + 4 + 4 + 4 + 8);
     data << secsToTimeBitFields(currTime);

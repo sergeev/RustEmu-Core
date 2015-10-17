@@ -220,7 +220,7 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         void MessageDistBroadcast(Player const*, WorldPacket*, float dist, bool to_self, bool own_team_only = false);
         void MessageDistBroadcast(WorldObject const*, WorldPacket*, float dist);
 
-        float GetVisibilityDistance(WorldObject const* obj = NULL) const;
+        float GetVisibilityDistance(WorldObject const* obj = nullptr) const;
         //function for setting up visibility distance for maps on per-type/per-Id basis
         virtual void InitVisibilityDistance();
 
@@ -300,7 +300,7 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         bool IsBattleGroundOrArena() const { return i_mapEntry && i_mapEntry->IsBattleGroundOrArena(); }
         bool IsContinent() const { return i_mapEntry && i_mapEntry->IsContinent(); }
 
-        // can't be NULL for loaded map
+        // can't be nullptr for loaded map
         MapPersistentState* GetPersistentState() const;
 
         void AddObjectToRemoveList(WorldObject *obj, bool immediateCleanup = false);
@@ -459,7 +459,7 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>
         bool loaded(GridPair const& p) const;
         void EnsureGridCreated(GridPair const& p);
         bool EnsureGridLoaded(Cell const& c);
-        void EnsureGridLoadedAtEnter(Cell const& c, Player* player = NULL);
+        void EnsureGridLoadedAtEnter(Cell const& c, Player* player = nullptr);
 
         void buildNGridLinkage(NGridType* pNGridType) { pNGridType->link(this); }
 
@@ -562,7 +562,7 @@ class MANGOS_DLL_SPEC WorldMap : public Map
         WorldMap(uint32 id, time_t expiry) : Map(id, expiry, 0, REGULAR_DIFFICULTY) {}
         virtual ~WorldMap() {}
 
-        // can't be NULL for loaded map
+        // can't be nullptr for loaded map
         WorldPersistentState* GetPersistanceState() const;
 };
 
@@ -583,7 +583,7 @@ class MANGOS_DLL_SPEC DungeonMap : public Map
         void SendResetWarnings(uint32 timeLeft) const;
         void SetResetSchedule(bool on);
 
-        // can't be NULL for loaded map
+        // can't be nullptr for loaded map
         DungeonPersistentState* GetPersistanceState() const;
 
         virtual void InitVisibilityDistance();
@@ -611,7 +611,7 @@ class MANGOS_DLL_SPEC BattleGroundMap : public Map
         BattleGround* GetBG() { return m_bg; }
         void SetBG(BattleGround* bg) { m_bg = bg; }
 
-        // can't be NULL for loaded map
+        // can't be nullptr for loaded map
         BattleGroundPersistentState* GetPersistanceState() const;
 
     private:

@@ -62,10 +62,10 @@ RealmBuildInfo const* FindBuildInfo(uint16 _build)
             return &ExpectedRealmdClientBuilds[i];
 
     // none appropriate build
-    return NULL;
+    return nullptr;
 }
 
-RealmList::RealmList() : update_interval_(0), next_update_time_(time(NULL))
+RealmList::RealmList() : update_interval_(0), next_update_time_(time(nullptr))
 {
 }
 
@@ -128,10 +128,10 @@ void RealmList::UpdateRealm(uint32 ID, const std::string& name, const std::strin
 void RealmList::UpdateIfNeed()
 {
     // maybe disabled or updated recently
-    if (!update_interval_ || next_update_time_ > time(NULL))
+    if (!update_interval_ || next_update_time_ > time(nullptr))
         return;
 
-    next_update_time_ = time(NULL) + update_interval_;
+    next_update_time_ = time(nullptr) + update_interval_;
 
     // Clears Realm list
     realms_.clear();

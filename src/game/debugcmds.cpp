@@ -74,7 +74,7 @@ bool ChatHandler::HandleDebugSendCalendarResultCommand(char* args)
 
     int Value = atoi(c_val);
 
-    char* c_str = strtok(NULL, "");
+    char* c_str = strtok(nullptr, "");
     std::string str = c_str;
 
     m_session->GetPlayer()->SendCalendarResult(CalendarResponseResult(Value), str);
@@ -110,7 +110,7 @@ bool ChatHandler::HandleDebugSendEquipErrorCommand(char* args)
         return false;
 
     uint8 msg = atoi(args);
-    m_session->GetPlayer()->SendEquipError(InventoryResult(msg), NULL, NULL);
+    m_session->GetPlayer()->SendEquipError(InventoryResult(msg), nullptr, nullptr);
     return true;
 }
 
@@ -499,9 +499,9 @@ bool ChatHandler::HandleDebugGetItemStateCommand(char* args)
                     error = true; continue;
                 }
 
-                if (updateQueue[qp] == NULL)
+                if (updateQueue[qp] == nullptr)
                 {
-                    PSendSysMessage("%s at slot %u has a queuepos (%d) that points to NULL in the queue!",
+                    PSendSysMessage("%s at slot %u has a queuepos (%d) that points to nullptr in the queue!",
                         item->GetGuidStr().c_str(), item->GetSlot(), qp);
                     error = true; continue;
                 }
@@ -570,9 +570,9 @@ bool ChatHandler::HandleDebugGetItemStateCommand(char* args)
                             error = true; continue;
                         }
 
-                        if (updateQueue[qp] == NULL)
+                        if (updateQueue[qp] == nullptr)
                         {
-                            PSendSysMessage("%s in bag %u at slot %u has a queuepos (%d) that points to NULL in the queue!",
+                            PSendSysMessage("%s in bag %u at slot %u has a queuepos (%d) that points to nullptr in the queue!",
                                 item2->GetGuidStr().c_str(), bag->GetSlot(), item2->GetSlot(), qp);
                             error = true; continue;
                         }
@@ -618,7 +618,7 @@ bool ChatHandler::HandleDebugGetItemStateCommand(char* args)
             if (item->GetState() == ITEM_REMOVED) continue;
             Item *test = player->GetItemByPos( item->GetBagSlot(), item->GetSlot());
 
-            if (test == NULL)
+            if (test == nullptr)
             {
                 PSendSysMessage("queue(" SIZEFMTD "): %s has incorrect (bag %u slot %u) values, the player doesn't have an item at that position!",
                     i, item->GetGuidStr().c_str(), item->GetBagSlot(), item->GetSlot());
@@ -1127,7 +1127,7 @@ bool ChatHandler::HandleDebugSpellModsCommand(char* args)
         return false;
 
     Player *chr = getSelectedPlayer();
-    if (chr == NULL)
+    if (chr == nullptr)
     {
         SendSysMessage(LANG_NO_CHAR_SELECTED);
         SetSentErrorMessage(true);

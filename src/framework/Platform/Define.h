@@ -19,6 +19,8 @@
 #ifndef MANGOS_DEFINE_H
 #define MANGOS_DEFINE_H
 
+#include <cstdint>
+
 #include <sys/types.h>
 #include "Platform/CompilerDefs.h"
 
@@ -30,8 +32,6 @@
 #  endif
 #endif
 
-#include <boost/cstdint.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/detail/endian.hpp>
 
 #define MANGOS_LITTLEENDIAN 0
@@ -123,28 +123,19 @@ typedef void* MANGOS_LIBRARY_HANDLE;
 #  define ATTR_PRINTF(F,V)
 #endif // COMPILER == COMPILER_GNU
 
-typedef boost::int64_t int64;
-typedef boost::int32_t int32;
-typedef boost::int16_t int16;
-typedef boost::int8_t int8;
-typedef boost::uint64_t uint64;
-typedef boost::uint32_t uint32;
-typedef boost::uint16_t uint16;
-typedef boost::uint8_t uint8;
-
-#if COMPILER != COMPILER_MICROSOFT
-typedef uint16      WORD;
-typedef uint32      DWORD;
-#endif // COMPILER
+typedef std::int64_t int64;
+typedef std::int32_t int32;
+typedef std::int16_t int16;
+typedef std::int8_t int8;
+typedef std::uint64_t uint64;
+typedef std::uint32_t uint32;
+typedef std::uint16_t uint16;
+typedef std::uint8_t uint8;
 
 #if COMPILER == COMPILER_GNU
 #  if !defined(__GXX_EXPERIMENTAL_CXX0X__) || (__GNUC__ < 4) || (__GNUC__ == 4) && (__GNUC_MINOR__ < 7)
 #    define override
 #  endif
-#endif
-
-#ifdef BOOST_NO_CXX11_STATIC_ASSERT
-#  define static_assert(a, b) BOOST_STATIC_ASSERT_MSG((a), b)
 #endif
 
 typedef uint64 OBJECT_HANDLE;

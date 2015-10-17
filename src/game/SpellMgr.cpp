@@ -2055,7 +2055,7 @@ bool SpellMgr::IsSpellProcEventCanTriggeredBy(SpellProcEventEntry const * spellP
         procEvent_procEx = spellProcEvent->procEx;
 
         // For melee triggers
-        if (procSpell == NULL)
+        if (procSpell == nullptr)
         {
             // Check (if set) for school (melee attack have Normal school)
             if (spellProcEvent->schoolMask && (spellProcEvent->schoolMask & SPELL_SCHOOL_MASK_NORMAL) == 0)
@@ -3193,7 +3193,7 @@ SpellEntry const* SpellMgr::SelectAuraRankForLevel(SpellEntry const* spellInfo, 
     }
 
     // not found
-    return NULL;
+    return nullptr;
 }
 
 typedef UNORDERED_MAP<uint32,uint32> AbilitySpellPrevMap;
@@ -4042,7 +4042,7 @@ bool SpellMgr::LoadPetDefaultSpells_helper(CreatureInfo const* cInfo, PetDefault
         return false;
 
     // remove duplicates with levelupSpells if any
-    if (PetLevelupSpellSet const* levelupSpells = cInfo->Family ? GetPetLevelupSpellList(cInfo->Family) : NULL)
+    if (PetLevelupSpellSet const* levelupSpells = cInfo->Family ? GetPetLevelupSpellList(cInfo->Family) : nullptr)
     {
         for(int j = 0; j < MAX_CREATURE_SPELL_DATA_SLOT; ++j)
         {
@@ -5451,7 +5451,7 @@ bool SpellArea::IsFitToRequirements(Player const* player, uint32 newZone, uint32
 {
     if (conditionId)
     {
-        if (!player || !sObjectMgr.IsPlayerMeetToCondition(conditionId, player, player->GetMap(), NULL, CONDITION_FROM_SPELL_AREA))
+        if (!player || !sObjectMgr.IsPlayerMeetToCondition(conditionId, player, player->GetMap(), nullptr, CONDITION_FROM_SPELL_AREA))
             return false;
     }
     else                                                    // This block will be removed
@@ -5526,7 +5526,7 @@ SpellEntry const* GetSpellEntryByDifficulty(uint32 id, Difficulty difficulty, bo
     SpellDifficultyEntry const* spellDiff = sSpellDifficultyStore.LookupEntry(id);
 
     if (!spellDiff)
-        return NULL;
+        return nullptr;
 
     DEBUG_LOG("Searching spell %u in SpellDifficulty.dbc: Result is: %u/%u/%u/%u ",id,
     spellDiff->spellId[RAID_DIFFICULTY_10MAN_NORMAL],
@@ -5544,7 +5544,7 @@ SpellEntry const* GetSpellEntryByDifficulty(uint32 id, Difficulty difficulty, bo
             return sSpellStore.LookupEntry(spellDiff->spellId[diff]);
     }
 
-    return NULL;
+    return nullptr;
 }
 
 uint32 GetProcFlag(SpellEntry const* spellInfo)

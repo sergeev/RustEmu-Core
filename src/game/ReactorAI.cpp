@@ -112,7 +112,7 @@ ReactorAI::EnterEvadeMode()
     m_creature->DeleteThreatList();
     i_victimGuid.Clear();
     m_creature->CombatStop(true);
-    m_creature->SetLootRecipient(NULL);
+    m_creature->SetLootRecipient(nullptr);
 
     // Remove ChaseMovementGenerator from MotionMaster stack list, and add HomeMovementGenerator instead
     if (m_creature->IsInUnitState(UNIT_ACTION_CHASE))

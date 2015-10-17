@@ -43,7 +43,7 @@ class MANGOS_DLL_SPEC TargetedMovementGeneratorMedium : public MovementGenerator
             m_recheckDistanceTimer(0), m_waitTargetTimer(0),
             m_offset(offset), m_angle(angle),
             m_speedChanged(false), m_targetReached(false),
-            m_path(NULL) {}
+            m_path(nullptr) {}
         virtual ~TargetedMovementGeneratorMedium() { delete m_path; }
 
     public:

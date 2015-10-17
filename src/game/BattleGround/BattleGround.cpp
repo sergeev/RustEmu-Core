@@ -41,7 +41,7 @@ namespace MaNGOS
     class BattleGroundChatBuilder
     {
         public:
-            BattleGroundChatBuilder(ChatMsg msgtype, int32 textId, Player const* source, va_list* args = NULL)
+            BattleGroundChatBuilder(ChatMsg msgtype, int32 textId, Player const* source, va_list* args = nullptr)
                 : i_msgtype(msgtype), i_textId(textId), i_source(source), i_args(args) {}
             void operator()(WorldPacket& data, int32 loc_idx)
             {
@@ -75,7 +75,7 @@ namespace MaNGOS
     class BattleGroundWarningBuilder
     {
         public:
-            BattleGroundWarningBuilder(int32 textId, va_list* args = NULL)
+            BattleGroundWarningBuilder(int32 textId, va_list* args = nullptr)
                 : i_textId(textId), i_args(args) {}
             void operator()(WorldPacket& data, int32 loc_idx)
             {
@@ -120,7 +120,7 @@ namespace MaNGOS
     class BattleGroundYellBuilder
     {
         public:
-            BattleGroundYellBuilder(uint32 language, int32 textId, Creature const* source, va_list* args = NULL)
+            BattleGroundYellBuilder(uint32 language, int32 textId, Creature const* source, va_list* args = nullptr)
                 : i_language(language), i_textId(textId), i_source(source), i_args(args) {}
             void operator()(WorldPacket& data, int32 loc_idx)
             {
@@ -166,13 +166,13 @@ namespace MaNGOS
                 snprintf(str, 2048, text, arg1str, arg2str);
 
                 ObjectGuid guid;
-                char const* pName = NULL;
+                char const* pName = nullptr;
                 if (i_source)
                 {
                     guid = i_source->GetObjectGuid();
                     pName = i_source->GetName();
                 }
-                ChatHandler::BuildChatPacket(data, i_msgtype, str, LANG_UNIVERSAL, CHAT_TAG_NONE, ObjectGuid(), NULL, guid, pName);
+                ChatHandler::BuildChatPacket(data, i_msgtype, str, LANG_UNIVERSAL, CHAT_TAG_NONE, ObjectGuid(), nullptr, guid, pName);
             }
         private:
             ChatMsg i_msgtype;
@@ -246,7 +246,7 @@ BattleGround::BattleGround()
     m_MinPlayers        = 0;
 
     m_MapId             = 0;
-    m_Map               = NULL;
+    m_Map               = nullptr;
 
     m_TeamStartLocX[TEAM_INDEX_ALLIANCE]    = 0;
     m_TeamStartLocX[TEAM_INDEX_HORDE]       = 0;
@@ -399,13 +399,13 @@ void BattleGround::Update(uint32 diff)
             if (newtime > (MINUTE * IN_MILLISECONDS))
             {
                 if (newtime / (MINUTE * IN_MILLISECONDS) != m_PrematureCountDownTimer / (MINUTE * IN_MILLISECONDS))
-                    PSendMessageToAll(LANG_BATTLEGROUND_PREMATURE_FINISH_WARNING, CHAT_MSG_SYSTEM, NULL, (uint32)(m_PrematureCountDownTimer / (MINUTE * IN_MILLISECONDS)));
+                    PSendMessageToAll(LANG_BATTLEGROUND_PREMATURE_FINISH_WARNING, CHAT_MSG_SYSTEM, nullptr, (uint32)(m_PrematureCountDownTimer / (MINUTE * IN_MILLISECONDS)));
             }
             else
             {
                 // announce every 15 seconds
                 if (newtime / (15 * IN_MILLISECONDS) != m_PrematureCountDownTimer / (15 * IN_MILLISECONDS))
-                    PSendMessageToAll(LANG_BATTLEGROUND_PREMATURE_FINISH_WARNING_SECS, CHAT_MSG_SYSTEM, NULL, (uint32)(m_PrematureCountDownTimer / IN_MILLISECONDS));
+                    PSendMessageToAll(LANG_BATTLEGROUND_PREMATURE_FINISH_WARNING_SECS, CHAT_MSG_SYSTEM, nullptr, (uint32)(m_PrematureCountDownTimer / IN_MILLISECONDS));
             }
             m_PrematureCountDownTimer = newtime;
         }
@@ -794,8 +794,8 @@ void BattleGround::EndBattleGround(Team winner)
 {
     this->RemoveFromBGFreeSlotQueue();
 
-    ArenaTeam* winner_arena_team = NULL;
-    ArenaTeam* loser_arena_team = NULL;
+    ArenaTeam* winner_arena_team = nullptr;
+    ArenaTeam* loser_arena_team = nullptr;
     uint32 loser_rating = 0;
     uint32 winner_rating = 0;
     WorldPacket data;
@@ -1277,8 +1277,8 @@ void BattleGround::RemovePlayerAtLeave(ObjectGuid guid, bool Transport, bool Sen
         {
             if (!group->RemoveMember(guid, 0))              // group was disbanded
             {
-                SetBgRaid(team, NULL);
-                group->SetBattlegroundGroup(NULL);
+                SetBgRaid(team, nullptr);
+                group->SetBattlegroundGroup(nullptr);
                 delete group;
             }
         }
@@ -1617,7 +1617,7 @@ void BattleGround::UpdatePlayerScore(Player* Source, uint32 type, uint32 value )
             if (isBattleGround())
             {
                 // reward honor instantly
-                if (Source->RewardHonor(NULL, 1, (float)value))
+                if (Source->RewardHonor(nullptr, 1, (float)value))
                     itr->second->BonusHonor += value;
             }
             break;
@@ -2116,7 +2116,7 @@ void BattleGround::SetBgRaid(Team team, Group* bg_raid)
     Group* old_raid = GetBgRaid(team);
 
     if (old_raid)
-        old_raid->SetBattlegroundGroup(NULL);
+        old_raid->SetBattlegroundGroup(nullptr);
 
     if (bg_raid)
     {

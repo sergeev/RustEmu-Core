@@ -109,7 +109,7 @@ bool UpdateFieldData::IsUpdateFieldVisible(uint16 fieldIndex) const
 Object::Object() :
     m_objectType(TYPEMASK_OBJECT),
     m_objectTypeId(TYPEID_OBJECT),
-    m_uint32Values(NULL),
+    m_uint32Values(nullptr),
     m_valuesCount(0),
     m_fieldNotifyFlags(UF_FLAG_DYNAMIC),
     m_objectUpdated(false),
@@ -1039,8 +1039,8 @@ void Object::MarkForClientUpdate()
 }
 
 WorldObject::WorldObject() :
-  movespline(new Movement::MoveSpline()), m_transportInfo(NULL), 
-  m_currMap(NULL), m_position(WorldLocation()), m_viewPoint(*this),
+  movespline(new Movement::MoveSpline()), m_transportInfo(nullptr), 
+  m_currMap(nullptr), m_position(WorldLocation()), m_viewPoint(*this),
   m_isActiveObject(false), m_LastUpdateTime(WorldTimer::getMSTime()){}
 
 WorldObject::~WorldObject()
@@ -1410,7 +1410,7 @@ bool WorldObject::isInBack(WorldObject const* target, float distance, float arc)
     return IsWithinDist(target, distance) && !HasInArc( 2 * M_PI_F - arc, target );
 }
 
-void WorldObject::GetRandomPoint(float x, float y, float z, float distance, float& rand_x, float& rand_y, float& rand_z, float minDist /*=0.0f*/, float const* ori /*=NULL*/) const
+void WorldObject::GetRandomPoint(float x, float y, float z, float distance, float& rand_x, float& rand_y, float& rand_z, float minDist /*=0.0f*/, float const* ori /*=nullptr*/) const
 {
     if (distance == 0)
     {
@@ -1449,7 +1449,7 @@ void WorldObject::UpdateGroundPositionZ(float x, float y, float &z) const
         z = new_z + 0.05f;                                   // just to be sure that we are not a few pixel under the surface
 }
 
-void WorldObject::UpdateAllowedPositionZ(float x, float y, float& z, Map* atMap /*=NULL*/) const
+void WorldObject::UpdateAllowedPositionZ(float x, float y, float& z, Map* atMap /*=nullptr*/) const
 {
     if (!atMap)
         atMap = GetMap();
@@ -1577,7 +1577,7 @@ namespace MaNGOS
                 : i_object(obj), i_msgtype(msgtype), i_textData(textData), i_language(language), i_target(target) {}
             void operator()(WorldPacket& data, int32 loc_idx)
             {
-                char const* text = NULL;
+                char const* text = nullptr;
                 if ((int32)i_textData->Content.size() > loc_idx + 1 && !i_textData->Content[loc_idx + 1].empty())
                     text = i_textData->Content[loc_idx + 1].c_str();
                 else
@@ -1726,7 +1726,7 @@ Creature* WorldObject::SummonCreature(uint32 id, float x, float y, float z, floa
     if(!cinfo)
     {
         sLog.outErrorDb("WorldObject::SummonCreature: Creature (Entry: %u) not existed for summoner: %s. ", id, GetGuidStr().c_str());
-        return NULL;
+        return nullptr;
     }
 
     TemporarySummon* pCreature = new TemporarySummon(GetObjectGuid());
@@ -1743,7 +1743,7 @@ Creature* WorldObject::SummonCreature(uint32 id, float x, float y, float z, floa
     if (!pCreature->Create(GetMap()->GenerateLocalLowGuid(cinfo->GetHighGuid()), pos, cinfo, team))
     {
         delete pCreature;
-        return NULL;
+        return nullptr;
     }
 
     pCreature->SetSummonPoint(pos);
@@ -1771,13 +1771,13 @@ GameObject* WorldObject::SummonGameobject(uint32 id, float x, float y, float z, 
     Map *map = GetMap();
 
     if (!map)
-        return NULL;
+        return nullptr;
 
     if(!pGameObj->Create(map->GenerateLocalLowGuid(HIGHGUID_GAMEOBJECT), id, map,
         GetPhaseMask(), x, y, z, angle))
     {
         delete pGameObj;
-        return NULL;
+        return nullptr;
     }
 
     pGameObj->SetRespawnTime(despwtime/IN_MILLISECONDS);
@@ -1871,7 +1871,7 @@ namespace MaNGOS
 
 //===================================================================================================
 
-void WorldObject::PlayMusic(uint32 sound_id, Player const* target /*= NULL*/) const
+void WorldObject::PlayMusic(uint32 sound_id, Player const* target /*= nullptr*/) const
 {
     WorldPacket data(SMSG_PLAY_MUSIC, 4);
     data << uint32(sound_id);
@@ -2007,7 +2007,7 @@ void WorldObject::SetPhaseMask(uint32 newPhaseMask, bool update)
         UpdateVisibilityAndView();
 }
 
-void WorldObject::PlayDistanceSound(uint32 sound_id, Player const* target /*= NULL*/) const
+void WorldObject::PlayDistanceSound(uint32 sound_id, Player const* target /*= nullptr*/) const
 {
     WorldPacket data(SMSG_PLAY_OBJECT_SOUND,4+8);
     data << uint32(sound_id);
@@ -2018,7 +2018,7 @@ void WorldObject::PlayDistanceSound(uint32 sound_id, Player const* target /*= NU
         SendMessageToSet( &data, true );
 }
 
-void WorldObject::PlayDirectSound(uint32 sound_id, Player const* target /*= NULL*/) const
+void WorldObject::PlayDirectSound(uint32 sound_id, Player const* target /*= nullptr*/) const
 {
     WorldPacket data(SMSG_PLAY_SOUND, 4);
     data << uint32(sound_id);
@@ -2031,7 +2031,7 @@ void WorldObject::PlayDirectSound(uint32 sound_id, Player const* target /*= NULL
 GameObject* WorldObject::GetClosestGameObjectWithEntry(const WorldObject* pSource, uint32 uiEntry, float fMaxSearchRange)
 {
     //return closest gameobject in grid, with range from pSource
-    GameObject* pGameObject = NULL;
+    GameObject* pGameObject = nullptr;
 
     CellPair p(MaNGOS::ComputeCellPair(pSource->GetPositionX(), pSource->GetPositionY()));
     Cell cell(p);
@@ -2069,7 +2069,7 @@ void WorldObject::UpdateVisibilityAndView()
 
 Creature* WorldObject::GetClosestCreatureWithEntry(WorldObject* pSource, uint32 uiEntry, float fMaxSearchRange)
 {
-   Creature *p_Creature = NULL;
+   Creature *p_Creature = nullptr;
    CellPair p(MaNGOS::ComputeCellPair(pSource->GetPositionX(), pSource->GetPositionY()));
 
    Cell cell(p);
@@ -2221,7 +2221,7 @@ void WorldObject::UpdateEvents(uint32 update_diff, uint32 /*time*/)
 
 Transport* WorldObject::GetTransport() const
 {
-    return IsOnTransport() ? sObjectMgr.GetTransportByGuid(GetTransportInfo()->GetTransportGuid()) : NULL;
+    return IsOnTransport() ? sObjectMgr.GetTransportByGuid(GetTransportInfo()->GetTransportGuid()) : nullptr;
 }
 
 bool WorldObject::IsOnTransport() const
@@ -2236,7 +2236,7 @@ TransportBase* WorldObject::GetTransportBase()
     else if (GetObjectGuid().IsUnit())
         return ((Unit*)this)->GetTransportBase();
 
-    return NULL;
+    return nullptr;
 }
 
 void WorldObject::UpdateHelper::Update(uint32 time_diff)

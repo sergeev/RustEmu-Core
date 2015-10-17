@@ -74,7 +74,7 @@ void TotemAI::UpdateAI(uint32 const /*diff*/)
         !victim->isTargetableForAttack() || !m_creature->IsWithinDistInMap(victim, max_range) ||
         m_creature->IsFriendlyTo(victim) || !victim->isVisibleForOrDetect(m_creature,m_creature,false) )
     {
-        victim = NULL;
+        victim = nullptr;
 
         MaNGOS::NearestAttackableUnitInObjectRangeCheck u_check(m_creature, max_range);
         MaNGOS::UnitLastSearcher<MaNGOS::NearestAttackableUnitInObjectRangeCheck> checker(victim, u_check);

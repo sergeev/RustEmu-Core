@@ -31,16 +31,16 @@ namespace MaNGOS
 {
     template
     <
-    typename T,
-             class ThreadingModel = MaNGOS::SingleThreaded<T>,
-             class CreatePolicy = MaNGOS::OperatorNew<T>,
-             class LifeTimePolicy = MaNGOS::ObjectLifeTime<T>
-             >
+        typename T,
+        class ThreadingModel = MaNGOS::SingleThreaded<T>,
+        class CreatePolicy = MaNGOS::OperatorNew<T>,
+        class LifeTimePolicy = MaNGOS::ObjectLifeTime<T>
+        >
     class Singleton
     {
         public:
 
-            static T&   Instance();
+            static T& Instance();
             static bool IsUnloading( ) { return si_unloading; }
 
         protected:
@@ -66,7 +66,7 @@ namespace MaNGOS
     };
 
     template<typename T, class ThreadingModel, class CreatePolicy, class LifeTimePolicy>
-    T* Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::si_instance = NULL;
+    T* Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::si_instance = nullptr;
 
     template<typename T, class ThreadingModel, class CreatePolicy, class LifeTimePolicy>
     bool Singleton<T, ThreadingModel, CreatePolicy, LifeTimePolicy>::si_destroyed = false;
@@ -103,7 +103,7 @@ namespace MaNGOS
     {
         si_unloading = true;
         CreatePolicy::Destroy(si_instance);
-        si_instance = NULL;
+        si_instance = nullptr;
         si_destroyed = true;
     }
 }

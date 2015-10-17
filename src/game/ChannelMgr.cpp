@@ -33,7 +33,7 @@ ChannelMgr* channelMgr(Team team)
     if (team == HORDE)
         return &MaNGOS::Singleton<HordeChannelMgr>::Instance();
 
-    return NULL;
+    return nullptr;
 }
 
 ChannelMgr::~ChannelMgr()
@@ -48,7 +48,7 @@ Channel* ChannelMgr::GetJoinChannel(std::string name, uint32 channel_id)
 {
     std::wstring wname;
     if (!Utf8toWStr(name, wname))
-        return NULL;
+        return nullptr;
 
     wstrToLower(wname);
 
@@ -66,7 +66,7 @@ Channel* ChannelMgr::GetChannel(std::string name, Player* p, bool pkt)
 {
     std::wstring wname;
     if (!Utf8toWStr(name, wname))
-        return NULL;
+        return nullptr;
 
     wstrToLower(wname);
 
@@ -80,7 +80,7 @@ Channel* ChannelMgr::GetChannel(std::string name, Player* p, bool pkt)
             p->GetSession()->SendPacket(&data);
         }
 
-        return NULL;
+        return nullptr;
     }
     else
         return i->second;

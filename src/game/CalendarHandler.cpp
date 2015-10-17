@@ -37,11 +37,11 @@ void WorldSession::HandleCalendarGetCalendar(WorldPacket& /*recv_data*/)
     ObjectGuid guid = GetPlayer()->GetObjectGuid();
     DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "CMSG_CALENDAR_GET_CALENDAR [%u]", guid.GetCounter());
 
-    time_t currTime = time(NULL);
+    time_t currTime = time(nullptr);
 
     WorldPacket data(SMSG_CALENDAR_SEND_CALENDAR);
 
-    CalendarInvitesList* invites = NULL;
+    CalendarInvitesList* invites = nullptr;
     invites = sCalendarMgr.GetPlayerInvitesList(guid);
 
     data << uint32(invites->size());
@@ -235,7 +235,7 @@ void WorldSession::HandleCalendarEventSignup(WorldPacket& recv_data)
         }
 
         CalendarInviteStatus status = tentative ? CALENDAR_STATUS_TENTATIVE : CALENDAR_STATUS_SIGNED_UP;
-        sCalendarMgr.AddInvite(calendarEvent, guid, guid, CalendarInviteStatus(status), CALENDAR_RANK_PLAYER, "", time(NULL));
+        sCalendarMgr.AddInvite(calendarEvent, guid, guid, CalendarInviteStatus(status), CALENDAR_RANK_PLAYER, "", time(nullptr));
         sCalendarMgr.SendCalendarClearPendingAction(guid);
     }
     else
@@ -283,7 +283,7 @@ void WorldSession::HandleCalendarAddEvent(WorldPacket& recv_data)
     {
         if (cal->IsGuildAnnouncement())
         {
-            sCalendarMgr.AddInvite(cal, guid, ObjectGuid(uint64(0)), CALENDAR_STATUS_NOT_SIGNED_UP, CALENDAR_RANK_PLAYER, "", time(NULL));
+            sCalendarMgr.AddInvite(cal, guid, ObjectGuid(uint64(0)), CALENDAR_STATUS_NOT_SIGNED_UP, CALENDAR_RANK_PLAYER, "", time(nullptr));
         }
         else
         {
@@ -299,7 +299,7 @@ void WorldSession::HandleCalendarAddEvent(WorldPacket& recv_data)
                 recv_data >> status;
                 recv_data >> rank;
 
-                sCalendarMgr.AddInvite(cal, guid, invitee, CalendarInviteStatus(status), CalendarModerationRank(rank), "", time(NULL));
+                sCalendarMgr.AddInvite(cal, guid, invitee, CalendarInviteStatus(status), CalendarModerationRank(rank), "", time(nullptr));
             }
         }
         sCalendarMgr.SendCalendarEvent(GetPlayer()->GetObjectGuid(), cal, CALENDAR_SENDTYPE_ADD);
@@ -339,7 +339,7 @@ void WorldSession::HandleCalendarUpdateEvent(WorldPacket& recv_data)
         if (guid != calendarEvent->CreatorGuid)
         {
             CalendarInvite* updaterInvite = calendarEvent->GetInviteByGuid(guid);
-            if (updaterInvite == NULL)
+            if (updaterInvite == nullptr)
             {
                 sCalendarMgr.SendCalendarCommandResult(guid, CALENDAR_ERROR_NOT_INVITED);
                 return ;
@@ -490,7 +490,7 @@ void WorldSession::HandleCalendarEventInvite(WorldPacket& recv_data)
                 return;
             }
 
-            sCalendarMgr.AddInvite(calendarEvent, playerGuid, inviteeGuid, CALENDAR_STATUS_INVITED, CALENDAR_RANK_PLAYER, "", time(NULL));
+            sCalendarMgr.AddInvite(calendarEvent, playerGuid, inviteeGuid, CALENDAR_STATUS_INVITED, CALENDAR_RANK_PLAYER, "", time(nullptr));
         }
         else
             sCalendarMgr.SendCalendarCommandResult(playerGuid, CALENDAR_ERROR_EVENT_INVALID);
@@ -509,7 +509,7 @@ void WorldSession::HandleCalendarEventInvite(WorldPacket& recv_data)
         calendarInvite.InviteeGuid = inviteeGuid;
         calendarInvite.Status = CALENDAR_STATUS_INVITED;
         calendarInvite.Rank = CALENDAR_RANK_PLAYER;
-        calendarInvite.LastUpdateTime = time(NULL);
+        calendarInvite.LastUpdateTime = time(nullptr);
 
         sCalendarMgr.SendCalendarEventInvite(&calendarInvite);
         DEBUG_FILTER_LOG(LOG_FILTER_CALENDAR, "WorldSession::HandleCalendarEventInvite PREINVITE sender[%u], Invitee[%u]", playerGuid.GetCounter(), inviteeGuid.GetCounter());
@@ -543,7 +543,7 @@ void WorldSession::HandleCalendarEventRsvp(WorldPacket& recv_data)
             if (invite->InviteeGuid != guid)
             {
                 CalendarInvite* updaterInvite = calendarEvent->GetInviteByGuid(guid);
-                if (updaterInvite == NULL)
+                if (updaterInvite == nullptr)
                 {
                     sCalendarMgr.SendCalendarCommandResult(guid, CALENDAR_ERROR_NOT_INVITED);
                     return ;
@@ -557,7 +557,7 @@ void WorldSession::HandleCalendarEventRsvp(WorldPacket& recv_data)
                 }
             }
             invite->Status = CalendarInviteStatus(status);
-            invite->LastUpdateTime = time(NULL);
+            invite->LastUpdateTime = time(nullptr);
 
             sCalendarMgr.SendCalendarEventStatus(invite);
             sCalendarMgr.SendCalendarClearPendingAction(guid);
@@ -619,7 +619,7 @@ void WorldSession::HandleCalendarEventStatus(WorldPacket& recv_data)
             if (invite->InviteeGuid != updaterGuid)
             {
                 CalendarInvite* updaterInvite = calendarEvent->GetInviteByGuid(updaterGuid);
-                if (updaterInvite == NULL)
+                if (updaterInvite == nullptr)
                 {
                     sCalendarMgr.SendCalendarCommandResult(updaterGuid, CALENDAR_ERROR_NOT_INVITED);
                     return ;
@@ -633,7 +633,7 @@ void WorldSession::HandleCalendarEventStatus(WorldPacket& recv_data)
                 }
             }
             invite->Status = (CalendarInviteStatus)status;
-            invite->LastUpdateTime = time(NULL);                                        // not sure if we should set response time when moderator changes invite status
+            invite->LastUpdateTime = time(nullptr);                                        // not sure if we should set response time when moderator changes invite status
 
             //sCalendarMgr.UpdateInvite(invite);
             sCalendarMgr.SendCalendarEventStatus(invite);
@@ -673,7 +673,7 @@ void WorldSession::HandleCalendarEventModeratorStatus(WorldPacket& recv_data)
             if (invite->InviteeGuid != guid)
             {
                 CalendarInvite* updaterInvite = calendarEvent->GetInviteByGuid(guid);
-                if (updaterInvite == NULL)
+                if (updaterInvite == nullptr)
                 {
                     sCalendarMgr.SendCalendarCommandResult(guid, CALENDAR_ERROR_NOT_INVITED);
                     return ;

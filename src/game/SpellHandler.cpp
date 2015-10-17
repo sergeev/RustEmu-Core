@@ -58,7 +58,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (glyphIndex >= MAX_GLYPH_SLOT_INDEX)
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
 
@@ -66,14 +66,14 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (!pItem)
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
 
     if (pItem->GetObjectGuid() != itemGuid)
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr);
         return;
     }
 
@@ -83,7 +83,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (!proto)
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL);
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
 
@@ -91,7 +91,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (proto->InventoryType != INVTYPE_NON_EQUIP && !pItem->IsEquipped())
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL);
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
 
@@ -99,7 +99,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (msg != EQUIP_ERR_OK)
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(msg, pItem, NULL);
+        pUser->SendEquipError(msg, pItem, nullptr);
         return;
     }
 
@@ -107,7 +107,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
     if (pItem->IsInTrade())
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL);
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr);
         return;
     }
 
@@ -117,7 +117,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         pUser->InArena())
     {
         recvPacket.rpos(recvPacket.wpos());                               // prevent spam at not read packet tail
-        pUser->SendEquipError(EQUIP_ERR_NOT_DURING_ARENA_MATCH, pItem, NULL);
+        pUser->SendEquipError(EQUIP_ERR_NOT_DURING_ARENA_MATCH, pItem, nullptr);
         return;
     }
 
@@ -139,7 +139,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
                 if (IsNonCombatSpell(spellInfo))
                 {
                     recvPacket.rpos(recvPacket.wpos());                   // prevent spam at not read packet tail
-                    pUser->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT,pItem,NULL);
+                    pUser->SendEquipError(EQUIP_ERR_NOT_IN_COMBAT,pItem,nullptr);
                     return;
                 }
             }
@@ -149,7 +149,7 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
         if (pItem->IsPotion() && pUser->GetLastPotionId())
         {
             recvPacket.rpos(recvPacket.wpos());                           // prevent spam at not read packet tail
-            pUser->SendEquipError(EQUIP_ERR_OBJECT_IS_BUSY,pItem,NULL);
+            pUser->SendEquipError(EQUIP_ERR_OBJECT_IS_BUSY,pItem,nullptr);
             return;
         }
     }
@@ -174,12 +174,12 @@ void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 
     targets.Update(pUser);
 
-    Unit* pTarget = targets.getUnitTarget() ? pUser->GetMap()->GetUnit(targets.getUnitTarget()->GetObjectGuid()) : NULL;
+    Unit* pTarget = targets.getUnitTarget() ? pUser->GetMap()->GetUnit(targets.getUnitTarget()->GetObjectGuid()) : nullptr;
 
     if (!pItem->IsTargetValidForItemUse(pTarget))
     {
         // free gray item after use fail
-        pUser->SendEquipError(EQUIP_ERR_NONE, pItem, NULL);
+        pUser->SendEquipError(EQUIP_ERR_NONE, pItem, nullptr);
 
         // send spell error
         if (SpellEntry const* spellInfo = sSpellStore.LookupEntry(spellid))
@@ -228,14 +228,14 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
     Item *pItem = pUser->GetItemByPos(bagIndex, slot);
     if(!pItem)
     {
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL );
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, nullptr, nullptr );
         return;
     }
 
     ItemPrototype const *proto = pItem->GetProto();
     if(!proto)
     {
-        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, NULL );
+        pUser->SendEquipError(EQUIP_ERR_ITEM_NOT_FOUND, pItem, nullptr );
         return;
     }
 
@@ -247,7 +247,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
 
         if (!lockInfo)
         {
-            pUser->SendEquipError(EQUIP_ERR_ITEM_LOCKED, pItem, NULL );
+            pUser->SendEquipError(EQUIP_ERR_ITEM_LOCKED, pItem, nullptr );
             sLog.outError( "WORLD::OpenItem: item [guid = %u] has an unknown lockId: %u!", pItem->GetGUIDLow() , lockId);
             return;
         }
@@ -255,7 +255,7 @@ void WorldSession::HandleOpenItemOpcode(WorldPacket& recvPacket)
         // required picklocking
         if(lockInfo->Skill[1] || lockInfo->Skill[0])
         {
-            pUser->SendEquipError(EQUIP_ERR_ITEM_LOCKED, pItem, NULL );
+            pUser->SendEquipError(EQUIP_ERR_ITEM_LOCKED, pItem, nullptr );
             return;
         }
     }
@@ -383,7 +383,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     //  Players on vehicles may cast many simple spells (like knock) from self
 
-    Unit* mover = NULL;
+    Unit* mover = nullptr;
 
     if (spellInfo->HasAttribute(SPELL_ATTR_EX6_CASTABLE_ON_VEHICLE) && _mover->IsCharmerOrOwnerPlayerOrPlayerItself())
         mover = _mover->GetCharmerOrOwnerPlayerOrPlayerItself();
@@ -405,7 +405,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     bool triggered = false;
-    SpellEntry const* triggeredBy = NULL;
+    SpellEntry const* triggeredBy = nullptr;
     Aura const* triggeredByAura = mover->GetTriggeredByClientAura(spellId);
     if (triggeredByAura)
     {
@@ -451,7 +451,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     // auto-selection buff level base at target level (in spellInfo)
     if (Unit* target = targets.getUnitTarget())
     {
-        // if rank not found then function return NULL but in explicit cast case original spell can be casted and later failed with appropriate error message
+        // if rank not found then function return nullptr but in explicit cast case original spell can be casted and later failed with appropriate error message
         if (SpellEntry const *actualSpellInfo = sSpellMgr.SelectAuraRankForLevel(spellInfo, target->getLevel()))
             spellInfo = actualSpellInfo;
     }
@@ -675,7 +675,7 @@ void WorldSession::HandleSpellClick( WorldPacket & recv_data )
             Unit* target = (itr->second.castFlags & 0x2) ? (Unit*)_player : (Unit*)unit;
 
             if (itr->second.spellId)
-                caster->CastSpell(target, itr->second.spellId, true, NULL, NULL,caster->GetObjectGuid());
+                caster->CastSpell(target, itr->second.spellId, true, nullptr, nullptr,caster->GetObjectGuid());
             else
                 sLog.outError("WorldSession::HandleSpellClick: npc_spell_click with entry %u has 0 in spell_id. Not handled custom case?", unit->GetEntry());
         }
@@ -799,7 +799,7 @@ void WorldSession::HandleGetMirrorimageData(WorldPacket& recv_data)
     }
     else
     {
-        // pCaster may have been NULL (usually not expected, but may happen at disconnect, etc)
+        // pCaster may have been nullptr (usually not expected, but may happen at disconnect, etc)
         // OR
         // pCaster is not player, data is taken from CreatureDisplayInfoExtraEntry by model already
         data << (uint8)0;
@@ -845,7 +845,7 @@ void WorldSession::HandleUpdateMissileTrajectory(WorldPacket& recv_data)
     if (!unit)
         return;
 
-    Spell* spell = unit ? unit->GetCurrentSpell(CURRENT_GENERIC_SPELL) : NULL;
+    Spell* spell = unit ? unit->GetCurrentSpell(CURRENT_GENERIC_SPELL) : nullptr;
     if (!spell || spell->m_spellInfo->Id != spellId || !(spell->m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION))
     {
         return;

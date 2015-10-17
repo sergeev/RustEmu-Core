@@ -143,12 +143,12 @@ extern int main(int argc, char** argv)
     if (!serviceDaemonMode.empty())
     {
 #ifdef WIN32
-        char const* const serviceModes[] = { "run", "install", "uninstall", NULL };
+        char const* const serviceModes[] = { "run", "install", "uninstall", nullptr };
 #else
-        char const* const serviceModes[] = { "run", "stop", NULL };
+        char const* const serviceModes[] = { "run", "stop", nullptr };
 #endif
         char const* const* mode_ptr = &serviceModes[0];
-        for(; *mode_ptr != NULL; ++mode_ptr)
+        for(; *mode_ptr != nullptr; ++mode_ptr)
             if (*mode_ptr == serviceDaemonMode)
                 break;
 

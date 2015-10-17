@@ -21,7 +21,7 @@
 
 using namespace MaNGOS;
 
-Thread::Thread() : m_task(NULL), m_iThreadId(), m_ThreadImp()
+Thread::Thread() : m_task(nullptr), m_iThreadId(), m_ThreadImp()
 {
 }
 

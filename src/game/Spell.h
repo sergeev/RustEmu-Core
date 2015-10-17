@@ -379,10 +379,10 @@ class Spell
         void EffectServerSide(SpellEffectIndex eff_idx);
         void EffectKnockBackFromPosition(SpellEffectIndex eff_idx);
 
-        Spell(Unit* caster, SpellEntry const *info, bool triggered, ObjectGuid originalCasterGUID = ObjectGuid(), SpellEntry const* triggeredBy = NULL);
+        Spell(Unit* caster, SpellEntry const *info, bool triggered, ObjectGuid originalCasterGUID = ObjectGuid(), SpellEntry const* triggeredBy = nullptr);
         ~Spell();
 
-        void prepare(SpellCastTargets const* targets, Aura const* triggeredByAura = NULL);
+        void prepare(SpellCastTargets const* targets, Aura const* triggeredByAura = nullptr);
 
         void cancel(bool force = false);
 
@@ -413,7 +413,7 @@ class Spell
         SpellCastResult CheckCastTargets() const;
 
         int32 CalculateDamage(SpellEffectIndex i, Unit* target) { return m_caster->CalculateSpellDamage(target, m_spellInfo, i, &m_currentBasePoints[i]); }
-        static int32 CalculatePowerCost(SpellEntry const* spellInfo, Unit* caster, Spell const* spell = NULL, Item* castItem = NULL);
+        static int32 CalculatePowerCost(SpellEntry const* spellInfo, Unit* caster, Spell const* spell = nullptr, Item* castItem = nullptr);
 
         bool HaveTargetsForEffect(SpellEffectIndex effect) const;
         void Delayed();
@@ -438,12 +438,12 @@ class Spell
         bool FillCustomTargetMap(SpellEffectIndex effIndex, UnitList& targetUnitMap, uint8& effToIndex);
         void SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList& targetUnitMap);
 
-        void FillAreaTargets(UnitList &targetUnitMap, float radius, SpellNotifyPushType pushType, SpellTargets spellTargets, WorldObject* originalCaster = NULL);
+        void FillAreaTargets(UnitList &targetUnitMap, float radius, SpellNotifyPushType pushType, SpellTargets spellTargets, WorldObject* originalCaster = nullptr);
         void FillRaidOrPartyTargets(UnitList &targetUnitMap, Unit* member, Unit* center, float radius, bool raid, bool withPets, bool withcaster);
         void FillRaidOrPartyManaPriorityTargets(UnitList &targetUnitMap, Unit* member, Unit* center, float radius, uint32 count, bool raid, bool withPets, bool withcaster);
         void FillRaidOrPartyHealthPriorityTargets(UnitList &targetUnitMap, Unit* member, Unit* center, float radius, uint32 count, bool raid, bool withPets, bool withcaster);
 
-        // Returns a target that was filled by SPELL_SCRIPT_TARGET (or selected victim) Can return NULL
+        // Returns a target that was filled by SPELL_SCRIPT_TARGET (or selected victim) Can return nullptr
         Unit* GetPrefilledUnitTargetOrUnitTarget(SpellEffectIndex effIndex) const;
 
         template<typename T> WorldObject* FindCorpseUsing(uint32 corpseTypeMask);
@@ -515,14 +515,14 @@ class Spell
         // caster types:
         // formal spell caster, in game source of spell affects cast
         Unit* GetCaster() const { return m_caster; }
-        // real source of cast affects, explicit caster, or DoT/HoT applier, or GO owner, or wild GO itself. Can be NULL
+        // real source of cast affects, explicit caster, or DoT/HoT applier, or GO owner, or wild GO itself. Can be nullptr
         WorldObject* GetAffectiveCasterObject() const;
-        // limited version returning NULL in cases wild gameobject caster object, need for Aura (auras currently not support non-Unit caster)
+        // limited version returning nullptr in cases wild gameobject caster object, need for Aura (auras currently not support non-Unit caster)
         Unit* GetAffectiveCaster() const { return m_originalCasterGuid ? m_originalCaster : m_caster; }
         // m_originalCasterGuid can store GO guid, and in this case this is visual caster
         WorldObject* GetCastingObject() const;
 
-        // Unstead of GetAffectiveCaster() not return NULL if original caster is GameObject.
+        // Unstead of GetAffectiveCaster() not return nullptr if original caster is GameObject.
         Unit* GetAffectiveUnitCaster() const { return (m_originalCaster ? m_originalCaster : m_caster); }
 
         int32 GetPowerCost() const { return m_powerCost; }
@@ -762,7 +762,7 @@ namespace MaNGOS
         float GetCenterZ() const { return i_center.z; }
 
         SpellNotifierCreatureAndPlayer(Spell &spell, Spell::UnitList &data, float radius, SpellNotifyPushType type,
-            SpellTargets TargetType = SPELL_TARGETS_NOT_FRIENDLY, WorldObject* originalCaster = NULL)
+            SpellTargets TargetType = SPELL_TARGETS_NOT_FRIENDLY, WorldObject* originalCaster = nullptr)
             : i_data(&data), i_spell(spell), i_push_type(type), i_radius(radius), i_TargetType(TargetType),
             i_originalCaster(originalCaster), i_castingObject(i_spell.GetCastingObject()), i_center(WorldLocation())
         {

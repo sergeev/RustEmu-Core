@@ -653,7 +653,7 @@ void PetAI::UpdateAI(const uint32 diff)
                     continue;
             }
 
-            Unit* autoCastTarget = NULL;
+            Unit* autoCastTarget = nullptr;
 
             if (inCombat)
             {
@@ -784,13 +784,13 @@ void PetAI::UpdateAI(const uint32 diff)
             currentSpells.push_back(GetSpellType(PET_SPELL_NONCOMBAT));
 
             if (m_creature->GetHealthPercent() < 95.0f) {
-              const SpellEntry *spellInfo = NULL;
+              const SpellEntry *spellInfo = nullptr;
               uint32            spellID   = GetSpellType(PET_SPELL_HEAL);
               bool              stopped   = m_creature->IsStopped( );
 
               stopped |= ( m_creature->GetMovementInfo( ).HasMovementFlag( movementFlagsMask ) == false );
               
-              if ( ( spellInfo = sSpellStore.LookupEntry( spellID ) ) != NULL ) {
+              if ( ( spellInfo = sSpellStore.LookupEntry( spellID ) ) != nullptr ) {
                 if ( ( IsChanneledSpell( spellInfo ) == false ) || ( stopped == true ) ) {
                   currentSpells.push_back( spellID );
                 }
@@ -897,7 +897,7 @@ void PetAI::UpdateAllies()
     if (!owner)
         return;
 
-    Group* pGroup = NULL;
+    Group* pGroup = nullptr;
 
     if (owner->GetTypeId() == TYPEID_PLAYER)
         pGroup = ((Player*)owner)->GetGroup();
@@ -915,7 +915,7 @@ void PetAI::UpdateAllies()
 
     if (pGroup)                                              // add group
     {
-        for (GroupReference* itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+        for (GroupReference* itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
         {
             Player* target = itr->getSource();
             if (!target || !pGroup->SameSubGroup((Player*)owner, target))
@@ -1019,14 +1019,14 @@ bool PetAI::SetPrimaryTarget(ObjectGuid const& guid)
 Unit* PetAI::GetPrimaryTarget()
 {
     if (!m_primaryTargetGuid || !m_primaryTargetGuid.IsUnit())
-        return NULL;
+        return nullptr;
 
     Unit* target = m_creature->GetMap()->GetUnit(m_primaryTargetGuid);
 
     if (!target || !target->isAlive() || !target->isTargetableForAttack() || !target->isInAccessablePlaceFor(m_creature))
     {
         m_primaryTargetGuid.Clear();
-        return NULL;
+        return nullptr;
     }
 
     return target;

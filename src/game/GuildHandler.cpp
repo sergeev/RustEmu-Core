@@ -77,7 +77,7 @@ void WorldSession::HandleGuildInviteOpcode(WorldPacket& recvPacket)
     DEBUG_LOG("WORLD: Received CMSG_GUILD_INVITE");
 
     std::string Invitedname, plname;
-    Player* player = NULL;
+    Player* player = nullptr;
 
     recvPacket >> Invitedname;
 
@@ -1089,7 +1089,7 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recv_data)
     // allow work with inventory only
     if (!Player::IsInventoryPos(PlayerBag, PlayerSlot) && !(PlayerBag == NULL_BAG && PlayerSlot == NULL_SLOT))
     {
-        _player->SendEquipError(EQUIP_ERR_NONE, NULL, NULL);
+        _player->SendEquipError(EQUIP_ERR_NONE, nullptr, nullptr);
         return;
     }
 

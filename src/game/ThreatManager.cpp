@@ -222,15 +222,15 @@ void ThreatContainer::clearReferences()
 }
 
 //============================================================
-// Return the HostileReference of NULL, if not found
+// Return the HostileReference of nullptr, if not found
 HostileReference* ThreatContainer::getReferenceByTarget(Unit* pVictim)
 {
    if (!pVictim)
-        return NULL;
+        return nullptr;
 
     ObjectGuid guid = pVictim->GetObjectGuid();
     if (!guid)
-        return NULL;
+        return nullptr;
 
     for (ThreatList::const_iterator i = iThreatList.begin(); i != iThreatList.end(); ++i)
     {
@@ -238,7 +238,7 @@ HostileReference* ThreatContainer::getReferenceByTarget(Unit* pVictim)
             return *i;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //============================================================
@@ -313,7 +313,7 @@ void ThreatContainer::update()
 HostileReference* ThreatContainer::selectNextVictim(Unit* pUnitAttacker, HostileReference* pCurrentVictim)
 {
     Creature* pAttacker = (Creature*)pUnitAttacker;
-    HostileReference* pCurrentRef = NULL;
+    HostileReference* pCurrentRef = nullptr;
     bool found = false;
     bool onlySecondChoiceTargetsFound = false;
     bool checkedCurrentVictim = false;
@@ -355,7 +355,7 @@ HostileReference* ThreatContainer::selectNextVictim(Unit* pUnitAttacker, Hostile
 
             // current victim is a second choice target, so don't compare threat with it below
             if (pCurrentRef == pCurrentVictim)
-                pCurrentVictim = NULL;
+                pCurrentVictim = nullptr;
 
             // second choice targets are only handled threat dependend if we have only have second choice targets
             continue;
@@ -411,7 +411,7 @@ HostileReference* ThreatContainer::selectNextVictim(Unit* pUnitAttacker, Hostile
         ++iter;
     }
     if (!found)
-        pCurrentRef = NULL;
+        pCurrentRef = nullptr;
 
     return pCurrentRef;
 }
@@ -421,7 +421,7 @@ HostileReference* ThreatContainer::selectNextVictim(Unit* pUnitAttacker, Hostile
 //============================================================
 
 ThreatManager::ThreatManager(Unit& aOwner)
-: iCurrentVictim(NULL), owner(aOwner), iUpdateTimer(THREAT_UPDATE_INTERVAL), iUpdateNeed(false)
+: iCurrentVictim(nullptr), owner(aOwner), iUpdateTimer(THREAT_UPDATE_INTERVAL), iUpdateNeed(false)
 {
 }
 
@@ -431,7 +431,7 @@ void ThreatManager::clearReferences()
 {
     iThreatContainer.clearReferences();
     iThreatOfflineContainer.clearReferences();
-    iCurrentVictim = NULL;
+    iCurrentVictim = nullptr;
     iUpdateTimer.Reset(THREAT_UPDATE_INTERVAL);
     iUpdateNeed = false;
 }
@@ -526,11 +526,11 @@ Unit* ThreatManager::getHostileTarget()
     HostileReference* nextVictim = iThreatContainer.selectNextVictim(getOwner(), getCurrentVictim());
     setCurrentVictim(nextVictim);
     if (!getCurrentVictim())
-        return NULL;
+        return nullptr;
 
     Unit* pTarget = getCurrentVictim()->getTarget();
     if (!pTarget)
-        return NULL;
+        return nullptr;
 
     if (pTarget->GetTypeId() == TYPEID_PLAYER && pTarget->GetVehicle())
         pTarget = pTarget->GetVehicle()->GetBase();
@@ -584,7 +584,7 @@ void ThreatManager::tauntFadeOut(Unit *pTaunter)
 
 void ThreatManager::setCurrentVictim(HostileReference* pHostileReference)
 {
-    // including NULL==NULL case
+    // including nullptr==nullptr case
     if (pHostileReference == iCurrentVictim)
         return;
 
@@ -617,7 +617,7 @@ void ThreatManager::processThreatEvent(ThreatRefStatusChangeEvent* threatRefStat
             {
                 if (hostileReference == getCurrentVictim())
                 {
-                    setCurrentVictim(NULL);
+                    setCurrentVictim(nullptr);
                     setDirty(true);
                 }
                 if (isOwnerOnline())
@@ -638,7 +638,7 @@ void ThreatManager::processThreatEvent(ThreatRefStatusChangeEvent* threatRefStat
         case UEV_THREAT_REF_REMOVE_FROM_LIST:
             if (hostileReference == getCurrentVictim())
             {
-                setCurrentVictim(NULL);
+                setCurrentVictim(nullptr);
                 setDirty(true);
             }
 

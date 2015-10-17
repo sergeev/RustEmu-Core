@@ -170,17 +170,17 @@ void SOAPCommand::commandFinished(void* soapconnection, bool success)
 
 struct Namespace namespaces[] = {
   { // must be first
-    "SOAP-ENV", "http://schemas.xmlsoap.org/soap/envelope/", NULL, NULL
+    "SOAP-ENV", "http://schemas.xmlsoap.org/soap/envelope/", nullptr, nullptr
   }, {  // must be second
-    "SOAP-ENC", "http://schemas.xmlsoap.org/soap/encoding/", NULL, NULL
+    "SOAP-ENC", "http://schemas.xmlsoap.org/soap/encoding/", nullptr, nullptr
   }, {
     "xsi", "http://www.w3.org/1999/XMLSchema-instance",
-    "http://www.w3.org/*/XMLSchema-instance", NULL
+    "http://www.w3.org/*/XMLSchema-instance", nullptr
   }, {
     "xsd", "http://www.w3.org/1999/XMLSchema",
-    "http://www.w3.org/*/XMLSchema", NULL
+    "http://www.w3.org/*/XMLSchema", nullptr
   }, { // "ns1" namespace prefix
-    "ns1", "urn:MaNGOS", NULL, NULL
+    "ns1", "urn:MaNGOS", nullptr, nullptr
   },
-  { NULL, NULL, NULL, NULL }
+  { nullptr, nullptr, nullptr, nullptr }
 };

@@ -315,7 +315,7 @@ void WorldSession::HandleLogoutRequestOpcode( WorldPacket & /*recv_data*/ )
     data << uint32(0);
     data << uint8(0);
     SendPacket(&data);
-    LogoutRequest(time(NULL));
+    LogoutRequest(time(nullptr));
 }
 
 void WorldSession::HandlePlayerLogoutOpcode( WorldPacket & /*recv_data*/ )
@@ -372,7 +372,7 @@ void WorldSession::HandleTogglePvP( WorldPacket & recv_data )
     else
     {
         if (!GetPlayer()->pvpInfo.inHostileArea && GetPlayer()->IsPvP())
-            GetPlayer()->pvpInfo.endTimer = time(NULL);     // start toggle-off
+            GetPlayer()->pvpInfo.endTimer = time(nullptr);     // start toggle-off
     }
 }
 
@@ -648,7 +648,7 @@ void WorldSession::HandleReclaimCorpseOpcode(WorldPacket &recv_data)
         return;
 
     // prevent resurrect before 30-sec delay after body release not finished
-    if (corpse->GetGhostTime() + GetPlayer()->GetCorpseReclaimDelay(corpse->GetType()==CORPSE_RESURRECTABLE_PVP) > time(NULL))
+    if (corpse->GetGhostTime() + GetPlayer()->GetCorpseReclaimDelay(corpse->GetType()==CORPSE_RESURRECTABLE_PVP) > time(nullptr))
         return;
 
     if (!corpse->IsWithinDistInMap(GetPlayer(), CORPSE_RECLAIM_RADIUS, true))
@@ -752,7 +752,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket & recv_data)
             return;
     }
 
-    // NULL if all values default (non teleport trigger)
+    // nullptr if all values default (non teleport trigger)
     AreaTrigger const* at = sObjectMgr.GetAreaTrigger(Trigger_ID);
     if (!at)
         return;
@@ -1247,7 +1247,7 @@ void WorldSession::HandleFarSightOpcode( WorldPacket & recv_data )
     {
         case 0:
             DEBUG_LOG("WorldSession: CMSG_FAR_SIGHT removed FarSight from %s", GetPlayer()->GetGuidStr().c_str());
-            GetPlayer()->SetViewPoint(NULL, false, false);
+            GetPlayer()->SetViewPoint(nullptr, false, false);
             break;
         case 1:
             {
@@ -1497,7 +1497,7 @@ void WorldSession::HandleUITimeRequestOpcode(WorldPacket& /*recv_data*/)
     DEBUG_LOG("WORLD: SMSG_UI_TIME");
 
     WorldPacket data(SMSG_UI_TIME, 4);
-    data << uint32(time(NULL));
+    data << uint32(time(nullptr));
     SendPacket(&data);
 }
 
@@ -1544,7 +1544,7 @@ void WorldSession::HandleInstanceLockResponse(WorldPacket& recvPacket)
     else
         GetPlayer()->RepopAtGraveyard();
 
-    GetPlayer()->SetPendingBind(NULL, 0);
+    GetPlayer()->SetPendingBind(nullptr, 0);
 }
 
 void WorldSession::HandleSetSavedInstanceExtend(WorldPacket& recv_data)

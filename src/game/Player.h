@@ -240,7 +240,7 @@ struct PlayerClassLevelInfo
 
 struct PlayerClassInfo
 {
-    PlayerClassInfo() : levelInfo(NULL) { }
+    PlayerClassInfo() : levelInfo(nullptr) { }
 
     PlayerClassLevelInfo* levelInfo;                        //[level-1] 0..MaxPlayerLevel-1
 };
@@ -269,7 +269,7 @@ typedef std::list<PlayerCreateInfoAction> PlayerCreateInfoActions;
 struct PlayerInfo
 {
                                                             // existence checked by displayId != 0             // existence checked by displayId != 0
-    PlayerInfo() : displayId_m(0),displayId_f(0),levelInfo(NULL)
+    PlayerInfo() : displayId_m(0),displayId_f(0),levelInfo(nullptr)
     {
     }
 
@@ -298,7 +298,7 @@ struct PvPInfo
 
 struct DuelInfo
 {
-    DuelInfo() : initiator(NULL), opponent(NULL), startTimer(0), startTime(0), outOfBound(0) {}
+    DuelInfo() : initiator(nullptr), opponent(nullptr), startTimer(0), startTime(0), outOfBound(0) {}
 
     Player *initiator;
     Player *opponent;
@@ -365,7 +365,7 @@ struct Runes
 
 struct EnchantDuration
 {
-    EnchantDuration() : item(NULL), slot(MAX_ENCHANTMENT_SLOT), leftduration(0) {};
+    EnchantDuration() : item(nullptr), slot(MAX_ENCHANTMENT_SLOT), leftduration(0) {};
     EnchantDuration(Item * _item, EnchantmentSlot _slot, uint32 _leftduration) : item(_item), slot(_slot), leftduration(_leftduration) { MANGOS_ASSERT(item); };
 
     Item * item;
@@ -876,7 +876,7 @@ struct InstancePlayerBind
     /* permanent PlayerInstanceBinds are created in Raid/Heroic instances for players
        that aren't already permanently bound when they are inside when a boss is killed
        or when they enter an instance that the group leader is permanently bound to. */
-    InstancePlayerBind() : state(NULL), perm(false), extend(false) {}
+    InstancePlayerBind() : state(nullptr), perm(false), extend(false) {}
 };
 
 enum PlayerRestState
@@ -1010,7 +1010,7 @@ class TradeData
     public:                                                 // access functions
 
         void SetItem(TradeSlots slot, Item* item);
-        void SetSpell(uint32 spell_id, Item* castItem = NULL);
+        void SetSpell(uint32 spell_id, Item* castItem = nullptr);
         void SetMoney(uint32 money);
 
         void SetAccepted(bool state, bool crosssend = false);
@@ -1068,7 +1068,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         void SetSummonPoint(WorldLocation const& loc)
         {
-            m_summon_expire = time(NULL) + MAX_PLAYER_SUMMON_DELAY;
+            m_summon_expire = time(nullptr) + MAX_PLAYER_SUMMON_DELAY;
             m_summon_loc = loc;
         }
         void SummonIfPossible(bool agree);
@@ -1105,7 +1105,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         PlayerTaxi m_taxi;
         void InitTaxiNodesForLevel() { m_taxi.InitTaxiNodesForLevel(getRace(), getClass(), getLevel()); }
-        bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc = NULL, uint32 spellid = 0);
+        bool ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc = nullptr, uint32 spellid = 0);
         bool ActivateTaxiPathTo(uint32 taxi_path_id, uint32 spellid = 0);
                                                             // mount_id can be used in scripting calls
         void ContinueTaxiFlight();
@@ -1179,8 +1179,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         void SetVirtualItemSlot(uint8 i, Item* item);
         void SetSheath(SheathState sheathed);             // overwrite Unit version
         uint8 FindEquipSlot(ItemPrototype const* proto, uint32 slot, bool swap) const;
-        uint32 GetItemCount(uint32 item, bool inBankAlso = false, Item* skipItem = NULL) const;
-        uint32 GetItemCountWithLimitCategory(uint32 limitCategory, Item* skipItem = NULL) const;
+        uint32 GetItemCount(uint32 item, bool inBankAlso = false, Item* skipItem = nullptr) const;
+        uint32 GetItemCountWithLimitCategory(uint32 limitCategory, Item* skipItem = nullptr) const;
         Item* GetItemByGuid(ObjectGuid guid) const;
         Item* GetItemByEntry(uint32 item) const;            // only for special cases
         Item* GetItemByLimitedCategory(uint32 limitedCategory) const;
@@ -1204,7 +1204,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         uint8 GetBankBagSlotCount() const { return GetByteValue(PLAYER_BYTES_2, 2); }
         void SetBankBagSlotCount(uint8 count) { SetByteValue(PLAYER_BYTES_2, 2, count); }
         bool HasItemCount(uint32 item, uint32 count, bool inBankAlso = false) const;
-        bool HasItemFitToSpellReqirements(SpellEntry const* spellInfo, Item const* ignoreItem = NULL);
+        bool HasItemFitToSpellReqirements(SpellEntry const* spellInfo, Item const* ignoreItem = nullptr);
         bool HasItemFitToAreaTriggerReqirements(AreaTrigger const* at) const;
         bool HasHeroicKeyFitToAreaTriggerReqirements(AreaTrigger const* at) const;
         bool HasQuestFitToAreaTriggerReqirements(AreaTrigger const* at, bool isRegularTargetMap) const;
@@ -1212,18 +1212,18 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool CanNoReagentCast(SpellEntry const* spellInfo) const;
         bool HasItemOrGemWithIdEquipped(uint32 item, uint32 count, uint8 except_slot = NULL_SLOT) const;
         bool HasItemOrGemWithLimitCategoryEquipped(uint32 limitCategory, uint32 count, uint8 except_slot = NULL_SLOT) const;
-        InventoryResult CanTakeMoreSimilarItems(Item* pItem, uint32* itemLimitCategory = NULL) const { return _CanTakeMoreSimilarItems(pItem->GetEntry(), pItem->GetCount(), pItem, NULL, itemLimitCategory); }
-        InventoryResult CanTakeMoreSimilarItems(uint32 entry, uint32 count, uint32* itemLimitCategory = NULL) const { return _CanTakeMoreSimilarItems(entry, count, NULL, NULL, itemLimitCategory); }
-        InventoryResult CanStoreNewItem(uint8 bag, uint8 slot, ItemPosCountVec& dest, uint32 item, uint32 count, uint32* no_space_count = NULL) const
+        InventoryResult CanTakeMoreSimilarItems(Item* pItem, uint32* itemLimitCategory = nullptr) const { return _CanTakeMoreSimilarItems(pItem->GetEntry(), pItem->GetCount(), pItem, nullptr, itemLimitCategory); }
+        InventoryResult CanTakeMoreSimilarItems(uint32 entry, uint32 count, uint32* itemLimitCategory = nullptr) const { return _CanTakeMoreSimilarItems(entry, count, nullptr, nullptr, itemLimitCategory); }
+        InventoryResult CanStoreNewItem(uint8 bag, uint8 slot, ItemPosCountVec& dest, uint32 item, uint32 count, uint32* no_space_count = nullptr) const
         {
-            return _CanStoreItem(bag, slot, dest, item, count, NULL, false, no_space_count);
+            return _CanStoreItem(bag, slot, dest, item, count, nullptr, false, no_space_count);
         }
         InventoryResult CanStoreItem(uint8 bag, uint8 slot, ItemPosCountVec& dest, Item *pItem, bool swap = false) const
         {
             if (!pItem)
                 return EQUIP_ERR_ITEM_NOT_FOUND;
             uint32 count = pItem->GetCount();
-            return _CanStoreItem(bag, slot, dest, pItem->GetEntry(), count, pItem, swap, NULL);
+            return _CanStoreItem(bag, slot, dest, pItem->GetEntry(), count, pItem, swap, nullptr);
 
         }
         InventoryResult CanStoreItems(Item** pItem, int count, uint32* itemLimitCategory) const;
@@ -1240,7 +1240,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool HasItemTotemCategory(uint32 TotemCategory) const;
         InventoryResult CanUseItem(ItemPrototype const *pItem) const;
         InventoryResult CanUseAmmo(uint32 item) const;
-        Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update,int32 randomPropertyId = 0, AllowedLooterSet* allowedLooters = NULL);
+        Item* StoreNewItem(ItemPosCountVec const& pos, uint32 item, bool update,int32 randomPropertyId = 0, AllowedLooterSet* allowedLooters = nullptr);
         Item* StoreItem(ItemPosCountVec const& pos, Item *pItem, bool update);
         Item* EquipNewItem(uint16 pos, uint32 item, bool update);
         Item* EquipItem(uint16 pos, Item *pItem, bool update);
@@ -1253,8 +1253,8 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         Item* ConvertItem(Item* item, uint32 newItemId);
 
-        InventoryResult _CanTakeMoreSimilarItems(uint32 entry, uint32 count, Item* pItem, uint32* no_space_count = NULL, uint32* itemLimitCategory = NULL) const;
-        InventoryResult _CanStoreItem(uint8 bag, uint8 slot, ItemPosCountVec& dest, uint32 entry, uint32 count, Item *pItem = NULL, bool swap = false, uint32* no_space_count = NULL) const;
+        InventoryResult _CanTakeMoreSimilarItems(uint32 entry, uint32 count, Item* pItem, uint32* no_space_count = nullptr, uint32* itemLimitCategory = nullptr) const;
+        InventoryResult _CanStoreItem(uint8 bag, uint8 slot, ItemPosCountVec& dest, uint32 entry, uint32 count, Item *pItem = nullptr, bool swap = false, uint32* no_space_count = nullptr) const;
 
         void ApplyEquipCooldown(Item * pItem);
         void SetAmmo(uint32 item);
@@ -1288,7 +1288,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void TakeExtendedCost(uint32 extendedCostId, uint32 count);
 
         uint32 GetMaxKeyringSize() const { return KEYRING_SLOT_END-KEYRING_SLOT_START; }
-        void SendEquipError(InventoryResult msg, Item* pItem, Item *pItem2 = NULL, uint32 itemid = 0) const;
+        void SendEquipError(InventoryResult msg, Item* pItem, Item *pItem2 = nullptr, uint32 itemid = 0) const;
         void SendBuyError(BuyResult msg, Creature* pCreature, uint32 item, uint32 param);
         void SendSellError(SellResult msg, Creature* pCreature, ObjectGuid itemGuid, uint32 param);
         void AddWeaponProficiency(uint32 newflag) { m_WeaponProficiency |= newflag; }
@@ -1316,7 +1316,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         float GetReputationPriceDiscount(Creature const* pCreature) const;
 
-        Player* GetTrader() const { return m_trade ? m_trade->GetTrader() : NULL; }
+        Player* GetTrader() const { return m_trade ? m_trade->GetTrader() : nullptr; }
         TradeData* GetTradeData() const { return m_trade; }
         void TradeCancel(bool sendback);
 
@@ -1405,7 +1405,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool SatisfyQuestDay(Quest const* qInfo, bool msg) const;
         bool SatisfyQuestWeek(Quest const* qInfo, bool msg) const;
         bool SatisfyQuestMonth(Quest const* qInfo, bool msg) const;
-        bool CanGiveQuestSourceItemIfNeed(Quest const *pQuest, ItemPosCountVec* dest = NULL) const;
+        bool CanGiveQuestSourceItemIfNeed(Quest const *pQuest, ItemPosCountVec* dest = nullptr) const;
         void GiveQuestSourceItemIfNeed(Quest const *pQuest);
         bool TakeQuestSourceItem(uint32 quest_id, bool msg);
         bool GetQuestRewardStatus(uint32 quest_id) const;
@@ -1542,7 +1542,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
             // "At Gold Limit"
             if (GetMoney() >= MAX_MONEY_AMOUNT)
-                SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,NULL,NULL);
+                SendEquipError(EQUIP_ERR_TOO_MUCH_GOLD,nullptr,nullptr);
         }
         void SetMoney(uint32 value)
         {
@@ -1591,7 +1591,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         Item* GetMItem(uint32 id)
         {
             ItemMap::const_iterator itr = mMitems.find(id);
-            return itr != mMitems.end() ? itr->second : NULL;
+            return itr != mMitems.end() ? itr->second : nullptr;
         }
 
         void AddMItem(Item* it)
@@ -1616,7 +1616,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool HasSpell(uint32 spell) const;
         bool HasActiveSpell(uint32 spell) const;            // show in spellbook
         TrainerSpellState GetTrainerSpellState(TrainerSpell const* trainer_spell, uint32 reqLevel) const;
-        bool IsSpellFitByClassAndRace(uint32 spell_id, uint32* pReqlevel = NULL) const;
+        bool IsSpellFitByClassAndRace(uint32 spell_id, uint32* pReqlevel = nullptr) const;
         bool IsNeedCastPassiveLikeSpellAtLearn(SpellEntry const* spellInfo) const;
         bool IsImmuneToSpell(SpellEntry const* spellInfo, bool isFriendly) const;
         bool IsImmuneToSpellEffect(SpellEntry const* spellInfo, SpellEffectIndex index) const;
@@ -1687,7 +1687,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void _SaveSpellCooldowns();
         void SetLastPotionId(uint32 item_id) { m_lastPotionId = item_id; }
         uint32 GetLastPotionId() { return m_lastPotionId; }
-        void UpdatePotionCooldown(Spell* spell = NULL);
+        void UpdatePotionCooldown(Spell* spell = nullptr);
 
         void setResurrectRequestData(ObjectGuid guid, uint32 mapId, float X, float Y, float Z, uint32 health, uint32 mana)
         {
@@ -2214,7 +2214,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         /*********************************************************/
         /*** REFER-A-FRIEND SYSTEM ***/
         /*********************************************************/
-        void SendReferFriendError(ReferAFriendError err, Player * target = NULL);
+        void SendReferFriendError(ReferAFriendError err, Player * target = nullptr);
         ReferAFriendError GetReferFriendError(Player * target, bool summon);
         void AccessGrantableLevel(ObjectGuid guid) { m_curGrantLevelGiverGuid = guid; }
         bool IsAccessGrantableLevel(ObjectGuid guid) { return m_curGrantLevelGiverGuid == guid; }
@@ -2328,11 +2328,11 @@ class MANGOS_DLL_SPEC Player : public Unit
         void UnbindInstance(BoundInstancesMap::iterator &itr, Difficulty difficulty, bool unload = false);
         void BindToInstance();
         void SetPendingBind(DungeonPersistentState* save, uint32 bindTimer) { _pendingBind = save; _pendingBindTimer = bindTimer; }
-        bool HasPendingBind() const { return _pendingBind != NULL; }
+        bool HasPendingBind() const { return _pendingBind != nullptr; }
         InstancePlayerBind* BindToInstance(DungeonPersistentState *save, bool permanent, bool load = false, bool extend = false);
         void SendRaidInfo();
         void SendSavedInstances();
-        static void ConvertInstancesToGroup(Player *player, Group *group = NULL, ObjectGuid player_guid = ObjectGuid());
+        static void ConvertInstancesToGroup(Player *player, Group *group = nullptr, ObjectGuid player_guid = ObjectGuid());
         DungeonPersistentState* GetBoundInstanceSaveForSelfOrGroup(uint32 mapid);
 
         AreaLockStatus GetAreaLockStatus(uint32 mapId, Difficulty difficulty);
@@ -2418,7 +2418,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         AchievementMgr const& GetAchievementMgr() const { return m_achievementMgr; }
         AchievementMgr& GetAchievementMgr() { return m_achievementMgr; }
-        void UpdateAchievementCriteria(AchievementCriteriaTypes type, uint32 miscvalue1=0, uint32 miscvalue2=0, Unit *unit=NULL, uint32 time=0);
+        void UpdateAchievementCriteria(AchievementCriteriaTypes type, uint32 miscvalue1=0, uint32 miscvalue2=0, Unit *unit=nullptr, uint32 time=0);
         void CompletedAchievement(AchievementEntry const* entry);
         void CompletedAchievement(uint32 uiAchievementID);
         void StartTimedAchievementCriteria(AchievementCriteriaTypes type, uint32 timedRequirementId, time_t startTime = 0);

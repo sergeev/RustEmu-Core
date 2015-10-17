@@ -44,7 +44,7 @@ void WorldSession::HandleAttackSwingOpcode(WorldPacket& recv_data)
         sLog.outError("WORLD: Enemy %s not found", guid.GetString().c_str());
 
         // stop attack state at client
-        GetPlayer()->SendMeleeAttackStop(NULL);
+        GetPlayer()->SendMeleeAttackStop(nullptr);
         return;
     }
 

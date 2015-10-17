@@ -162,10 +162,10 @@ Unit* VehicleKit::GetPassenger(SeatId seatId) const
 {
     SeatMap::const_iterator seat = m_Seats.find(seatId);
     if (seat == m_Seats.end())
-        return NULL;
+        return nullptr;
 
     if (!seat->second.passengerGuid)
-        return NULL;
+        return nullptr;
     else
         return GetBase()->GetMap()->GetUnit(seat->second.passengerGuid);
 }
@@ -420,7 +420,7 @@ void VehicleKit::RemovePassenger(Unit* passenger, bool dismount /*false*/)
 
     if (seat->second.seatInfo->m_flags & SEAT_FLAG_CAN_CONTROL)
     {
-        passenger->SetCharm(NULL);
+        passenger->SetCharm(nullptr);
         passenger->RemoveSpellsCausingAura(SPELL_AURA_CONTROL_VEHICLE);
 
         GetBase()->SetCharmerGuid(ObjectGuid());
@@ -443,7 +443,7 @@ void VehicleKit::RemovePassenger(Unit* passenger, bool dismount /*false*/)
     if (passenger->GetTypeId() == TYPEID_PLAYER)
     {
         Player* player = (Player*)passenger;
-        player->SetViewPoint(NULL);
+        player->SetViewPoint(nullptr);
 
         passenger->SetRoot(false);
 
@@ -560,7 +560,7 @@ void VehicleKit::InstallAccessory(VehicleAccessory const* accessory)
         SetDestination(accessory->m_offsetX, accessory->m_offsetY, accessory->m_offsetZ, accessory->m_offsetO, 0.0f, 0.0f);
         int32 seatId = accessory->seatId + 1;
         summoned->SetPhaseMask(GetBase()->GetPhaseMask(), true);
-        summoned->CastCustomSpell(GetBase(), SPELL_RIDE_VEHICLE_HARDCODED, &seatId, &seatId, NULL, true);
+        summoned->CastCustomSpell(GetBase(), SPELL_RIDE_VEHICLE_HARDCODED, &seatId, &seatId, nullptr, true);
 
         SetDestination();
 
@@ -611,7 +611,7 @@ void VehicleKit::UpdateFreeSeatCount()
 VehicleSeatEntry const* VehicleKit::GetSeatInfo(Unit* passenger)
 {
     if (m_Seats.empty() || !passenger || passenger->GetMap() != GetBase()->GetMap())
-        return NULL;
+        return nullptr;
 
     return GetSeatInfo(passenger->GetObjectGuid());
 }
@@ -623,7 +623,7 @@ VehicleSeatEntry const* VehicleKit::GetSeatInfo(ObjectGuid const& guid)
         if (guid == itr->second.passengerGuid)
             return itr->second.seatInfo;
     }
-    return NULL;
+    return nullptr;
 }
 
 SeatId VehicleKit::GetSeatId(Unit* passenger)
@@ -793,7 +793,7 @@ bool VehicleSeat::IsProtectPassenger() const
 Aura* VehicleKit::GetControlAura(Unit* passenger)
 {
     if (!passenger)
-        return NULL;
+        return nullptr;
 
     ObjectGuid casterGuid = passenger->GetObjectGuid();
 
@@ -804,7 +804,7 @@ Aura* VehicleKit::GetControlAura(Unit* passenger)
             return (*itr)();
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void VehicleKit::DisableDismount(Unit* passenger)

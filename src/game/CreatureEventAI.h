@@ -147,18 +147,18 @@ enum Target
 
     TARGET_T_END,
 
-    // Vehicle-based targets (NULL if owner/target vehicle)
-    TARGET_T_VEHICLE_PASSENGER = 50,                        // First current passenger (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_0,                           // Passenger on seat 0 (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_1,                           // Passenger on seat 1 (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_2,                           // Passenger on seat 2 (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_3,                           // Passenger on seat 3 (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_4,                           // Passenger on seat 4 (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_5,                           // Passenger on seat 5 (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_6,                           // Passenger on seat 6 (NULL if not vehicle or not passenger)
-    TARGET_T_VEHICLE_PASSENGER_7,                           // Passenger on seat 7 (NULL if not vehicle or not passenger)
+    // Vehicle-based targets (nullptr if owner/target vehicle)
+    TARGET_T_VEHICLE_PASSENGER = 50,                        // First current passenger (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_0,                           // Passenger on seat 0 (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_1,                           // Passenger on seat 1 (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_2,                           // Passenger on seat 2 (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_3,                           // Passenger on seat 3 (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_4,                           // Passenger on seat 4 (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_5,                           // Passenger on seat 5 (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_6,                           // Passenger on seat 6 (nullptr if not vehicle or not passenger)
+    TARGET_T_VEHICLE_PASSENGER_7,                           // Passenger on seat 7 (nullptr if not vehicle or not passenger)
 
-    TARGET_T_CURRENT_VEHICLE,                               // Current owned vehicle (NULL if m_creature not seat on vehicle)
+    TARGET_T_CURRENT_VEHICLE,                               // Current owned vehicle (nullptr if m_creature not seat on vehicle)
 
     TARGET_T_VEHICLE_END
 };
@@ -663,7 +663,7 @@ class MANGOS_DLL_SPEC CreatureEventAI : public CreatureAI
 
         static int Permissible(const Creature*);
 
-        bool ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pActionInvoker = NULL, Creature* pAIEventSender = NULL);
+        bool ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pActionInvoker = nullptr, Creature* pAIEventSender = nullptr);
         void ProcessAction(CreatureEventAI_Action const& action, uint32 rnd, uint32 EventId, Unit* pActionInvoker, Creature* pAIEventSender);
         inline uint32 GetRandActionParam(uint32 rnd, uint32 param1, uint32 param2, uint32 param3);
         inline int32 GetRandActionParam(uint32 rnd, int32 param1, int32 param2, int32 param3);

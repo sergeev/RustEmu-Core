@@ -158,7 +158,7 @@ void WorldSession::HandleQuestgiverAcceptQuestOpcode(WorldPacket & recv_data)
             {
                 if (Group* pGroup = _player->GetGroup())
                 {
-                    for(GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+                    for(GroupReference *itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
                     {
                         Player* pPlayer = itr->getSource();
 
@@ -382,7 +382,7 @@ void WorldSession::HandleQuestConfirmAccept(WorldPacket& recv_data)
         }
 
         if (_player->CanAddQuest(pQuest, true))
-            _player->AddQuest(pQuest, NULL);                // NULL, this prevent DB script from duplicate running
+            _player->AddQuest(pQuest, nullptr);                // nullptr, this prevent DB script from duplicate running
 
         _player->ClearDividerGuid();
     }
@@ -435,7 +435,7 @@ void WorldSession::HandlePushQuestToParty(WorldPacket& recvPacket)
     {
         if (Group* pGroup = _player->GetGroup())
         {
-            for(GroupReference *itr = pGroup->GetFirstMember(); itr != NULL; itr = itr->next())
+            for(GroupReference *itr = pGroup->GetFirstMember(); itr != nullptr; itr = itr->next())
             {
                 Player *pPlayer = itr->getSource();
 
@@ -627,7 +627,7 @@ void WorldSession::HandleQuestgiverStatusMultipleQuery(WorldPacket& /*recvPacket
         if (guid.IsAnyTypeCreature())
         {
             // need also pet quests case support
-            Creature* questgiver = GetPlayer()->GetMap() ? GetPlayer()->GetMap()->GetAnyTypeCreature(guid) : NULL;
+            Creature* questgiver = GetPlayer()->GetMap() ? GetPlayer()->GetMap()->GetAnyTypeCreature(guid) : nullptr;
 
             if (!questgiver || questgiver->IsHostileTo(_player))
                 continue;
@@ -646,7 +646,7 @@ void WorldSession::HandleQuestgiverStatusMultipleQuery(WorldPacket& /*recvPacket
         }
         else if (guid.IsGameObject())
         {
-            GameObject* questgiver = GetPlayer()->GetMap() ? GetPlayer()->GetMap()->GetGameObject(guid) : NULL;
+            GameObject* questgiver = GetPlayer()->GetMap() ? GetPlayer()->GetMap()->GetGameObject(guid) : nullptr;
 
             if (!questgiver)
                 continue;

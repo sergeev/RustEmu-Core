@@ -274,8 +274,8 @@ bool ItemCanGoIntoBag(ItemPrototype const* proto, ItemPrototype const* pBagProto
 class MANGOS_DLL_SPEC Item : public Object
 {
     public:
-        static Item* CreateItem(uint32 item, uint32 count, Player const* player = NULL, uint32 randomPropertyId = 0);
-        Item* CloneItem(uint32 count, Player const* player = NULL) const;
+        static Item* CreateItem(uint32 item, uint32 count, Player const* player = nullptr, uint32 randomPropertyId = 0);
+        Item* CloneItem(uint32 count, Player const* player = nullptr) const;
 
         Item();
 
@@ -332,7 +332,7 @@ class MANGOS_DLL_SPEC Item : public Object
         uint16 GetPos() const { return uint16(GetBagSlot()) << 8 | GetSlot(); }
         void SetContainer(Bag* container) { m_container = container; }
 
-        bool IsInBag() const { return m_container != NULL; }
+        bool IsInBag() const { return m_container != nullptr; }
         bool IsEquipped() const;
 
         uint32 GetSkill();
@@ -374,7 +374,7 @@ class MANGOS_DLL_SPEC Item : public Object
 
         // Update States
         ItemUpdateState GetState() const { return m_state; }
-        void SetState(ItemUpdateState state, Player* forplayer = NULL);
+        void SetState(ItemUpdateState state, Player* forplayer = nullptr);
         void AddToUpdateQueueOf(Player* player);
         void RemoveFromUpdateQueueOf(Player* player);
         bool IsInUpdateQueue() const { return m_queuePos != -1; }

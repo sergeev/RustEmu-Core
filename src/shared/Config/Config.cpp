@@ -85,7 +85,7 @@ std::string const* Config::GetValue(const char* name) const
 {
     std::string key = m_SectionName + "." + name;
     Values::const_iterator itr = m_values.find(key);
-    return itr != m_values.end() ? &itr->second : NULL;
+    return itr != m_values.end() ? &itr->second : nullptr;
 }
 
 std::string Config::GetStringDefault(const char* name, const char* def) const

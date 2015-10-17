@@ -76,7 +76,7 @@ void Camera::SetView(WorldObject* obj, bool update_far_sight_field /*= true*/)
     if (obj->GetObjectGuid() == m_sourceGuid)
         return;
 
-    WorldObject* m_source = IsInitialized() ? GetBody() : NULL;
+    WorldObject* m_source = IsInitialized() ? GetBody() : nullptr;
 
     if (IsInitialized() && !m_owner.IsInMap(obj))
     {

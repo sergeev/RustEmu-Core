@@ -43,13 +43,13 @@ GridMap::GridMap()
 
     // Area data
     m_gridArea = 0;
-    m_area_map = NULL;
+    m_area_map = nullptr;
 
     // Height level data
     m_gridHeight = INVALID_HEIGHT_VALUE;
     m_gridGetHeight = &GridMap::getHeightFromFlat;
-    m_V9 = NULL;
-    m_V8 = NULL;
+    m_V9 = nullptr;
+    m_V8 = nullptr;
 
     // Liquid data
     m_liquidType = 0;
@@ -58,9 +58,9 @@ GridMap::GridMap()
     m_liquid_width = 0;
     m_liquid_height = 0;
     m_liquidLevel = INVALID_HEIGHT_VALUE;
-    m_liquidEntry = NULL;
-    m_liquidFlags = NULL;
-    m_liquid_map = NULL;
+    m_liquidEntry = nullptr;
+    m_liquidFlags = nullptr;
+    m_liquid_map = nullptr;
 }
 
 GridMap::~GridMap()
@@ -137,12 +137,12 @@ void GridMap::unloadData()
     if (m_liquid_map)
         delete[] m_liquid_map;
 
-    m_area_map = NULL;
-    m_V9 = NULL;
-    m_V8 = NULL;
-    m_liquidEntry = NULL;
-    m_liquidFlags = NULL;
-    m_liquid_map = NULL;
+    m_area_map = nullptr;
+    m_V9 = nullptr;
+    m_V8 = nullptr;
+    m_liquidEntry = nullptr;
+    m_liquidFlags = nullptr;
+    m_liquid_map = nullptr;
     m_gridGetHeight = &GridMap::getHeightFromFlat;
 }
 
@@ -668,7 +668,7 @@ TerrainInfo::TerrainInfo(uint32 mapid) : m_mapId(mapid)
     {
         for (int i = 0; i < MAX_NUMBER_OF_GRIDS; ++i)
         {
-            m_GridMaps[i][k] = NULL;
+            m_GridMaps[i][k] = nullptr;
             m_GridRef[i][k] = 0;
         }
     }
@@ -730,7 +730,7 @@ void TerrainInfo::CleanUpGrids(const uint32 /*diff*/)
             // delete those GridMap objects which have refcount = 0
             if (pMap && iRef == 0)
             {
-                m_GridMaps[x][y] = NULL;
+                m_GridMaps[x][y] = nullptr;
                 // delete grid data if reference count == 0
                 pMap->unloadData();
                 delete pMap;
@@ -1075,7 +1075,7 @@ bool TerrainInfo::IsInWater(float x, float y, float pZ, GridMapLiquidData* data,
     return false;
 }
 
-bool TerrainInfo::IsAboveWater(float x, float y, float z, float* pWaterZ/*= NULL*/) const
+bool TerrainInfo::IsAboveWater(float x, float y, float z, float* pWaterZ/*= nullptr*/) const
 {
     if (const_cast<TerrainInfo*>(this)->GetGrid(x, y))
     {
@@ -1092,7 +1092,7 @@ bool TerrainInfo::IsAboveWater(float x, float y, float z, float* pWaterZ/*= NULL
     return false;
 }
 
-bool TerrainInfo::IsUnderWater(float x, float y, float z, float* pWaterZ/*= NULL*/) const
+bool TerrainInfo::IsUnderWater(float x, float y, float z, float* pWaterZ/*= nullptr*/) const
 {
     if (const_cast<TerrainInfo*>(this)->GetGrid(x, y))
     {
@@ -1121,7 +1121,7 @@ bool TerrainInfo::IsUnderWater(float x, float y, float z, float* pWaterZ/*= NULL
 *
 * @return           calculated z coordinate
 */
-float TerrainInfo::GetWaterOrGroundLevel(float x, float y, float z, float* pGround /*= NULL*/, bool swim /*= false*/) const
+float TerrainInfo::GetWaterOrGroundLevel(float x, float y, float z, float* pGround /*= nullptr*/, bool swim /*= false*/) const
 {
     if (const_cast<TerrainInfo*>(this)->GetGrid(x, y))
     {
@@ -1149,7 +1149,7 @@ GridMap* TerrainInfo::GetGrid(const float x, const float y)
 
     if (gx >= MAX_NUMBER_OF_GRIDS || gy >= MAX_NUMBER_OF_GRIDS ||
         gx < 0 || gy < 0)
-        return NULL;
+        return nullptr;
 
     // quick check if GridMap already loaded
     GridMap* pMap = m_GridMaps[gx][gy];
@@ -1211,7 +1211,7 @@ GridMap* TerrainInfo::LoadMapAndVMap(const uint32 x, const uint32 y)
     return  m_GridMaps[x][y];
 }
 
-float TerrainInfo::GetWaterLevel(float x, float y, float z, float* pGround /*= NULL*/) const
+float TerrainInfo::GetWaterLevel(float x, float y, float z, float* pGround /*= nullptr*/) const
 {
     if (const_cast<TerrainInfo*>(this)->GetGrid(x, y))
     {
@@ -1252,7 +1252,7 @@ TerrainManager::~TerrainManager()
 
 TerrainInfo* TerrainManager::LoadTerrain(uint32 const& mapId)
 {
-    TerrainInfo* ptr = NULL;
+    TerrainInfo* ptr = nullptr;
     TerrainDataMap::const_iterator iter = i_TerrainMap.find(mapId);
     if (iter == i_TerrainMap.end())
     {

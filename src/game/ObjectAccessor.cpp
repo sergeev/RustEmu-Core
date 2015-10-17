@@ -49,13 +49,13 @@ Unit*
 ObjectAccessor::GetUnit(WorldObject const& u, ObjectGuid guid)
 {
     if (!guid)
-        return NULL;
+        return nullptr;
 
     if (guid.IsPlayer())
         return FindPlayer(guid);
 
     if (!u.IsInWorld())
-        return NULL;
+        return nullptr;
 
     return u.GetMap()->GetAnyTypeCreature(guid);
 }
@@ -64,9 +64,9 @@ Corpse* ObjectAccessor::GetCorpseInMap(ObjectGuid guid, uint32 mapid)
 {
     Corpse* ret = HashMapHolder<Corpse>::Find(guid);
     if (!ret)
-        return NULL;
+        return nullptr;
     if (ret->GetMapId() != mapid)
-        return NULL;
+        return nullptr;
 
     return ret;
 }
@@ -74,11 +74,11 @@ Corpse* ObjectAccessor::GetCorpseInMap(ObjectGuid guid, uint32 mapid)
 Player* ObjectAccessor::FindPlayer(ObjectGuid guid, bool inWorld /*= true*/)
 {
     if (!guid)
-        return NULL;
+        return nullptr;
 
     Player* plr = HashMapHolder<Player>::Find(guid);
     if (!plr || (!plr->IsInWorld() && inWorld))
-        return NULL;
+        return nullptr;
 
     return plr;
 }
@@ -91,7 +91,7 @@ Player* ObjectAccessor::FindPlayerByName(const char* name)
         if (iter->second->IsInWorld() && (::strcmp(name, iter->second->GetName()) == 0))
             return iter->second;
 
-    return NULL;
+    return nullptr;
 }
 
 void
@@ -120,7 +120,7 @@ ObjectAccessor::GetCorpseForPlayerGUID(ObjectGuid guid)
 
     Player2CorpsesMapType::iterator iter = i_player2corpse.find(guid);
     if (iter == i_player2corpse.end())
-        return NULL;
+        return nullptr;
 
     MANGOS_ASSERT(iter->second->GetType() != CORPSE_BONES);
 
@@ -197,7 +197,7 @@ ObjectAccessor::ConvertCorpseForPlayer(ObjectGuid player_guid, bool insignia)
         // in fact this function is called from several places
         // even when player doesn't have a corpse, not an error
         // sLog.outError("Try remove corpse that not in map for GUID %ul", player_guid);
-        return NULL;
+        return nullptr;
     }
 
     DEBUG_LOG("Deleting Corpse and spawning bones.");
@@ -214,7 +214,7 @@ ObjectAccessor::ConvertCorpseForPlayer(ObjectGuid player_guid, bool insignia)
     // remove corpse from DB
     corpse->DeleteFromDB();
 
-    Corpse* bones = NULL;
+    Corpse* bones = nullptr;
     // create the bones only if the map and the grid is loaded at the corpse's location
     // ignore bones creating option in case insignia
     if (map && (insignia ||
@@ -255,7 +255,7 @@ ObjectAccessor::ConvertCorpseForPlayer(ObjectGuid player_guid, bool insignia)
 
 void ObjectAccessor::RemoveOldCorpses()
 {
-    time_t now = time(NULL);
+    time_t now = time(nullptr);
     Player2CorpsesMapType::iterator next;
     for (Player2CorpsesMapType::iterator itr = i_player2corpse.begin(); itr != i_player2corpse.end(); itr = next)
     {

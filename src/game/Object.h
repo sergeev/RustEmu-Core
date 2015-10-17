@@ -172,9 +172,9 @@ class MANGOS_DLL_SPEC Object
         void MarkForClientUpdate();
         void SendForcedObjectUpdate();
 
-        virtual GuidSet const* GetObjectsUpdateQueue() { return NULL; };
+        virtual GuidSet const* GetObjectsUpdateQueue() { return nullptr; };
         bool IsMarkedForClientUpdate() const { return m_objectUpdated; };
-        virtual Object* GetDependentObject(ObjectGuid const& /*guid*/) { return NULL; };
+        virtual Object* GetDependentObject(ObjectGuid const& /*guid*/) { return nullptr; };
         virtual void RemoveUpdateObject(ObjectGuid const& /*guid*/) {};
         virtual void AddUpdateObject(ObjectGuid const& /*guid*/) {};
 
@@ -471,13 +471,13 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         void RemoveFromWorld(bool remove) override;
 
         TransportInfo* GetTransportInfo() const { return m_transportInfo; }
-        bool IsBoarded() const { return m_transportInfo != NULL; }
+        bool IsBoarded() const { return m_transportInfo != nullptr; }
         void SetTransportInfo(TransportInfo* transportInfo) { m_transportInfo = transportInfo; }
 
         virtual bool IsTransport() const { return false; };
         virtual bool IsMOTransport() const { return false; };
         TransportBase* GetTransportBase();
-        virtual TransportKit* GetTransportKit() { return NULL; };
+        virtual TransportKit* GetTransportKit() { return nullptr; };
 
         void Relocate(WorldLocation const& location);
         void Relocate(Position const& position);
@@ -519,15 +519,15 @@ class MANGOS_DLL_SPEC WorldObject : public Object
          * @param bounding_radius   -           radius for the searcher
          * @param distance2d        -           range in which to find a free spot. Default = 0.0f (which usually means the units will have contact)
          * @param angle             -           direction in which to look for a free spot. Default = 0.0f (direction in which 'this' is looking
-         * @param obj               -           for whom to look for a spot. Default = NULL
+         * @param obj               -           for whom to look for a spot. Default = nullptr
          */
-        void GetClosePoint(float& x, float& y, float& z, float bounding_radius, float distance2d = 0.0f, float angle = 0.0f, const WorldObject* obj = NULL) const
+        void GetClosePoint(float& x, float& y, float& z, float bounding_radius, float distance2d = 0.0f, float angle = 0.0f, const WorldObject* obj = nullptr) const
         {
             // angle calculated from current orientation
             GetNearPoint(obj, x, y, z, bounding_radius, distance2d + GetObjectBoundingRadius() + bounding_radius, GetOrientation() + angle);
         }
 
-        WorldLocation GetClosePoint(float bounding_radius, float distance2d = 0.0f, float angle = 0.0f, WorldObject const* obj = NULL)
+        WorldLocation GetClosePoint(float bounding_radius, float distance2d = 0.0f, float angle = 0.0f, WorldObject const* obj = nullptr)
         {
             WorldLocation loc = GetPosition();
             GetNearPoint(obj, loc.x, loc.y, loc.z, bounding_radius, distance2d, loc.o + angle);
@@ -549,9 +549,9 @@ class MANGOS_DLL_SPEC WorldObject : public Object
 
         bool IsPositionValid() const;
         void UpdateGroundPositionZ(float x, float y, float &z) const;
-        void UpdateAllowedPositionZ(float x, float y, float& z, Map* atMap = NULL) const;
+        void UpdateAllowedPositionZ(float x, float y, float& z, Map* atMap = nullptr) const;
 
-        void GetRandomPoint(float x, float y, float z, float distance, float& rand_x, float& rand_y, float& rand_z, float minDist = 0.0f, float const* ori = NULL) const;
+        void GetRandomPoint(float x, float y, float z, float distance, float& rand_x, float& rand_y, float& rand_z, float minDist = 0.0f, float const* ori = nullptr) const;
 
         uint32 GetMapId() const { return m_position.GetMapId(); }
         uint32 GetInstanceId() const { return m_position.GetInstanceId(); }
@@ -625,15 +625,15 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         virtual void SendMessageToSetInRange(WorldPacket* data, float dist, bool self) const;
         void SendMessageToSetExcept(WorldPacket* data, Player const* skipped_receiver) const;
 
-        void MonsterSay(const char* text, uint32 language, Unit const* target = NULL) const;
-        void MonsterYell(const char* text, uint32 language, Unit const* target = NULL) const;
+        void MonsterSay(const char* text, uint32 language, Unit const* target = nullptr) const;
+        void MonsterYell(const char* text, uint32 language, Unit const* target = nullptr) const;
         void MonsterTextEmote(const char* text, Unit const* target, bool IsBossEmote = false) const;
         void MonsterWhisper(const char* text, Unit const* target, bool IsBossWhisper = false) const;
         void MonsterText(MangosStringLocale const* textData, Unit const* target) const;
 
-        void PlayDistanceSound(uint32 sound_id, Player const* target = NULL) const;
-        void PlayDirectSound(uint32 sound_id, Player const* target = NULL) const;
-        void PlayMusic(uint32 sound_id, Player const* target = NULL) const;
+        void PlayDistanceSound(uint32 sound_id, Player const* target = nullptr) const;
+        void PlayDirectSound(uint32 sound_id, Player const* target = nullptr) const;
+        void PlayMusic(uint32 sound_id, Player const* target = nullptr) const;
 
         void SendObjectDeSpawnAnim(ObjectGuid guid);
         void SendGameObjectCustomAnim(ObjectGuid guid, uint32 animId = 0);
@@ -658,7 +658,7 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         virtual void SetMap(Map* map);
         Map* GetMap() const { return m_currMap; }
         //used to check all object's GetMap() calls when object is not in world!
-        virtual void ResetMap() { m_currMap = NULL; }
+        virtual void ResetMap() { m_currMap = nullptr; }
 
         //obtain terrain data for map where this object belong...
         TerrainInfo const* GetTerrain() const;

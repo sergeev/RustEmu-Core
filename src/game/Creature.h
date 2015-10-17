@@ -371,7 +371,7 @@ struct VendorItemData
 
     VendorItem* GetItem(uint32 slot) const
     {
-        if (slot >= m_items.size()) return NULL;
+        if (slot >= m_items.size()) return nullptr;
         return m_items[slot];
     }
     bool Empty() const { return m_items.empty(); }
@@ -394,7 +394,7 @@ struct VendorItemData
 struct VendorItemCount
 {
     explicit VendorItemCount(uint32 _item, uint32 _count)
-        : itemId(_item), count(_count), lastIncrementTime(time(NULL)) {}
+        : itemId(_item), count(_count), lastIncrementTime(time(nullptr)) {}
 
     uint32 itemId;
     uint32 count;
@@ -456,7 +456,7 @@ public:
     // exactly coordinates used
     CreatureCreatePos(Map* map, float x, float y, float z, float o, uint32 phaseMask)
         : m_pos(map->GetId(), x, y, z, o, phaseMask, map->GetInstanceId()), m_map(map),
-        m_closeObject(NULL), m_angle(0.0f), m_dist(0.0f)
+        m_closeObject(nullptr), m_angle(0.0f), m_dist(0.0f)
     {
     }
     // if dist == 0.0f -> exactly object coordinates used, in other case close point to object (CONTACT_DIST can be used as minimal distances)
@@ -468,7 +468,7 @@ public:
     }
     // Constructor for use with casttarget
     CreatureCreatePos(Map* map, WorldLocation const& loc)
-        : m_pos(loc), m_map(map), m_closeObject(NULL), m_angle(0.0f), m_dist(0.0f)
+        : m_pos(loc), m_map(map), m_closeObject(nullptr), m_angle(0.0f), m_dist(0.0f)
     {
     }
 public:
@@ -519,7 +519,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
 
         void AddToWorld() override;
 
-        bool Create(uint32 guidlow, CreatureCreatePos& cPos, CreatureInfo const* cinfo, Team team = TEAM_NONE, const CreatureData* data = NULL, GameEventCreatureData const* eventData = NULL);
+        bool Create(uint32 guidlow, CreatureCreatePos& cPos, CreatureInfo const* cinfo, Team team = TEAM_NONE, const CreatureData* data = nullptr, GameEventCreatureData const* eventData = nullptr);
         bool LoadCreatureAddon(bool reload);
         void SelectLevel(const CreatureInfo* cinfo, float percentHealth = 100.0f, float percentMana = 100.0f);
         void LoadEquipment(uint32 equip_entry, bool force = false);
@@ -532,7 +532,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
 
         virtual void RegenerateAll(uint32 update_diff);
 
-        void GetRespawnCoord(float& x, float& y, float& z, float* ori = NULL, float* dist = NULL) const;
+        void GetRespawnCoord(float& x, float& y, float& z, float* ori = nullptr, float* dist = nullptr) const;
         void SetSummonPoint(CreatureCreatePos const& pos) { m_respawnPos = pos.m_pos; }
         void SetRespawnCoord(float x, float y, float z, float ori) { m_respawnPos.x = x; m_respawnPos.y = y; m_respawnPos.z = z; m_respawnPos.o = ori; }
         void SetRespawnCoord(CreatureCreatePos const& pos) { m_respawnPos = pos.m_pos; }
@@ -623,7 +623,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
         bool HasSpell(uint32 spellId) const;
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs) override;
 
-        bool UpdateEntry(uint32 entry, Team team = ALLIANCE, const CreatureData* data = NULL, GameEventCreatureData const* eventData = NULL, bool preserveHPAndPower = true);
+        bool UpdateEntry(uint32 entry, Team team = ALLIANCE, const CreatureData* data = nullptr, GameEventCreatureData const* eventData = nullptr, bool preserveHPAndPower = true);
 
         void ApplyGameEventSpells(GameEventCreatureData const* eventData, bool activated);
         bool UpdateStats(Stats stat) override;
@@ -651,7 +651,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
         CreatureInfo const* GetCreatureInfo() const { return m_creatureInfo; }
         CreatureDataAddon const* GetCreatureAddon() const;
 
-        static uint32 ChooseDisplayId(const CreatureInfo* cinfo, const CreatureData* data = NULL, GameEventCreatureData const* eventData = NULL);
+        static uint32 ChooseDisplayId(const CreatureInfo* cinfo, const CreatureData* data = nullptr, GameEventCreatureData const* eventData = nullptr);
         void SetDisplayId(uint32 modelId);
 
         std::string GetAIName() const;
@@ -728,7 +728,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
 
         time_t const& GetRespawnTime() const { return m_respawnTime; }
         time_t GetRespawnTimeEx() const;
-        void SetRespawnTime(uint32 respawn) { m_respawnTime = respawn ? time(NULL) + respawn : 0; }
+        void SetRespawnTime(uint32 respawn) { m_respawnTime = respawn ? time(nullptr) + respawn : 0; }
         void Respawn();
         void SaveRespawnTime();
 
@@ -749,7 +749,7 @@ class MANGOS_DLL_SPEC Creature : public Unit
         void SetInCombatWithZone();
 
         Unit* SelectAttackingTarget(AttackingTarget target, uint32 position, uint32 uiSpellEntry, uint32 selectFlags = 0) const;
-        Unit* SelectAttackingTarget(AttackingTarget target, uint32 position, SpellEntry const* pSpellInfo = NULL, uint32 selectFlags = 0) const;
+        Unit* SelectAttackingTarget(AttackingTarget target, uint32 position, SpellEntry const* pSpellInfo = nullptr, uint32 selectFlags = 0) const;
 
         virtual Unit* SelectPreferredTargetForSpell(SpellEntry const* spellInfo);
 
@@ -788,8 +788,8 @@ class MANGOS_DLL_SPEC Creature : public Unit
     protected:
         bool MeetsSelectAttackingRequirement(Unit* pTarget, SpellEntry const* pSpellInfo, uint32 selectFlags) const;
 
-        bool CreateFromProto(uint32 guidlow, CreatureInfo const* cinfo, Team team, const CreatureData* data = NULL, GameEventCreatureData const* eventData = NULL);
-        bool InitEntry(uint32 entry, const CreatureData* data = NULL, GameEventCreatureData const* eventData = NULL);
+        bool CreateFromProto(uint32 guidlow, CreatureInfo const* cinfo, Team team, const CreatureData* data = nullptr, GameEventCreatureData const* eventData = nullptr);
+        bool InitEntry(uint32 entry, const CreatureData* data = nullptr, GameEventCreatureData const* eventData = nullptr);
 
         uint32 m_groupLootTimer;                            // (msecs)timer used for group loot
         uint32 m_groupLootId;                               // used to find group which is looting corpse

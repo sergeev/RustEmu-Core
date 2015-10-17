@@ -261,12 +261,12 @@ int HandleProgramArguments(int argc, char** argv)
     if (!serviceDaemonMode.empty())
     {
 #ifdef WIN32
-        char const* const serviceModes[] = { "run", "install", "uninstall", NULL };
+        char const* const serviceModes[] = { "run", "install", "uninstall", nullptr };
 #else
-        char const* const serviceModes[] = { "run", "stop", NULL };
+        char const* const serviceModes[] = { "run", "stop", nullptr };
 #endif
         char const* const* mode_ptr = &serviceModes[0];
-        for (; *mode_ptr != NULL; ++mode_ptr)
+        for (; *mode_ptr != nullptr; ++mode_ptr)
             if (*mode_ptr == serviceDaemonMode)
                 break;
 
@@ -502,7 +502,7 @@ extern int main(int argc, char** argv)
     }
 
     // Start up freeze catcher thread
-    MaNGOS::Thread* freeze_thread = NULL;
+    MaNGOS::Thread* freeze_thread = nullptr;
     if (uint32 freeze_delay = sConfig.GetIntDefault("MaxCoreStuckTime", 0))
     {
         FreezeDetectorRunnable* fdr = new FreezeDetectorRunnable();
@@ -527,7 +527,7 @@ extern int main(int argc, char** argv)
     WorldDatabase.ThreadStart();                            // let thread do safe mySQL requests (one connection call enough)
     sWorld.InitResultQueue();
 
-    MaNGOS::Thread* cliThread = NULL;
+    MaNGOS::Thread* cliThread = nullptr;
     
 #ifdef WIN32
     if (sConfig.GetBoolDefault("Console.Enable", true) && (serviceStatus == -1)/* need disable console in service mode*/)

@@ -327,13 +327,13 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
     PetNameInvalidReason res = ObjectMgr::CheckPetName(name);
     if (res != PET_NAME_SUCCESS)
     {
-        SendPetNameInvalid(res, name, NULL);
+        SendPetNameInvalid(res, name, nullptr);
         return;
     }
 
     if (sObjectMgr.IsReservedName(name))
     {
-        SendPetNameInvalid(PET_NAME_RESERVED, name, NULL);
+        SendPetNameInvalid(PET_NAME_RESERVED, name, nullptr);
         return;
     }
 
@@ -386,7 +386,7 @@ void WorldSession::HandlePetRename(WorldPacket& recv_data)
 
     CharacterDatabase.CommitTransaction();
 
-    pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(time(NULL)));
+    pet->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, uint32(time(nullptr)));
 }
 
 void WorldSession::HandlePetAbandon(WorldPacket& recv_data)

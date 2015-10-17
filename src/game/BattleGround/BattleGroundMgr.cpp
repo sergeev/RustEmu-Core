@@ -147,7 +147,7 @@ bool BattleGroundQueue::SelectionPool::AddGroup(GroupQueueInfo* ginfo, uint32 de
 /***               BATTLEGROUND QUEUES                 ***/
 /*********************************************************/
 
-// add group or player (grp == NULL) to bg queue with the given leader and bg specifications
+// add group or player (grp == nullptr) to bg queue with the given leader and bg specifications
 GroupQueueInfo* BattleGroundQueue::AddGroup(Player* leader, Group* grp, BattleGroundTypeId BgTypeId, PvPDifficultyEntry const*  bracketEntry, ArenaType arenaType, bool isRated, bool isPremade, uint32 arenaRating, uint32 arenateamid)
 {
     BattleGroundBracketId bracketId =  bracketEntry->GetBracketId();
@@ -190,7 +190,7 @@ GroupQueueInfo* BattleGroundQueue::AddGroup(Player* leader, Group* grp, BattleGr
         // ACE_Guard<ACE_Recursive_Thread_Mutex> guard(m_Lock);
         if (grp)
         {
-            for (GroupReference* itr = grp->GetFirstMember(); itr != NULL; itr = itr->next())
+            for (GroupReference* itr = grp->GetFirstMember(); itr != nullptr; itr = itr->next())
             {
                 Player* member = itr->getSource();
                 if (!member)
@@ -908,8 +908,8 @@ void BattleGroundQueue::Update(BattleGroundTypeId bgTypeId, BattleGroundBracketI
         // 0 is on (automatic update call) and we must set it to team's with longest wait time
         if (!arenaRating)
         {
-            GroupQueueInfo* front1 = NULL;
-            GroupQueueInfo* front2 = NULL;
+            GroupQueueInfo* front1 = nullptr;
+            GroupQueueInfo* front2 = nullptr;
             if (!m_QueuedGroups[bracket_id][BG_QUEUE_PREMADE_ALLIANCE].empty())
             {
                 front1 = m_QueuedGroups[bracket_id][BG_QUEUE_PREMADE_ALLIANCE].front();
@@ -1347,7 +1347,7 @@ BattleGround* BattleGroundMgr::GetBattleGroundThroughClientInstance(uint32 insta
     // SMSG_BATTLEFIELD_LIST we need to find the battleground with this clientinstance-id
     BattleGround* bg = GetBattleGroundTemplate(bgTypeId);
     if (!bg)
-        return NULL;
+        return nullptr;
 
     if (bg->isArena())
         return GetBattleGround(instanceId, bgTypeId);
@@ -1357,7 +1357,7 @@ BattleGround* BattleGroundMgr::GetBattleGroundThroughClientInstance(uint32 insta
         if (itr->second->GetClientInstanceID() == instanceId)
             return itr->second;
     }
-    return NULL;
+    return nullptr;
 }
 
 BattleGround* BattleGroundMgr::GetBattleGround(uint32 InstanceID, BattleGroundTypeId bgTypeId)
@@ -1372,10 +1372,10 @@ BattleGround* BattleGroundMgr::GetBattleGround(uint32 InstanceID, BattleGroundTy
             if (itr != m_BattleGrounds[i].end())
                 return itr->second;
         }
-        return NULL;
+        return nullptr;
     }
     itr = m_BattleGrounds[bgTypeId].find(InstanceID);
-    return ((itr != m_BattleGrounds[bgTypeId].end()) ? itr->second : NULL);
+    return ((itr != m_BattleGrounds[bgTypeId].end()) ? itr->second : nullptr);
 }
 
 BattleGround* BattleGroundMgr::GetBattleGroundTemplate(BattleGroundTypeId bgTypeId)
@@ -1415,7 +1415,7 @@ BattleGround* BattleGroundMgr::CreateNewBattleGround(BattleGroundTypeId bgTypeId
     if (!bg_template)
     {
         sLog.outError("BattleGround: CreateNewBattleGround - bg template not found for %u", bgTypeId);
-        return NULL;
+        return nullptr;
     }
 
     bool isArena = false;
@@ -1429,7 +1429,7 @@ BattleGround* BattleGroundMgr::CreateNewBattleGround(BattleGroundTypeId bgTypeId
         if (!bg_template)
         {
             sLog.outError("BattleGround: CreateNewBattleGround - bg template not found for %u", bgTypeId);
-            return NULL;
+            return nullptr;
         }
         isArena = true;
     }
@@ -1445,12 +1445,12 @@ BattleGround* BattleGroundMgr::CreateNewBattleGround(BattleGroundTypeId bgTypeId
         if (!bg_template)
         {
             sLog.outError("BattleGround: CreateNewBattleGround - bg template not found for %u", bgTypeId);
-            return NULL;
+            return nullptr;
         }
         isRandom = true;
     }
 
-    BattleGround* bg = NULL;
+    BattleGround* bg = nullptr;
     // create a copy of the BG template
     switch (bgTypeId)
     {
@@ -1527,7 +1527,7 @@ BattleGround* BattleGroundMgr::CreateNewBattleGround(BattleGroundTypeId bgTypeId
 uint32 BattleGroundMgr::CreateBattleGround(BattleGroundTypeId bgTypeId, bool IsArena, uint32 MinPlayersPerTeam, uint32 MaxPlayersPerTeam, uint32 LevelMin, uint32 LevelMax, char const* BattleGroundName, uint32 MapID, float Team1StartLocX, float Team1StartLocY, float Team1StartLocZ, float Team1StartLocO, float Team2StartLocX, float Team2StartLocY, float Team2StartLocZ, float Team2StartLocO)
 {
     // Create the BG
-    BattleGround* bg = NULL;
+    BattleGround* bg = nullptr;
     switch (bgTypeId)
     {
         case BATTLEGROUND_AV: bg = new BattleGroundAV; break;

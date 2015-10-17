@@ -42,7 +42,7 @@ template<class T, class P>
 class MANGOS_DLL_SPEC PathMovementBase
 {
     public:
-        PathMovementBase() : m_path(NULL), m_currentNode(0) {}
+        PathMovementBase() : m_path(nullptr), m_currentNode(0) {}
         virtual ~PathMovementBase() {}
 
         // template pattern, not defined .. override required
@@ -69,7 +69,7 @@ class MANGOS_DLL_SPEC WaypointMovementGenerator<Creature> :
 {
     public:
         WaypointMovementGenerator(Creature&) : m_nextMoveTime(0), m_isArrivalDone(false), m_lastReachedWaypoint(0) {}
-        ~WaypointMovementGenerator() { m_path = NULL; }
+        ~WaypointMovementGenerator() { m_path = nullptr; }
 
         void InitializeWaypointPath(Creature& u, int32 id, WaypointPathOrigin wpSource, uint32 initialDelay, uint32 overwriteEntry);
 

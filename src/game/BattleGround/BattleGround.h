@@ -163,7 +163,7 @@ struct BattleGroundPlayer
 
 struct BattleGroundObjectInfo
 {
-    BattleGroundObjectInfo() : object(NULL), timer(0), spellid(0) {}
+    BattleGroundObjectInfo() : object(nullptr), timer(0), spellid(0) {}
 
     GameObject* object;
     int32       timer;
@@ -425,7 +425,7 @@ class BattleGround
         // method that should fill worldpacket with actual world states (not yet implemented for all battlegrounds!)
         virtual void FillInitialWorldStates() {}
         void FillInitialWorldState(uint32 stateId, uint32 value);
-        void SendPacketToTeam(Team team, WorldPacket* packet, Player* sender = NULL, bool self = true);
+        void SendPacketToTeam(Team team, WorldPacket* packet, Player* sender = nullptr, bool self = true);
         void SendPacketToAll(WorldPacket* packet);
 
         template<class Do>
@@ -447,7 +447,7 @@ class BattleGround
         virtual void EndBattleGround(Team winner);
         void BlockMovement(Player* plr);
 
-        void SendMessageToAll(int32 entry, ChatMsg type, Player const* source = NULL);
+        void SendMessageToAll(int32 entry, ChatMsg type, Player const* source = nullptr);
         void SendYellToAll(int32 entry, uint32 language, ObjectGuid guid);
         void PSendMessageToAll(int32 entry, ChatMsg type, Player const* source, ...);
         void SendWarningToAll(int32 entry, ...);

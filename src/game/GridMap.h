@@ -216,11 +216,11 @@ public:
     // TODO: move all terrain/vmaps data info query functions
     // from 'Map' class into this class
     float GetHeightStatic(float x, float y, float z, bool pCheckVMap = true, float maxSearchDist = DEFAULT_HEIGHT_SEARCH) const;
-    float GetWaterLevel(float x, float y, float z, float* pGround = NULL) const;
-    float GetWaterOrGroundLevel(float x, float y, float z, float* pGround = NULL, bool swim = false) const;
+    float GetWaterLevel(float x, float y, float z, float* pGround = nullptr) const;
+    float GetWaterOrGroundLevel(float x, float y, float z, float* pGround = nullptr, bool swim = false) const;
     bool IsInWater(float x, float y, float z, GridMapLiquidData* data = 0, float min_depth = 2.0f) const;
-    bool IsAboveWater(float x, float y, float z, float* pWaterZ = NULL) const;
-    bool IsUnderWater(float x, float y, float z, float* pWaterZ = NULL) const;
+    bool IsAboveWater(float x, float y, float z, float* pWaterZ = nullptr) const;
+    bool IsUnderWater(float x, float y, float z, float* pWaterZ = nullptr) const;
 
     GridMapLiquidStatus getLiquidStatus(float x, float y, float z, uint8 ReqLiquidType, GridMapLiquidData *data = 0) const;
 

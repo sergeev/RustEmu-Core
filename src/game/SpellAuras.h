@@ -72,8 +72,8 @@ class MANGOS_DLL_SPEC SpellAuraHolder
     public:
         SpellAuraHolder (SpellEntry const* spellproto, Unit *target, WorldObject *caster, Item *castItem);
 
-        Aura* CreateAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32* currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = NULL, Item* castItem = NULL);
-        Aura* CreateAura(AuraClassType type, SpellEffectIndex eff, int32* currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = NULL, Item* castItem = NULL);
+        Aura* CreateAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32* currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = nullptr, Item* castItem = nullptr);
+        Aura* CreateAura(AuraClassType type, SpellEffectIndex eff, int32* currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = nullptr, Item* castItem = nullptr);
 
         void RemoveAura(SpellEffectIndex index);
         void ApplyAuraModifiers(bool apply, bool real = false);
@@ -419,15 +419,15 @@ class MANGOS_DLL_SPEC Aura
         int32 GetMiscValue() const { return GetHolder() ? GetHolder()->GetSpellProto()->GetEffectMiscValue(m_effIndex) : 0; }
         int32 GetMiscValueB() const { return GetHolder() ? GetHolder()->GetSpellProto()->GetEffectMiscValueB(m_effIndex) : 0; }
 
-        SpellEntry const* GetSpellProto() const { return ( GetHolder() ? GetHolder()->GetSpellProto() : NULL); }
+        SpellEntry const* GetSpellProto() const { return ( GetHolder() ? GetHolder()->GetSpellProto() : nullptr); }
         uint32 GetId() const { if (SpellEntry const* spellProto = GetSpellProto()) return spellProto->Id; else return 0; }
         ObjectGuid const& GetCastItemGuid() const;
         ObjectGuid const& GetCasterGuid() const;
-        Unit* GetCaster() const { return ( GetHolder() ? GetHolder()->GetCaster() : NULL); }
-        Unit* GetTarget() const { return ( GetHolder() ? GetHolder()->GetTarget() : NULL); }
+        Unit* GetCaster() const { return ( GetHolder() ? GetHolder()->GetCaster() : nullptr); }
+        Unit* GetTarget() const { return ( GetHolder() ? GetHolder()->GetTarget() : nullptr); }
 
         ObjectGuid const& GetAffectiveCasterGuid() const;
-        Unit* GetAffectiveCaster() const { return ( GetHolder() ? GetHolder()->GetAffectiveCaster() : NULL); }
+        Unit* GetAffectiveCaster() const { return ( GetHolder() ? GetHolder()->GetAffectiveCaster() : nullptr); }
 
         SpellEffectIndex GetEffIndex() const { return m_effIndex; }
         int32 GetBasePoints() const { return m_currentBasePoints; }
@@ -502,10 +502,10 @@ class MANGOS_DLL_SPEC Aura
         bool IsActive() const { return m_isActive; }
 
     protected:
-        Aura(AuraClassType type,SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = NULL, Item* castItem = NULL);
-        void AreaAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = NULL, Item* castItem = NULL);
-        void PersistentAreaAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = NULL, Item* castItem = NULL);
-        void SingleEnemyTargetAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = NULL, Item* castItem = NULL);
+        Aura(AuraClassType type,SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = nullptr, Item* castItem = nullptr);
+        void AreaAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = nullptr, Item* castItem = nullptr);
+        void PersistentAreaAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = nullptr, Item* castItem = nullptr);
+        void SingleEnemyTargetAura(SpellEntry const* spellproto, SpellEffectIndex eff, int32 *currentBasePoints, SpellAuraHolder* holder, Unit *target, Unit *caster = nullptr, Item* castItem = nullptr);
 
         // must be called only from Aura::UpdateAura
         void Update(uint32 diff);
@@ -553,12 +553,12 @@ class MANGOS_DLL_SPEC Aura
         AreaAuraType m_areaAuraType;
 };
 
-MANGOS_DLL_SPEC SpellAuraHolder* CreateSpellAuraHolder(SpellEntry const* spellproto, Unit *target, WorldObject *caster, Item *castItem = NULL);
+MANGOS_DLL_SPEC SpellAuraHolder* CreateSpellAuraHolder(SpellEntry const* spellproto, Unit *target, WorldObject *caster, Item *castItem = nullptr);
 
 class MANGOS_DLL_SPEC AuraPair
 {
     public:
-        AuraPair() : m_holder(NULL), m_index(MAX_EFFECT_INDEX) {};
+        AuraPair() : m_holder(nullptr), m_index(MAX_EFFECT_INDEX) {};
         AuraPair(SpellAuraHolder* holder, SpellEffectIndex idx) : m_holder(holder), m_index(idx) {};
         AuraPair(Aura const* aura) : m_holder(aura->GetHolder()), m_index(aura->GetEffIndex()) {};
 
@@ -579,9 +579,9 @@ class MANGOS_DLL_SPEC AuraPair
         Aura const operator * () const { return *m_holder->GetAura(m_index); };
 
         bool operator == (AuraPair const& pair) const { return (m_index == pair.m_index && m_holder == pair.m_holder); };
-        bool operator == (Aura const* aura)     const { return IsEmpty() ? (aura == NULL) : (aura == GetHolder()->GetAura(m_index)); };
+        bool operator == (Aura const* aura)     const { return IsEmpty() ? (aura == nullptr) : (aura == GetHolder()->GetAura(m_index)); };
         bool operator !  ()                     const { return IsEmpty(); };
-        bool operator != (Aura const* aura)     const { return IsEmpty() ? (aura != NULL) : (aura != GetHolder()->GetAura(m_index)); };
+        bool operator != (Aura const* aura)     const { return IsEmpty() ? (aura != nullptr) : (aura != GetHolder()->GetAura(m_index)); };
 
         SpellAuraHolder* GetHolder()         { return m_holder; };
         SpellAuraHolder* GetHolder()   const { return m_holder; };

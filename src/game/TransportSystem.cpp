@@ -190,8 +190,8 @@ void TransportBase::UnBoardPassenger(WorldObject* passenger)
     }
     passenger->ClearTransportData();
 
-    // Set passengers transportInfo to NULL
-    passenger->SetTransportInfo(NULL);
+    // Set passengers transportInfo to nullptr
+    passenger->SetTransportInfo(nullptr);
 
     PassengerMap::iterator itr = m_passengers.find(passenger->GetObjectGuid());
 

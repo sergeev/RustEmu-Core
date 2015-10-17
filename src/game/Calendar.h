@@ -113,7 +113,7 @@ class CalendarInvite
 {
 public:
 
-    CalendarInvite() : InviteId(ObjectGuid()), InviteeGuid(ObjectGuid()), SenderGuid(ObjectGuid()), LastUpdateTime(time(NULL)),
+    CalendarInvite() : InviteId(ObjectGuid()), InviteeGuid(ObjectGuid()), SenderGuid(ObjectGuid()), LastUpdateTime(time(nullptr)),
         Status(CALENDAR_STATUS_INVITED), Rank(CALENDAR_RANK_PLAYER), Text(), m_calendarEventId(ObjectGuid()), m_flags(0)
         {}
 
@@ -242,7 +242,7 @@ class CalendarMgr : public MaNGOS::Singleton<CalendarMgr, MaNGOS::ClassLevelLock
         bool IsEventReadyForRemove(time_t eventTime)
         {
             int32 delaySec = sWorld.getConfig(CONFIG_INT32_CALENDAR_REMOVE_EXPIRED_EVENTS_DELAY);
-            return delaySec < 0 ? false : eventTime + time_t(delaySec) <= time(NULL);
+            return delaySec < 0 ? false : eventTime + time_t(delaySec) <= time(nullptr);
         }
         void DBRemap(TRemapAction remapAction, TRemapData& remapData, bool& dbTransactionUsed);
         void DBRemoveExpiredEventsAndRemapData();
@@ -288,7 +288,7 @@ class CalendarMgr : public MaNGOS::Singleton<CalendarMgr, MaNGOS::ClassLevelLock
         // send data to client function
         void SendCalendarEventInvite(CalendarInvite const* invite);
         void SendCalendarEventInviteAlert(CalendarInvite const* invite);
-        void SendCalendarCommandResult(ObjectGuid const& guid, CalendarResponseResult err, char const* param = NULL);
+        void SendCalendarCommandResult(ObjectGuid const& guid, CalendarResponseResult err, char const* param = nullptr);
         void SendCalendarEventRemovedAlert(CalendarEvent const* event);
         void SendCalendarEvent(ObjectGuid const& guid, CalendarEvent const* event, uint32 sendType);
         void SendCalendarEventInviteRemoveAlert(ObjectGuid const& guid, CalendarEvent const* event, CalendarInviteStatus status);

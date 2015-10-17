@@ -631,7 +631,7 @@ bool AuthSocket::HandleLogonProof()
         return false;
 
     ///- Check if the client has one of the expected version numbers
-    bool valid_version = FindBuildInfo(build_) != NULL;
+    bool valid_version = FindBuildInfo(build_) != nullptr;
 
     /// <ul><li> If the client has no valid version
     if (!valid_version)
@@ -703,7 +703,7 @@ bool AuthSocket::HandleLogonProof()
         return false;
 
     Sha1Hash sha;
-    sha.UpdateBigNumbers(&A, &B, NULL);
+    sha.UpdateBigNumbers(&A, &B, nullptr);
     sha.Finalize();
     BigNumber u;
     u.SetBinary(sha.GetDigest(), 20);
@@ -740,11 +740,11 @@ bool AuthSocket::HandleLogonProof()
     uint8 hash[20];
 
     sha.Initialize();
-    sha.UpdateBigNumbers(&N, NULL);
+    sha.UpdateBigNumbers(&N, nullptr);
     sha.Finalize();
     memcpy(hash, sha.GetDigest(), 20);
     sha.Initialize();
-    sha.UpdateBigNumbers(&g, NULL);
+    sha.UpdateBigNumbers(&g, nullptr);
     sha.Finalize();
     for (int i = 0; i < 20; ++i)
     {
@@ -760,9 +760,9 @@ bool AuthSocket::HandleLogonProof()
     memcpy(t4, sha.GetDigest(), SHA_DIGEST_LENGTH);
 
     sha.Initialize();
-    sha.UpdateBigNumbers(&t3, NULL);
+    sha.UpdateBigNumbers(&t3, nullptr);
     sha.UpdateData(t4, SHA_DIGEST_LENGTH);
-    sha.UpdateBigNumbers(&s, &A, &B, &K, NULL);
+    sha.UpdateBigNumbers(&s, &A, &B, &K, nullptr);
     sha.Finalize();
     BigNumber M;
     M.SetBinary(sha.GetDigest(), 20);
@@ -780,7 +780,7 @@ bool AuthSocket::HandleLogonProof()
 
         ///- Finish SRP6 and send the final result to the client
         sha.Initialize();
-        sha.UpdateBigNumbers(&A, &M, &K, NULL);
+        sha.UpdateBigNumbers(&A, &M, &K, nullptr);
         sha.Finalize();
 
         SendProof(sha);
@@ -929,7 +929,7 @@ bool AuthSocket::HandleReconnectProof()
     Sha1Hash sha;
     sha.Initialize();
     sha.UpdateData(login_);
-    sha.UpdateBigNumbers(&t1, &reconnect_proof_, &K, NULL);
+    sha.UpdateBigNumbers(&t1, &reconnect_proof_, &K, nullptr);
     sha.Finalize();
 
     if (!memcmp(sha.GetDigest(), lp.R2, SHA_DIGEST_LENGTH))
@@ -1068,7 +1068,7 @@ void AuthSocket::LoadRealmlist(ByteBuffer& pkt, uint32 acctid)
 
             bool ok_build = std::find(i->second.realmbuilds.begin(), i->second.realmbuilds.end(), build_) != i->second.realmbuilds.end();
 
-            RealmBuildInfo const* buildInfo = ok_build ? FindBuildInfo(build_) : NULL;
+            RealmBuildInfo const* buildInfo = ok_build ? FindBuildInfo(build_) : nullptr;
             if (!buildInfo)
                 buildInfo = &i->second.realmBuildInfo;
 
@@ -1135,7 +1135,7 @@ void AuthSocket::LoadRealmlist(ByteBuffer& pkt, uint32 acctid)
 
             bool ok_build = std::find(i->second.realmbuilds.begin(), i->second.realmbuilds.end(), build_) != i->second.realmbuilds.end();
 
-            RealmBuildInfo const* buildInfo = ok_build ? FindBuildInfo(build_) : NULL;
+            RealmBuildInfo const* buildInfo = ok_build ? FindBuildInfo(build_) : nullptr;
             if (!buildInfo)
                 buildInfo = &i->second.realmBuildInfo;
 

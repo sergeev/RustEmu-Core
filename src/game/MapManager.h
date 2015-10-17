@@ -129,7 +129,7 @@ class MapManager : public MaNGOS::Singleton<MapManager, MaNGOS::ClassLevelLockab
         MapManager& operator=(const MapManager &);
 
         Map* CreateInstance(uint32 id, Player * player);
-        DungeonMap* CreateDungeonMap(uint32 id, uint32 InstanceId, Difficulty difficulty, DungeonPersistentState *save = NULL);
+        DungeonMap* CreateDungeonMap(uint32 id, uint32 InstanceId, Difficulty difficulty, DungeonPersistentState *save = nullptr);
         BattleGroundMap* CreateBattleGroundMap(uint32 id, uint32 InstanceId, BattleGround* bg);
 
         MapMapType         m_maps;

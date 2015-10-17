@@ -53,7 +53,7 @@ OutdoorPvPMgr::~OutdoorPvPMgr()
         if (!m_scripts[OPVP_ID_##a]->InitOutdoorPvPArea())          \
         {                                                           \
             delete m_scripts[OPVP_ID_##a];                          \
-            m_scripts[OPVP_ID_##a] = NULL;                          \
+            m_scripts[OPVP_ID_##a] = nullptr;                          \
         }                                                           \
         else                                                        \
             ++counter;                                              \
@@ -66,7 +66,7 @@ OutdoorPvPMgr::~OutdoorPvPMgr()
         if (!m_scripts[OPVP_ID_##a]->InitOutdoorPvPArea())          \
         {                                                           \
             delete m_scripts[OPVP_ID_##a];                          \
-            m_scripts[OPVP_ID_##a] = NULL;                          \
+            m_scripts[OPVP_ID_##a] = nullptr;                          \
         }                                                           \
         else                                                        \
             ++counter;                                              \
@@ -114,7 +114,7 @@ OutdoorPvP* OutdoorPvPMgr::GetScript(uint32 zoneId)
         case ZONE_ID_WINTERGRASP:
             return m_scripts[OPVP_ID_WG];
         default:
-            return NULL;
+            return nullptr;
     }
 }
 
@@ -148,7 +148,7 @@ OutdoorPvP* OutdoorPvPMgr::GetScriptOfAffectedZone(uint32 zoneId)
         case ZONE_ID_WINTERGRASP:
             return m_scripts[OPVP_ID_WG];
         default:
-            return NULL;
+            return nullptr;
     }
 }
 
@@ -260,5 +260,5 @@ BattleField* OutdoorPvPMgr::GetBattlefieldById(uint32 id)
             if (opvp->IsBattleField() && ((BattleField*)opvp)->GetBattlefieldId() == id)
                 return (BattleField*)opvp;
 
-    return NULL;
+    return nullptr;
 }
