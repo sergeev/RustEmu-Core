@@ -34,7 +34,6 @@
 #include "Log.h"
 #include "RealmList.h"
 #include "revision.h"
-#include "revision_nr.h"
 #include "revision_sql.h"
 #include "SessionManager.h"
 #include "SystemConfig.h"
@@ -131,7 +130,7 @@ extern int main(int argc, char** argv)
 
     if (vm.count("version"))
     {
-        printf("%s\n", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_NR, REVISION_ID));
+        printf("%s\n", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_ID));
         return 0;
     }
 
@@ -200,7 +199,7 @@ extern int main(int argc, char** argv)
 
     sLog.Initialize();
 
-    sLog.outString("%s [realm-daemon]", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_NR, REVISION_ID));
+    sLog.outString("%s [realm-daemon]", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_ID));
     sLog.outString("<Ctrl-C> to stop.\n");
     sLog.outString("Using configuration file %s.", cfg_file.c_str());
 

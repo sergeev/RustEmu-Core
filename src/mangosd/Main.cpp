@@ -39,7 +39,6 @@
 #include "ProgressBar.h"
 #include "RemoteAdministration.h"
 #include "revision.h"
-#include "revision_nr.h"
 #include "revision_sql.h"
 #include "SystemConfig.h"
 #include "Util.h"
@@ -246,7 +245,7 @@ int HandleProgramArguments(int argc, char** argv)
 
     if (vm.count("version"))
     {
-        printf("%s\n", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_NR, REVISION_ID));
+        printf("%s\n", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_ID));
         return 0;
     }
 
@@ -324,7 +323,7 @@ int HandleProgramArguments(int argc, char** argv)
     
 void ShowHint()
 {
-    sLog.outString("%s [world-daemon]", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_NR, REVISION_ID));
+    sLog.outString("%s [world-daemon]", _FULLVERSION(REVISION_DATE, REVISION_TIME, REVISION_ID));
     sLog.outString("<Ctrl-C> to stop.");
     sLog.outString("\n\n"
         "       _____     __  __       _   _  _____  ____   _____ \n"
