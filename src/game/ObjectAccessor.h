@@ -32,12 +32,9 @@
 #include "Player.h"
 #include "Corpse.h"
 
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/thread/shared_lock_guard.hpp>
-
 #include <set>
 #include <list>
+#include <mutex>
 
 class Unit;
 class WorldObject;
@@ -49,9 +46,9 @@ class HashMapHolder
     public:
 
         typedef UNORDERED_MAP<ObjectGuid, T*>   MapType;
-        typedef boost::shared_mutex LockType;
-        typedef boost::shared_lock<LockType> ReadGuard;
-        typedef boost::unique_lock<LockType> WriteGuard;
+        typedef std::mutex LockType;
+        typedef std::lock_guard<std::mutex> ReadGuard;
+        typedef std::lock_guard<std::mutex> WriteGuard;
 
         static void Insert(T* o)
         {
@@ -85,7 +82,7 @@ class HashMapHolder
         static MapType  m_objectMap;
 };
 
-class ObjectAccessor : public MaNGOS::Singleton<ObjectAccessor, MaNGOS::ClassLevelLockable<ObjectAccessor, boost::mutex> >
+class ObjectAccessor : public MaNGOS::Singleton<ObjectAccessor, MaNGOS::ClassLevelLockable<ObjectAccessor, std::mutex> >
 {
         friend class MaNGOS::OperatorNew<ObjectAccessor>;
 
@@ -131,6 +128,12 @@ class ObjectAccessor : public MaNGOS::Singleton<ObjectAccessor, MaNGOS::ClassLev
     private:
 
         Player2CorpsesMapType   i_player2corpse;
+
+        typedef std::mutex LockType;
+        typedef MaNGOS::GeneralLock<LockType > Guard;
+
+        LockType i_playerGuard;
+        LockType i_corpseGuard;
 };
 
 #define sObjectAccessor ObjectAccessor::Instance()

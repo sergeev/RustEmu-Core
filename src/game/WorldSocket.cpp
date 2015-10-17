@@ -31,7 +31,9 @@
 #include "WorldSocketMgr.h"
 #include "Log.h"
 #include "DBCStores.h"
+#include "Policies/Lock.h"
 
+#include <mutex>
 #include <chrono>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>

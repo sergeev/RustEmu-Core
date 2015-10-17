@@ -22,7 +22,7 @@
 #include "Common.h"
 #include "ObjectGuid.h"
 #include "Policies/Singleton.h"
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 #include "LFG.h"
 #include "Timer.h"
 
@@ -143,7 +143,7 @@ typedef std::list<LFGEvent> LFGEventList;
 
 typedef UNORDERED_MAP<ObjectGuid /*group or player guid*/, LFGStateStructure*> LFGStatesMap;
 
-class LFGMgr : public MaNGOS::Singleton<LFGMgr, MaNGOS::ClassLevelLockable<LFGMgr, boost::mutex> >
+class LFGMgr : public MaNGOS::Singleton<LFGMgr, MaNGOS::ClassLevelLockable<LFGMgr, std::mutex> >
 {
     public:
         LFGMgr();

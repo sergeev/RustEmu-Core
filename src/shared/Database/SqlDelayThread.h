@@ -19,9 +19,10 @@
 #ifndef __SQLDELAYTHREAD_H
 #define __SQLDELAYTHREAD_H
 
-#include <boost/thread/mutex.hpp>
 #include "LockedQueue.h"
 #include "Threading.h"
+
+#include <mutex>
 
 class Database;
 class SqlOperation;
@@ -29,7 +30,7 @@ class SqlConnection;
 
 class SqlDelayThread : public MaNGOS::Runnable
 {
-    typedef MaNGOS::LockedQueue<SqlOperation*, boost::mutex> SqlQueue;
+        typedef MaNGOS::LockedQueue<SqlOperation*> SqlQueue;
 
     private:
         SqlQueue m_sqlQueue;                                ///< Queue of SQL statements

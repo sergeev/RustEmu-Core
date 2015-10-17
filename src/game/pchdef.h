@@ -6,7 +6,6 @@
 #include <boost/asio.hpp>
 #include <boost/atomic.hpp>
 #include <boost/bind.hpp>
-#include <boost/cstdint.hpp>
 #include <boost/date_time.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -14,11 +13,6 @@
 #include <boost/program_options.hpp>
 #include <boost/scoped_array.hpp>
 #include <boost/thread.hpp>
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/thread/shared_lock_guard.hpp>
 #include <boost/thread/tss.hpp>
 
 #include "MapManager.h"

@@ -24,8 +24,8 @@
 #include "SharedDefines.h"
 #include "DBCEnums.h"
 #include "BattleGround.h"
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/recursive_mutex.hpp>
+
+#include <mutex>
 
 typedef std::map<uint32, BattleGround*> BattleGroundSet;
 
@@ -94,7 +94,7 @@ class BattleGroundQueue
 
     private:
         // mutex that should not allow changing private data, nor allowing to update Queue during private data change.
-        boost::recursive_mutex m_Lock;
+		std::recursive_mutex m_Lock;
 
 
         typedef std::map<ObjectGuid, PlayerQueueInfo> QueuedPlayersMap;
@@ -137,7 +137,7 @@ class BattleGroundQueue
         uint32 m_SumOfWaitTimes[PVP_TEAM_COUNT][MAX_BATTLEGROUND_BRACKETS];
 };
 
-class BattleGroundMgr : public MaNGOS::Singleton<BattleGroundMgr, MaNGOS::ClassLevelLockable<BattleGroundMgr, boost::mutex> >
+class BattleGroundMgr : public MaNGOS::Singleton<BattleGroundMgr, MaNGOS::ClassLevelLockable<BattleGroundMgr, std::mutex> >
 {
     public:
         /* Construction */
@@ -231,7 +231,7 @@ class BattleGroundMgr : public MaNGOS::Singleton<BattleGroundMgr, MaNGOS::ClassL
         static BattleGroundTypeId WeekendHolidayIdToBGType(HolidayIds holiday);
         static bool IsBGWeekend(BattleGroundTypeId bgTypeId);
     private:
-        boost::mutex    SchedulerLock;
+		std::mutex    SchedulerLock;
         BattleMastersMap    mBattleMastersMap;
         CreatureBattleEventIndexesMap m_CreatureBattleEventIndexMap;
         GameObjectBattleEventIndexesMap m_GameObjectBattleEventIndexMap;

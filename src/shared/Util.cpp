@@ -27,6 +27,7 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 #include <boost/random/uniform_real_distribution.hpp>
+#include <boost/thread/tss.hpp>
 
 static boost::thread_specific_ptr< boost::random::mt19937 > mtrand; // TLS: MersenneTwister generator
 boost::random::random_device   rd;               // Random device seed ( /dev/urandom, CryptGenRandom(), etc )

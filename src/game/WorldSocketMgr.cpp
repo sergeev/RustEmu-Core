@@ -28,9 +28,11 @@
 #include "Config/Config.h"
 #include "WorldSocket.h"
 
-#define CLASS_LOCK MaNGOS::ClassLevelLockable<WorldSocketMgr, boost::recursive_mutex>
+#include <mutex>
+
+#define CLASS_LOCK MaNGOS::ClassLevelLockable<WorldSocketMgr, std::recursive_mutex>
 INSTANTIATE_SINGLETON_2(WorldSocketMgr, CLASS_LOCK);
-INSTANTIATE_CLASS_MUTEX(WorldSocketMgr, boost::recursive_mutex);
+INSTANTIATE_CLASS_MUTEX(WorldSocketMgr, std::recursive_mutex);
 
 WorldSocketMgr::WorldSocketMgr() : NetworkManager("World"),
     m_SockOutKBuff(-1),

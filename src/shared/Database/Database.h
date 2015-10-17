@@ -23,13 +23,10 @@
 #include "Utilities/UnorderedMapSet.h"
 #include "Database/SqlDelayThread.h"
 #include "Policies/ThreadingModel.h"
-
-#include <boost/atomic.hpp>
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/tss.hpp>
-
 #include "SqlPreparedStatement.h"
+
+#include <atomic>
 
 class SqlTransaction;
 class SqlResultQueue;
@@ -96,8 +93,7 @@ class MANGOS_DLL_SPEC SqlConnection
         void FreePreparedStatements();
 
     private:
-        typedef boost::recursive_mutex LOCK_TYPE;
-        LOCK_TYPE m_mutex;
+        std::recursive_mutex m_mutex;
 
         typedef std::vector<SqlPreparedStatement* > StmtHolder;
         StmtHolder m_holder;
@@ -262,7 +258,8 @@ class MANGOS_DLL_SPEC Database
         };
 
         // per-thread based storage for SqlTransaction object initialization - no locking is required
-        boost::thread_specific_ptr<TransHelper> m_TransStorage;
+        typedef boost::thread_specific_ptr<Database::TransHelper> DBTransHelperTSS;
+        Database::DBTransHelperTSS m_TransStorage;
 
         ///< DB connections
 
@@ -279,7 +276,7 @@ class MANGOS_DLL_SPEC Database
 
         // connection helper counters
         int m_nQueryConnPoolSize;                           // current size of query connection pool
-        boost::atomic_long m_nQueryCounter;                 // counter for connection selection
+        std::atomic_long m_nQueryCounter;  // counter for connection selection
 
         // lets use pool of connections for sync queries
         typedef std::vector< SqlConnection* > SqlConnectionContainer;
@@ -290,13 +287,13 @@ class MANGOS_DLL_SPEC Database
 
         SqlResultQueue*     m_pResultQueue;                 ///< Transaction queues from diff. threads
         SqlDelayThread*     m_threadBody;                   ///< Pointer to delay sql executer (owned by m_delayThread)
-        MaNGOS::Thread* m_delayThread;                      ///< Pointer to executer thread
+        MaNGOS::Thread*     m_delayThread;                  ///< Pointer to executer thread
 
         bool m_bAllowAsyncTransactions;                     ///< flag which specifies if async transactions are enabled
 
         // PREPARED STATEMENT REGISTRY
-        typedef boost::mutex LOCK_TYPE;
-        typedef boost::lock_guard<LOCK_TYPE> LOCK_GUARD;
+        typedef std::mutex LOCK_TYPE;
+        typedef std::lock_guard<LOCK_TYPE> LOCK_GUARD;
 
         mutable LOCK_TYPE m_stmtGuard;
 

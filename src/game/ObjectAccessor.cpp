@@ -32,8 +32,11 @@
 #include "World.h"
 
 #include <cmath>
+#include <mutex>
 
-INSTANTIATE_SINGLETON_1(ObjectAccessor);
+#define CLASS_LOCK MaNGOS::ClassLevelLockable<ObjectAccessor, std::mutex>
+INSTANTIATE_SINGLETON_2(ObjectAccessor, CLASS_LOCK);
+INSTANTIATE_CLASS_MUTEX(ObjectAccessor, std::mutex);
 
 ObjectAccessor::ObjectAccessor() {}
 ObjectAccessor::~ObjectAccessor()
@@ -116,7 +119,7 @@ void ObjectAccessor::KickPlayer(ObjectGuid guid)
 Corpse*
 ObjectAccessor::GetCorpseForPlayerGUID(ObjectGuid guid)
 {
-    HashMapHolder<Corpse>::ReadGuard g(HashMapHolder<Corpse>::GetLock());
+    Guard guard(i_corpseGuard);
 
     Player2CorpsesMapType::iterator iter = i_player2corpse.find(guid);
     if (iter == i_player2corpse.end())
@@ -132,8 +135,7 @@ ObjectAccessor::RemoveCorpse(Corpse* corpse)
 {
     MANGOS_ASSERT(corpse && corpse->GetType() != CORPSE_BONES);
 
-    HashMapHolder<Corpse>::WriteGuard g(HashMapHolder<Corpse>::GetLock());
-
+    Guard guard(i_corpseGuard);
     Player2CorpsesMapType::iterator iter = i_player2corpse.find(corpse->GetOwnerGuid());
     if (iter == i_player2corpse.end())
         return;
@@ -143,9 +145,9 @@ ObjectAccessor::RemoveCorpse(Corpse* corpse)
     uint32 cell_id = (cell_pair.y_coord * TOTAL_NUMBER_OF_CELLS_PER_MAP) + cell_pair.x_coord;
 
     sObjectMgr.DeleteCorpseCellData(corpse->GetMapId(), cell_id, corpse->GetOwnerGuid().GetCounter());
-    i_player2corpse.erase(iter);
-    g.unlock( );
     corpse->RemoveFromWorld(true);
+
+    i_player2corpse.erase(iter);
 }
 
 void
@@ -153,8 +155,7 @@ ObjectAccessor::AddCorpse(Corpse* corpse)
 {
     MANGOS_ASSERT(corpse && corpse->GetType() != CORPSE_BONES);
 
-    HashMapHolder<Corpse>::WriteGuard g(HashMapHolder<Corpse>::GetLock());
-
+    Guard guard(i_corpseGuard);
     MANGOS_ASSERT(i_player2corpse.find(corpse->GetOwnerGuid()) == i_player2corpse.end());
     i_player2corpse[corpse->GetOwnerGuid()] = corpse;
 
@@ -168,8 +169,7 @@ ObjectAccessor::AddCorpse(Corpse* corpse)
 void
 ObjectAccessor::AddCorpsesToGrid(GridPair const& gridpair, GridType& grid, Map* map)
 {
-    HashMapHolder<Corpse>::ReadGuard g(HashMapHolder<Corpse>::GetLock());
-
+    Guard guard(i_corpseGuard);
     for (Player2CorpsesMapType::iterator iter = i_player2corpse.begin(); iter != i_player2corpse.end(); ++iter)
         if (iter->second->GetGrid() == gridpair)
         {
@@ -232,7 +232,8 @@ ObjectAccessor::ConvertCorpseForPlayer(ObjectGuid player_guid, bool insignia)
         // bones->m_time = m_time;                          // don't overwrite time
         // bones->m_inWorld = m_inWorld;                    // don't overwrite world state
         // bones->m_type = m_type;                          // don't overwrite type
-        bones->Relocate(corpse->GetPosition());
+        bones->Relocate(corpse->GetPositionX(), corpse->GetPositionY(), corpse->GetPositionZ(), corpse->GetOrientation());
+        bones->SetPhaseMask(corpse->GetPhaseMask(), false);
 
         bones->SetUInt32Value(CORPSE_FIELD_FLAGS, CORPSE_FLAG_UNK2 | CORPSE_FLAG_BONES);
         bones->SetGuidValue(CORPSE_FIELD_OWNER, ObjectGuid());
@@ -272,7 +273,7 @@ void ObjectAccessor::RemoveOldCorpses()
 /// Define the static member of HashMapHolder
 
 template <class T> typename HashMapHolder<T>::MapType HashMapHolder<T>::m_objectMap;
-template <class T> typename HashMapHolder<T>::LockType HashMapHolder<T>::i_lock;
+template <class T> std::mutex HashMapHolder<T>::i_lock;
 
 /// Global definitions for the hashmap storage
 

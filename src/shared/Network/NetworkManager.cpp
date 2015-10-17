@@ -46,7 +46,7 @@ bool NetworkManager::StartNetwork(boost::uint16_t port, std::string address)
     
     if (network_threads_count_ <= 0)
     {
-        sLog.outError("Number of network threads is incorrect = " SIZEFMTD,
+        sLog.outError("Number of network threads is incorrect = " SIZEFMTD ,
                       network_threads_count_);
         return false;
     }

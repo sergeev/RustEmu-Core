@@ -22,7 +22,7 @@
 #include "Common.h"
 #include "Policies/Singleton.h"
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 class Config;
 class ByteBuffer;
@@ -92,7 +92,7 @@ enum Color
 
 const int Color_count = int(WHITE) + 1;
 
-class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, boost::mutex> >
+class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, std::mutex> >
 {
         friend class MaNGOS::OperatorNew<Log>;
         Log();
@@ -198,7 +198,7 @@ class Log : public MaNGOS::Singleton<Log, MaNGOS::ClassLevelLockable<Log, boost:
         FILE* eventAiErLogfile;
         FILE* scriptErrLogFile;
         FILE* worldLogfile;
-        boost::mutex m_worldLogMtx;
+        std::mutex m_worldLogMtx;
 
         // log/console control
         LogLevel m_logLevel;

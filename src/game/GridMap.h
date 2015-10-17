@@ -26,10 +26,9 @@
 #include "GridDefines.h"
 #include "Object.h"
 #include "SharedDefines.h"
-#include <boost/atomic.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/lock_guard.hpp>
 
+#include <atomic>
+#include <mutex>
 #include <bitset>
 #include <list>
 
@@ -204,8 +203,8 @@ private:
     Countable m_count;
 };
 
-//class for sharing and managin GridMap objects
-class MANGOS_DLL_SPEC TerrainInfo : public Referencable<boost::atomic_long>
+// class for sharing and managin GridMap objects
+class MANGOS_DLL_SPEC TerrainInfo : public Referencable<std::atomic_long>
 {
 public:
     TerrainInfo(uint32 mapid);
@@ -221,6 +220,7 @@ public:
     bool IsInWater(float x, float y, float z, GridMapLiquidData* data = 0, float min_depth = 2.0f) const;
     bool IsAboveWater(float x, float y, float z, float* pWaterZ = nullptr) const;
     bool IsUnderWater(float x, float y, float z, float* pWaterZ = nullptr) const;
+	bool IsSwimmable(float x, float y, float pZ, float radius = 1.5f, GridMapLiquidData* data = 0) const;
 
     GridMapLiquidStatus getLiquidStatus(float x, float y, float z, uint8 ReqLiquidType, GridMapLiquidData *data = 0) const;
 
@@ -265,14 +265,14 @@ private:
     GridMap *m_GridMaps[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
     int16 m_GridRef[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS];
 
-    typedef boost::mutex LOCK_TYPE;
-    typedef boost::lock_guard<LOCK_TYPE> LOCK_GUARD;
-    LOCK_TYPE m_mutex;
-    LOCK_TYPE m_refMutex;
+	typedef std::mutex LOCK_TYPE;
+	typedef std::lock_guard<LOCK_TYPE> LOCK_GUARD;
+	LOCK_TYPE m_mutex;
+	LOCK_TYPE m_refMutex;
 };
 
 //class for managing TerrainData object and all sort of geometry querying operations
-class TerrainManager : public MaNGOS::Singleton<TerrainManager, MaNGOS::ClassLevelLockable<TerrainManager, boost::mutex> >
+class TerrainManager : public MaNGOS::Singleton<TerrainManager, MaNGOS::ClassLevelLockable<TerrainManager, std::mutex> >
 {
     typedef UNORDERED_MAP<uint32, TerrainInfo*> TerrainDataMap;
     friend class MaNGOS::OperatorNew<TerrainManager>;
@@ -313,6 +313,7 @@ private:
     TerrainManager(const TerrainManager &);
     TerrainManager& operator=(const TerrainManager &);
 
+	typedef MaNGOS::ClassLevelLockable<TerrainManager, std::mutex>::Lock Guard;
     TerrainDataMap i_TerrainMap;
 };
 

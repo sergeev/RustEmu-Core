@@ -22,19 +22,17 @@
 #include "Common.h"
 #include "Platform/Define.h"
 #include "Policies/Singleton.h"
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/recursive_mutex.hpp>
 #include "Map.h"
 
 class BattleGround;
 
-class MapManager : public MaNGOS::Singleton<MapManager, MaNGOS::ClassLevelLockable<MapManager, boost::recursive_mutex> >
+class MapManager : public MaNGOS::Singleton<MapManager, MaNGOS::ClassLevelLockable<MapManager, std::recursive_mutex> >
 {
     friend class MaNGOS::OperatorNew<MapManager>;
 
-    typedef boost::recursive_mutex LOCK_TYPE;
-    typedef boost::lock_guard<LOCK_TYPE> LOCK_TYPE_GUARD;
-    typedef MaNGOS::ClassLevelLockable<MapManager, LOCK_TYPE>::Lock Guard;
+	typedef std::recursive_mutex LOCK_TYPE;
+	typedef std::lock_guard<LOCK_TYPE> LOCK_TYPE_GUARD;
+	typedef MaNGOS::ClassLevelLockable<MapManager, std::recursive_mutex>::Lock Guard;
 
     public:
         typedef UNORDERED_MAP<MapID, Map*> MapMapType;

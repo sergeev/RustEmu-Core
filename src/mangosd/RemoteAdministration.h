@@ -24,6 +24,8 @@
 #include "Network/Socket.h"
 #include "ByteBuffer.h"
 
+#include <mutex>
+
 #define RA_BUFF_SIZE 8192
 
 /// Manages all sockets connected to peers and network threads
@@ -46,7 +48,7 @@ class RASocket : public Socket
 #define RA_MAX_LOGIN_TRY 3
 public:
     RASocket(NetworkManager& manager, NetworkThread& owner);
-    boost::mutex PendingCommand;
+    std::mutex PendingCommand;
     ~RASocket();
 
 protected:

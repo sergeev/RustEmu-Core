@@ -25,7 +25,7 @@
 #include "SharedDefines.h"
 #include "World.h"
 
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 enum CalendarEventType
 {
@@ -210,7 +210,7 @@ private:
 typedef UNORDERED_MAP<ObjectGuid, CalendarInvite> CalendarInviteStore;
 typedef UNORDERED_MAP<ObjectGuid, CalendarEvent> CalendarEventStore;
 
-class CalendarMgr : public MaNGOS::Singleton<CalendarMgr, MaNGOS::ClassLevelLockable<CalendarMgr, boost::mutex> >
+class CalendarMgr : public MaNGOS::Singleton<CalendarMgr, MaNGOS::ClassLevelLockable<CalendarMgr, std::mutex> >
 {
     public:
         CalendarMgr();

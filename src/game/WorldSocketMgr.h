@@ -25,7 +25,7 @@
 #ifndef __WORLDSOCKETMGR_H
 #define __WORLDSOCKETMGR_H
 
-#include <boost/thread/recursive_mutex.hpp>
+#include <mutex>
 
 #include <string>
 
@@ -33,7 +33,7 @@
 #include "Network/NetworkManager.h"
 
 /// Manages all sockets connected to peers and network threads
-class WorldSocketMgr : public NetworkManager, public MaNGOS::Singleton<WorldSocketMgr, MaNGOS::ClassLevelLockable<WorldSocketMgr, boost::recursive_mutex>>
+class WorldSocketMgr : public NetworkManager, public MaNGOS::Singleton<WorldSocketMgr, MaNGOS::ClassLevelLockable<WorldSocketMgr, std::recursive_mutex>>
 {
 public:
     friend class WorldSocket;
@@ -53,7 +53,7 @@ private:
     bool    m_UseNoDelay;
 };
 
-#define sWorldSocketMgr WorldSocketMgr::Instance()
+#define sWorldSocketMgr MaNGOS::Singleton<WorldSocketMgr>::Instance()
 
 #endif
 /// @}

@@ -24,7 +24,6 @@
 #define __WORLDSESSION_H
 
 #include <boost/shared_ptr.hpp>
-#include <boost/thread/mutex.hpp>
 #include "Common.h"
 #include "SharedDefines.h"
 #include "ObjectGuid.h"
@@ -941,7 +940,7 @@ class MANGOS_DLL_SPEC WorldSession
         uint32 m_Tutorials[8];
         TutorialDataState m_tutorialState;
         AddonsList m_addonsList;
-        MaNGOS::LockedQueue<WorldPacket*, boost::mutex> _recvQueue;
+        MaNGOS::LockedQueue<WorldPacket*> _recvQueue;
 };
 #endif
 /// @}

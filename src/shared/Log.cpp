@@ -367,7 +367,7 @@ std::string Log::GetTimestampStr()
 
 void Log::outString()
 {
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_includeTime)
         outTime();
@@ -387,7 +387,7 @@ void Log::outString(const char* str, ...)
     if (!str)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_colored)
         SetColor(true, m_colors[LogNormal]);
@@ -426,7 +426,7 @@ void Log::outError(const char* err, ...)
     if (!err)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_colored)
         SetColor(false, m_colors[LogError]);
@@ -489,7 +489,7 @@ void Log::outErrorDb(const char* err, ...)
     if (!err)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_colored)
         SetColor(false, m_colors[LogError]);
@@ -566,7 +566,7 @@ void Log::outErrorEventAI(const char* err, ...)
     if (!err)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_colored)
         SetColor(false, m_colors[LogError]);
@@ -619,7 +619,7 @@ void Log::outBasic(const char* str, ...)
     if (!str)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_logLevel >= LOG_LVL_BASIC)
     {
@@ -659,7 +659,7 @@ void Log::outDetail(const char* str, ...)
     if (!str)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_logLevel >= LOG_LVL_DETAIL)
     {
@@ -701,7 +701,7 @@ void Log::outDebug(const char* str, ...)
     if (!str)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_logLevel >= LOG_LVL_DEBUG)
     {
@@ -743,7 +743,7 @@ void Log::outCommand(uint32 account, const char* str, ...)
     if (!str)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_logLevel >= LOG_LVL_DETAIL)
     {
@@ -851,7 +851,7 @@ void Log::outErrorScriptLib(const char* err, ...)
     if (!err)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (m_colored)
         SetColor(false, m_colors[LogError]);
@@ -907,7 +907,7 @@ void Log::outWorldPacketDump(uint32 socket, uint32 opcode, char const* opcodeNam
     if (!worldLogfile)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> guard(m_worldLogMtx);
 
     outTimestamp(worldLogfile);
 
@@ -932,7 +932,7 @@ void Log::outCharDump(const char* str, uint32 account_id, uint32 guid, const cha
 {
     if (charLogfile)
     {
-        boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+		std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
         fprintf(charLogfile, "== START DUMP == (account: %u guid: %u name: %s )\n%s\n== END DUMP ==\n", account_id, guid, name, str);
         fflush(charLogfile);
     }
@@ -943,7 +943,7 @@ void Log::outRALog(const char* str, ...)
     if (!str)
         return;
 
-    boost::lock_guard<boost::mutex> GuardObj(m_worldLogMtx);
+	std::lock_guard<std::mutex> GuardObj(m_worldLogMtx);
 
     if (raLogfile)
     {

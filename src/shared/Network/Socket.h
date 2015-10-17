@@ -22,13 +22,13 @@
 #include "ProtocolDefinitions.h"
 
 #include <boost/enable_shared_from_this.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/lock_guard.hpp>
 #include "NetworkBuffer.h"
 
 #include "Common.h"
 #include "Auth/AuthCrypt.h"
 #include "Auth/BigNumber.h"
+
+#include <mutex>
 
 class NetworkThread;
 class NetworkManager;
@@ -78,8 +78,8 @@ protected:
     uint32 native_handle();
      
     /// Mutex type used for various synchronizations.
-    typedef boost::mutex LockType;
-    typedef boost::lock_guard<LockType> GuardType;
+    typedef std::mutex LockType;
+    typedef std::lock_guard<LockType> GuardType;
 
     /// Mutex for protecting output related data.
     LockType out_buffer_lock_;

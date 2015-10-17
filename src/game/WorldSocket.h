@@ -26,8 +26,7 @@
 #define _WORLDSOCKET_H
 
 #include "Network/Socket.h"
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/lock_guard.hpp>
+#include <mutex>
 
 #include <chrono>
 

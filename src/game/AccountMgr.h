@@ -24,7 +24,7 @@
 #include "ObjectGuid.h"
 #include "SharedDefines.h"
 #include "Policies/Singleton.h"
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 #include <string>
 
 class Player;
@@ -61,7 +61,7 @@ template<> class hash <RafLinkedPair>
 };
 HASH_NAMESPACE_END
 
-class AccountMgr : public MaNGOS::Singleton<AccountMgr, MaNGOS::ClassLevelLockable<AccountMgr, boost::mutex> >
+class AccountMgr : public MaNGOS::Singleton<AccountMgr, MaNGOS::ClassLevelLockable<AccountMgr, std::mutex> >
 {
     public:
         AccountMgr();

@@ -24,9 +24,7 @@
 #include "SharedDefines.h"
 #include "WorldLocation.h"
 
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/shared_mutex.hpp>
-#include <boost/thread/shared_lock_guard.hpp>
+#include <mutex>
 
 class Spell;
 class Unit;
@@ -48,9 +46,9 @@ typedef std::queue<std::pair<uint64, BasicEvent*> > EventNewQueue;
 class MANGOS_DLL_SPEC WorldObjectEventProcessor : public EventProcessor
 {
     public:
-        typedef boost::shared_mutex LockType;
-        typedef boost::shared_lock<LockType> ReadGuard;
-        typedef boost::unique_lock<LockType> WriteGuard;
+        typedef std::mutex LockType;
+        typedef std::lock_guard<LockType> ReadGuard;
+        typedef std::unique_lock<LockType> WriteGuard;
 
         WorldObjectEventProcessor();
         ~WorldObjectEventProcessor() {};

@@ -26,6 +26,8 @@
 #include "soapStub.h"
 
 #include "World.h"
+#include <boost/thread.hpp>
+#include <boost/thread/tss.hpp>
 
 class SoapMgr
 {

@@ -21,7 +21,6 @@
 
 #include "Common.h"
 
-#include <boost/thread/mutex.hpp>
 #include "LockedQueue.h"
 #include <queue>
 #include "Utilities/Callback.h"
@@ -88,7 +87,7 @@ class SqlResultQueue;                                       /// queue for thread
 class SqlQueryHolder;                                       /// groups several async quries
 class SqlQueryHolderEx;                                     /// points to a holder, added to the delay thread
 
-class SqlResultQueue : public MaNGOS::LockedQueue<MaNGOS::IQueryCallback*, boost::mutex>
+class SqlResultQueue : public MaNGOS::LockedQueue<MaNGOS::IQueryCallback*>
 {
     public:
         SqlResultQueue() {}

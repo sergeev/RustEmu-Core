@@ -27,9 +27,9 @@
 #include "Corpse.h"
 #include "ObjectMgr.h"
 
-#define CLASS_LOCK MaNGOS::ClassLevelLockable<MapManager, boost::recursive_mutex>
+#define CLASS_LOCK MaNGOS::ClassLevelLockable<MapManager, std::recursive_mutex>
 INSTANTIATE_SINGLETON_2(MapManager, CLASS_LOCK);
-INSTANTIATE_CLASS_MUTEX(MapManager, boost::recursive_mutex);
+INSTANTIATE_CLASS_MUTEX(MapManager, std::recursive_mutex);
 
 MapManager::MapManager()
 {

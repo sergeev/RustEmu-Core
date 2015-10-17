@@ -31,6 +31,8 @@
 #include "Policies/Singleton.h"
 #include "Util.h"
 
+#include <mutex>
+
 char const* MAP_MAGIC = "MAPS";
 char const* MAP_VERSION_MAGIC = "v1.3";
 char const* MAP_AREA_MAGIC = "AREA";
@@ -1109,6 +1111,23 @@ bool TerrainInfo::IsUnderWater(float x, float y, float z, float* pWaterZ/*= null
     return false;
 }
 
+// check if creature is in water and have enough space to swim
+bool TerrainInfo::IsSwimmable(float x, float y, float pZ, float radius /*= 1.5f*/, GridMapLiquidData* data /*= 0*/) const
+{
+	// Check surface in x, y point for liquid
+	if (const_cast<TerrainInfo*>(this)->GetGrid(x, y))
+	{
+		GridMapLiquidData liquid_status;
+		GridMapLiquidData* liquid_ptr = data ? data : &liquid_status;
+		if (getLiquidStatus(x, y, pZ, MAP_ALL_LIQUIDS, liquid_ptr))
+		{
+			if (liquid_ptr->level - liquid_ptr->depth_level > radius) // is unit have enough space to swim
+				return true;
+		}
+	}
+	return false;
+}
+
 /**
 * Function find higher form water or ground height for current floor
 *
@@ -1238,7 +1257,9 @@ bool TerrainInfo::IsNextZcoordOK(float x, float y, float oldZ, float maxDiff) co
 }
 
 //////////////////////////////////////////////////////////////////////////
-INSTANTIATE_SINGLETON_1(TerrainManager);
+#define CLASS_LOCK MaNGOS::ClassLevelLockable<TerrainManager, std::mutex>
+INSTANTIATE_SINGLETON_2(TerrainManager, CLASS_LOCK);
+INSTANTIATE_CLASS_MUTEX(TerrainManager, std::mutex);
 
 TerrainManager::TerrainManager()
 {
@@ -1252,6 +1273,8 @@ TerrainManager::~TerrainManager()
 
 TerrainInfo* TerrainManager::LoadTerrain(uint32 const& mapId)
 {
+	Guard _guard(*this);
+
     TerrainInfo* ptr = nullptr;
     TerrainDataMap::const_iterator iter = i_TerrainMap.find(mapId);
     if (iter == i_TerrainMap.end())
@@ -1269,6 +1292,8 @@ void TerrainManager::UnloadTerrain(uint32 const& mapId)
 {
     if (sWorld.getConfig(CONFIG_BOOL_GRID_UNLOAD) == 0)
         return;
+
+	Guard _guard(*this);
 
     TerrainDataMap::iterator iter = i_TerrainMap.find(mapId);
     if (iter != i_TerrainMap.end())

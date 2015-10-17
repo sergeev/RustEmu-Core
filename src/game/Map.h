@@ -38,8 +38,6 @@
 #include "CreatureLinkingMgr.h"
 #include "vmap/DynamicTree.h"
 #include "WorldObjectEvents.h"
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/recursive_mutex.hpp>
 
 #include <bitset>
 #include <list>

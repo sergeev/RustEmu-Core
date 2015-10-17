@@ -81,9 +81,6 @@
 #include "LockedQueue.h"
 #include "Threading.h"
 
-#include <boost/cstdint.hpp>
-#include <boost/thread/mutex.hpp>
-
 #if PLATFORM != PLATFORM_WINDOWS
 #  include <sys/types.h>
 #  include <sys/ioctl.h>
@@ -151,8 +148,6 @@
 #endif // sizemacro
 
 inline float finiteAlways(float f) { return finite(f) ? f : 0.0f; }
-
-#define atol(a) strtoul( a, nullptr, 10)
 
 #define STRINGIZE(a) #a
 
